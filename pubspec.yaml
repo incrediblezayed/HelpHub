@@ -1,0 +1,92 @@
+name: helphub
+description: A new Flutter project.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.2.2 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  intro_views_flutter:
+  file_picker:
+  sortedmap:
+  flutter_fadein:
+  camera:
+  random_color:
+  intl:
+  division:
+  flutter_spinkit:
+  http:
+  shared_preferences:
+  permission_handler:
+  image:
+  image_picker:
+  photo_view:
+  path_provider:
+  flutter_plugin_pdf_viewer:
+  custom_radio_grouped_button:
+  get_it:
+  provider:
+  cupertino_icons:
+  font_awesome_flutter:
+  community_material_icon:
+  firebase_auth:
+  firebase_core:
+  cloud_firestore:
+  firebase_storage:
+  datetime_picker_formfield:
+  bottom_navy_bar:
+  pull_to_refresh:
+  firebase_messaging:
+  flutter_local_notifications:
+  fluttertoast:
+  cached_network_image:
+  flutter_login:
+  flutter_swiper:
+  percent_indicator:
+  hidden_drawer_menu:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  assets:
+    - assets/
+
+  fonts:
+    - family: Customicons
+      fonts:
+        - asset: assets/fonts/Customicons.ttf
+
+    - family: MyFlutterApp
+      fonts:
+        - asset: assets/fonts/MyFlutterApp.ttf
+
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Nunito-Regular.ttf
+        - asset: assets/fonts/Nunito-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Nunito-Black.ttf
+        - asset: assets/fonts/Nunito-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Nunito-ExtraBold.ttf
+          weight: 900
+        - asset: assets/fonts/Nunito-Italic.ttf
