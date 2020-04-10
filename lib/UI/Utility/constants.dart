@@ -103,17 +103,18 @@ Future openFileExplorer(
     if (!mounted) return '';
 
     return _path;
-  } else if (_pickingType == FileType.custom) {
-    try {
-      if (extension == null) extension = 'PDF';
-      _path = await FilePicker.getFilePath(
-          type: _pickingType, fileExtension: extension);
-    } on PlatformException catch (e) {
-      print("Unsupported operation" + e.toString());
-    }
-    if (!mounted) return '';
-    return _path;
-  }
+  } 
+  // TODO:else if (_pickingType == FileType.custom) {
+  //   try {
+  //     if (extension == null) extension = 'PDF';
+  //     _path = await FilePicker.getFilePath(
+  //         type: _pickingType, fileExtension: extension);
+  //   } on PlatformException catch (e) {
+  //     print("Unsupported operation" + e.toString());
+  //   }
+  //   if (!mounted) return '';
+  //   return _path;
+  // }
 }
 
 Widget progressIndicator() {

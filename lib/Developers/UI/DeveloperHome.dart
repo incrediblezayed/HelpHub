@@ -121,9 +121,9 @@ class _DeveloperHomeState extends State<DeveloperHome>
       autoCancel: true,
       channelShowBadge: true,
       enableLights: true,
-      style: message['tag'] == 'chat'
-          ? AndroidNotificationStyle.Messaging
-          : AndroidNotificationStyle.Default,
+      // style: message['tag'] == 'chat'
+      //     ? AndroidNotificationStyle.Messaging
+      //     : AndroidNotificationStyle.Default,
       groupKey: message['tag'],
       importance: Importance.Max,
       priority: Priority.High,
@@ -645,6 +645,11 @@ class _DeveloperHomeState extends State<DeveloperHome>
   Widget enrolledList({Student student}) {
     Size size = MediaQuery.of(context).size;
     double height = size.height;
+    double width = size.width;
+    var name = student.displayName.split(' ');
+    String firstName = name[0];
+
+    String lastName = (name.length > 1) ? name[1] : " "; //Ali
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -654,43 +659,135 @@ class _DeveloperHomeState extends State<DeveloperHome>
                 )));
       },
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: EdgeInsets.only(top: 18.0),
         child: Container(
-          height: height / 4,
-          child: Card(
-            elevation: 3,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Expanded(
-                    child: Hero(
-                  tag: '${student.displayName}+1',
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: setImage(
-                            student.photoUrl, ConstassetsString.student),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                )),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          alignment: Alignment.center,
+          child: Hero(
+            tag: '${student.displayName}',
+            child: Material(
+              elevation: 0.7,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                  height: (Orientation.portrait == true) ? height / 5.31 : 150,
+                  width: (Orientation.portrait == true) ? width - 50 : 350,
+                  color: Colors.white,
+                  margin: EdgeInsets.only(top: 10),
+                  child: Stack(
                     children: <Widget>[
-                      Text(student.displayName),
-                      Text(student.qualification)
+                      Container(
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                colors: [Colors.blue, Colors.blue[900]])),
+                        margin: EdgeInsets.only(top: 90),
+                        height:
+                            (Orientation.portrait == true) ? height / 10 : 70,
+                        width:
+                            (Orientation.portrait == true) ? width - 50 : 350,
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(5),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.blue[900],
+                          radius: 70,
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(student.photoUrl),
+                            backgroundColor: Colors.blue,
+                            radius: 68,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 15, left: 150),
+                        child: Text(
+                          '$firstName'.toUpperCase(),
+                          style: TextStyle(
+                              fontSize: 37,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.blue[900]),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 43, left: 150),
+                        child: Text(
+                          '$lastName'.toUpperCase(),
+                          style: TextStyle(
+                              fontSize: 27,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.blue[900]),
+                        ),
+                      ),
+                      Container(
+                        color: Colors.blue,
+                        padding: EdgeInsets.all(5),
+                        margin: EdgeInsets.only(top: 67, left: 150),
+                        child: Text(
+                          '${student.qualification}'.toUpperCase(),
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.blue[50]),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 95, left: 150),
+                        child: Text(
+                          '${student.email}',
+                          style:
+                              TextStyle(fontSize: 16, color: Colors.blue[50]),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 110, left: 200),
+                        child: Text(
+                          '${student.city}'.toUpperCase(),
+                          style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.blue[50]),
+                        ),
+                      ),
                     ],
-                  ),
-                )
-              ],
+                  )),
             ),
           ),
         ),
+
+        // TODO:child: Container(
+        //   height: height / 4,
+        //   child: Card(
+        //     elevation: 3,
+        //     shape:
+        //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        //     child: Column(
+        //       mainAxisSize: MainAxisSize.max,
+        //       children: <Widget>[
+        //         Expanded(
+        //             child: Hero(
+        //           tag: '${student.displayName}+1',
+        //           child: Container(
+        //             decoration: BoxDecoration(
+        //               image: DecorationImage(
+        //                 image: setImage(
+        //                     student.photoUrl, ConstassetsString.student),
+        //                 fit: BoxFit.cover,
+        //               ),
+        //             ),
+        //           ),
+        //         )),
+        //         Padding(
+        //           padding: EdgeInsets.all(8.0),
+        //           child: Row(
+        //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //             children: <Widget>[
+        //               Text(student.displayName),
+        //               Text(student.qualification)
+        //             ],
+        //           ),
+        //         )
+        //       ],
+        //     ),
+        //   ),
+        // ),
       ),
     );
   }
