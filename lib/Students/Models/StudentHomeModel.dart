@@ -1,7 +1,6 @@
 import 'package:helphub/Students/Services/StudentHomeServices.dart';
 import 'package:helphub/core/viewmodel/BaseModel.dart';
 import 'package:helphub/imports.dart';
-import 'package:helphub/model/projectmodel.dart';
 
 class StudentHomeModel extends BaseModel {
   StudentHomeServices studentHomeServices = locator<StudentHomeServices>();

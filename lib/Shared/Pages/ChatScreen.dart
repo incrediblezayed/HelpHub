@@ -1,17 +1,6 @@
-import 'dart:async';
-import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:helphub/Widgets/chatback.dart';
-import 'package:helphub/core/helpers/shared_preferences_helper.dart';
 import 'package:helphub/imports.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'const.dart';
-import 'fullPhoto.dart';
+
 
 class Chat extends StatelessWidget {
   final String peerId;
@@ -203,7 +192,6 @@ class ChatScreenState extends State<ChatScreen> {
     // type: 0 = text, 1 = image, 2 = sticker
     if (content.trim() != '') {
       textEditingController.clear();
-
       var documentReference = Firestore.instance
           .collection('messages')
           .document(groupChatId)
@@ -244,7 +232,7 @@ class ChatScreenState extends State<ChatScreen> {
                   padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                   width: 200.0,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.only(),
                       color: greyColor2),
                   margin: EdgeInsets.only(
                       bottom: isLastMessageRight(index) ? 20.0 : 10.0,

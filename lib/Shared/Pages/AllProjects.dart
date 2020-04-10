@@ -1,4 +1,3 @@
-import 'package:helphub/Shared/MyProject.dart';
 import 'package:helphub/imports.dart';
 
 class AllProjects extends StatelessWidget {

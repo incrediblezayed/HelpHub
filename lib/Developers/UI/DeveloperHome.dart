@@ -1,18 +1,6 @@
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:community_material_icon/community_material_icon.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:helphub/Developers/Models/DeveloperHomeModel.dart';
-import 'package:helphub/Developers/UI/StudentDetail.dart';
-import 'package:helphub/Shared/ChatScreen.dart';
-import 'package:helphub/Shared/MyProject.dart';
-import 'package:helphub/Students/UI/AllProjects.dart';
 import 'package:helphub/imports.dart';
-import 'package:helphub/model/projectmodel.dart';
-import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
 
 class DeveloperHome extends StatefulWidget {
   static const id = 'DeveloperHome';
@@ -643,7 +631,9 @@ class _DeveloperHomeState extends State<DeveloperHome>
   }
 
   Widget enrolledList({Student student}) {
-    Size size = MediaQuery.of(context).size;
+    var media = MediaQuery.of(context);
+    Orientation orientation = media.orientation;
+    Size size = media.size;
     double height = size.height;
     double width = size.width;
     var name = student.displayName.split(' ');
@@ -668,8 +658,11 @@ class _DeveloperHomeState extends State<DeveloperHome>
               elevation: 0.7,
               borderRadius: BorderRadius.circular(12),
               child: Container(
-                  height: (Orientation.portrait == true) ? height / 5.31 : 150,
-                  width: (Orientation.portrait == true) ? width - 50 : 350,
+                  height: (orientation == Orientation.portrait)
+                      ? height / 5.31
+                      : 150,
+                  width:
+                      (orientation == Orientation.portrait) ? width - 50 : 350,
                   color: Colors.white,
                   margin: EdgeInsets.only(top: 10),
                   child: Stack(
@@ -679,10 +672,12 @@ class _DeveloperHomeState extends State<DeveloperHome>
                             gradient: LinearGradient(
                                 colors: [Colors.blue, Colors.blue[900]])),
                         margin: EdgeInsets.only(top: 90),
-                        height:
-                            (Orientation.portrait == true) ? height / 10 : 70,
-                        width:
-                            (Orientation.portrait == true) ? width - 50 : 350,
+                        height: (orientation == Orientation.portrait)
+                            ? height / 10
+                            : 70,
+                        width: (orientation == Orientation.portrait)
+                            ? width - 50
+                            : 350,
                       ),
                       Container(
                         margin: EdgeInsets.all(5),
@@ -752,7 +747,8 @@ class _DeveloperHomeState extends State<DeveloperHome>
           ),
         ),
 
-        // TODO:child: Container(
+        // TODO: Old UI
+        //child: Container(
         //   height: height / 4,
         //   child: Card(
         //     elevation: 3,

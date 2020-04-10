@@ -1,11 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:helphub/Developers/UI/DeveloperProfile.dart';
-import 'package:helphub/Students/UI/StudentProfile.dart';
+import 'dart:ui';
 import 'package:helphub/imports.dart';
-import 'dart:ui' as ui;
-import 'Flutter Login/flutter_login.dart';
-import 'Flutter Login/src/widgets/fade_in.dart';
-import 'Flutter Login/src/widgets/gradient_box.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -284,7 +278,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                       model.state == ViewState.Busy
                           ? Container(
                               child: BackdropFilter(
-                                filter: ui.ImageFilter.blur(
+                                filter: ImageFilter.blur(
                                     sigmaX: 10.0, sigmaY: 10.0),
                                 child: kBuzyPage(
                                     color: Theme.of(context).primaryColor),

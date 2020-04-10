@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:helphub/Students/UI/ColorChoice.dart';
 import 'package:helphub/imports.dart';
 
 class Developer {
@@ -33,15 +30,7 @@ class Developer {
       this.country = '',
       this.qualification = '',
       this.currentProject = '',
-      this.experience = ''}) {
-    ColorChoice choice =
-        ColorChoices.choices[Random().nextInt(ColorChoices.choices.length)];
-    this.color = choice.primary;
-    this.gradient = LinearGradient(
-        colors: choice.gradient,
-        begin: Alignment.bottomCenter,
-        end: Alignment.topCenter);
-  }
+      this.experience = ''});
 
   bool isEmpty() {
     if (this.displayName == '' || this.displayName == null) return true;

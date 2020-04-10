@@ -1,12 +1,8 @@
-import 'package:flutter/cupertino.dart';
-import 'package:helphub/Developers/Models/DeveloperHomeModel.dart';
-import 'package:helphub/Developers/UI/StudentDetail.dart';
 import 'package:helphub/imports.dart';
-import 'package:helphub/model/projectmodel.dart';
-import 'dart:math' as math;
-
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:sortedmap/sortedmap.dart';
+import 'dart:math' as math;
+
 
 class MyProject extends StatefulWidget {
   final bool val;

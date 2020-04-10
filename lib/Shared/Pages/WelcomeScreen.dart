@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:helphub/Shared/login.dart';
-import 'package:intro_views_flutter/Models/page_view_model.dart';
-import 'package:intro_views_flutter/intro_views_flutter.dart';
-import 'package:helphub/UI/Utility/Resources.dart';
+
+import 'package:helphub/imports.dart';
 
 class WelcomeScreen extends StatelessWidget {
   static const id = 'WelcomeScreen';

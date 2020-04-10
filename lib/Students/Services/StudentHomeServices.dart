@@ -1,5 +1,4 @@
 import 'package:helphub/imports.dart';
-import 'package:helphub/model/projectmodel.dart';
 
 class StudentHomeServices extends Services {
   StreamController<Student> studentStream =

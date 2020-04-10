@@ -1,19 +1,9 @@
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:helphub/Shared/ChatScreen.dart';
-import 'package:helphub/Shared/MyProject.dart';
-import 'package:helphub/Students/Models/StudentHomeModel.dart';
-import 'package:helphub/Students/UI/AllProjects.dart';
 import 'package:helphub/Students/UI/DeveloperDetail.dart';
-import 'package:helphub/Students/UI/DevelopersCard.dart';
 import 'package:helphub/imports.dart';
-import 'package:helphub/model/projectmodel.dart';
-import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
-import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
+
+import 'DevelopersCard.dart';
 
 class StudentPage extends StatefulWidget {
   static String id = 'student';

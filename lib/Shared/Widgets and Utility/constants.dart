@@ -1,13 +1,10 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helphub/imports.dart';
 import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
 import 'ImageCompress.dart' as CompressImage;
-import 'SlideRoute.dart';
 
 var kTextFieldDecoration = InputDecoration(
   border: OutlineInputBorder(
@@ -45,15 +42,6 @@ kopenPage(BuildContext context, Widget page) {
   );
 }
 
-kopenPageSlide(BuildContext context, Widget page, {Duration duration}) {
-  return Navigator.push(
-    context,
-    RouteTransition(
-        // fade: false,
-        widget: page,
-        duration: duration),
-  );
-}
 
 kBuzyPage({Color color = Colors.white}) {
   return Align(
@@ -69,14 +57,6 @@ kbackBtn(BuildContext context) {
   Navigator.pop(context);
 }
 
-kopenPageBottom(BuildContext context, Widget page) {
-  Navigator.of(context).push(
-    CupertinoPageRoute<bool>(
-      fullscreenDialog: true,
-      builder: (BuildContext context) => page,
-    ),
-  );
-}
 
 Future openFileExplorer(
     FileType _pickingType, bool mounted, BuildContext context,
@@ -104,7 +84,8 @@ Future openFileExplorer(
 
     return _path;
   } 
-  // TODO:else if (_pickingType == FileType.custom) {
+  // TODO: FileType custom
+  //else if (_pickingType == FileType.custom) {
   //   try {
   //     if (extension == null) extension = 'PDF';
   //     _path = await FilePicker.getFilePath(
