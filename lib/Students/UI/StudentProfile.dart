@@ -153,9 +153,11 @@ class _StudentProfileState extends State<StudentProfile> {
             key: _scaffoldKey,
             appBar: TopBar(
               title: //Text(
-                student != null
-                  ? student.displayName == '' ? 'Profile' : student.displayName
-                  : 'Profile',//),
+                  student != null
+                      ? student.displayName == ''
+                          ? 'Profile'
+                          : student.displayName
+                      : 'Profile', //),
               child: kBackBtn,
               onPressed: () {
                 if (model.state ==
@@ -334,8 +336,7 @@ class _StudentProfileState extends State<StudentProfile> {
                         size: 25,
                       ),
                       onPressed: () async {
-                        String _path = await getImage(
-                            mounted, context);
+                        String _path = await getImage(mounted);
                         setState(() {
                           path = _path;
                           //tempPath = _path;

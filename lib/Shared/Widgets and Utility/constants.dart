@@ -56,10 +56,9 @@ kbackBtn(BuildContext context) {
 
 Future<String> getImage(
   bool mounted,
-  BuildContext context,
 ) async {
   String _path;
-  File file = await takeCompressedPicture(context);
+  File file = await takeCompressedPicture();
   if (file != null) _path = file.path;
   if (!mounted) return '';
   return _path;

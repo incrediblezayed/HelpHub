@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:helphub/core/enums/ViewState.dart';
 import 'package:helphub/imports.dart';
 
@@ -274,7 +273,7 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
                       ),
                       onPressed: () async {
                         String _path = await getImage(
-                             mounted, context);
+                             mounted);
                         setState(() {
                           path = _path;
                           // tempPath = _path;

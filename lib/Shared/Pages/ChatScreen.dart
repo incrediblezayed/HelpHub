@@ -499,7 +499,7 @@ class ChatScreenState extends State<ChatScreen> {
               child: new IconButton(
                 icon: new Icon(Icons.image),
                 onPressed: () {
-                  getImage(mounted, context).then((path) {
+                  getImage(mounted).then((path) {
                     if (path != null && path != '') {
                       setState(() {
                         isLoading = true;

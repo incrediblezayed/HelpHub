@@ -1,13 +1,12 @@
 import 'dart:async' show Future;
 import 'dart:io' show File;
 import 'package:flutter/foundation.dart' show compute;
-import 'package:flutter/material.dart' show BuildContext;
 import 'package:image/image.dart' as Im;
 import 'dart:math' as Math;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
 
-Future<File> takeCompressedPicture(BuildContext context) async {
+Future<File> takeCompressedPicture() async {
   var _imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
   if (_imageFile == null) {
     return null;
