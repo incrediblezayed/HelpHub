@@ -1,4 +1,3 @@
-
 import 'package:helphub/imports.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -81,7 +80,6 @@ class WelcomeScreen extends StatelessWidget {
         textStyle: TextStyle(color: Colors.white),
       ),
       PageViewModel(
-        
         bubbleBackgroundColor: Color(0xff008b88),
         bubble: Center(
           child: Text('3',
@@ -128,11 +126,7 @@ class WelcomeScreen extends StatelessWidget {
         children: <Widget>[
           IntroViewsFlutter(
             page(context),
-            onTapDoneButton: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Login()));
-            },
-
+            onTapDoneButton: () => kopenPage(context, Login()),
             fullTransition: 450,
             showNextButton: true,
             showBackButton: true,
@@ -181,14 +175,7 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                   height: 50,
                   minWidth: MediaQuery.of(context).size.width - 100,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => Login(),
-                      ),
-                    );
-                  },
+                  onPressed: () => kopenPage(context, Login()),
                   color: Colors.white,
                   child: Text(
                     ConstString.get_started,

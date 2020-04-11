@@ -9,15 +9,15 @@ class StorageServices extends Services {
   StorageServices() {
     getFirebaseUser();
   }
+  StorageUploadTask uploadTask;
   Future<String> setProfilePhoto(String filePath) async {
-    if (firebaseUser == null) 
-    await getFirebaseUser();
+    if (firebaseUser == null) await getFirebaseUser();
     // String schoolCode = await sharedPreferencesHelper.getSchoolCode();
 
     String _extension = p.extension(filePath);
     String fileName = firebaseUser.uid + _extension;
     UserType userType = await sharedPreferencesHelper.getUserType();
-    StorageUploadTask uploadTask;
+
     if (userType == UserType.STUDENT) {
       uploadTask = storageReference
           .child("Profile" + '/' + "Students" + '/' + fileName)
@@ -27,10 +27,12 @@ class StorageServices extends Services {
               contentType: "image",
               customMetadata: {
                 "uploadedBy": firebaseUser.uid,
+                "uploaderEmail": firebaseUser.email,
               },
             ),
           );
     } else {
+      String devId = await sharedPreferencesHelper.getDevelopersId();
       uploadTask = storageReference
           .child("Profile" + '/' + "Developers" + '/' + fileName)
           .putFile(
@@ -39,6 +41,7 @@ class StorageServices extends Services {
               contentType: "image",
               customMetadata: {
                 "uploadedBy": firebaseUser.uid,
+                "uploaderId": devId,
               },
             ),
           );
@@ -52,8 +55,21 @@ class StorageServices extends Services {
     return profileUrl;
   }
 
-  /* Future<String> sendImage(String path) async {
-    String 
-  } */
+  Future<String> sendImage(
+      {String path, String name, String sender, String reciever}) async {
+    String _extension = p.extension(path);
+    String filename = name + _extension;
+    uploadTask = storageReference
+        .child("Messages" + "/" + sender + " - " + reciever + filename)
+        .putFile(
+            File(path),
+            StorageMetadata(contentType: "image", customMetadata: {
+              "sender": sender,
+              "reciever": reciever,
+            }));
+    final StorageTaskSnapshot url = await uploadTask.onComplete;
+    final String imageUrl = await url.ref.getDownloadURL();
 
+    return imageUrl;
+  }
 }

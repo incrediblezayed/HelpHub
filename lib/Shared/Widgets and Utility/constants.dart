@@ -77,11 +77,6 @@ Future<String> getImage(
   //   return _path;
   // }
 }
-
-Widget progressIndicator() {
-  return Center(child: SpinKitThreeBounce(size: 20, color: Colors.blue));
-}
-
 ShapeBorder bordershape(double radius) {
   return RoundedRectangleBorder(
     borderRadius: BorderRadius.horizontal(right: Radius.circular(radius ?? 15)),
@@ -218,7 +213,9 @@ Card drawerNameCard(Size size,
   );
 }
 
-LayoutBuilder buildMenu({
+LayoutBuilder buildMenu(
+  pageContext,
+  {
   @required String user,
   @required String name,
   @required String imageUrl,
@@ -282,7 +279,7 @@ LayoutBuilder buildMenu({
                           onPressed: () {
                         animateIcon();
                         SimpleHiddenDrawerProvider.of(context).toggle();
-                        Navigator.of(context).pushNamed(profileRoute);
+                        Navigator.of(pageContext).pushNamed(profileRoute);
                       }, text: 'Edit Profile'),
                     ),
                     Spacer(),
@@ -302,7 +299,7 @@ LayoutBuilder buildMenu({
                                 onPressed: () {
                               animateIcon();
                               SimpleHiddenDrawerProvider.of(context).toggle();
-                              Navigator.of(context).pushNamed(WelcomeScreen.id);
+                              Navigator.of(pageContext).pushNamed(WelcomeScreen.id);
                               model.logoutUser();
                             }, text: "Logout"),
                             Divider(color: Colors.black, height: 3),

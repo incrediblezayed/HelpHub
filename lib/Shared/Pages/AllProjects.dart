@@ -5,10 +5,9 @@ class AllProjects extends StatelessWidget {
   final bool val;
   final bool enrolled;
   final UserType userType;
-  const AllProjects({Key key, this.project, this.val, this.enrolled, @required this.userType})
+  const AllProjects(
+      {Key key, this.project, this.val, this.enrolled, @required this.userType})
       : super(key: key);
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -17,15 +16,14 @@ class AllProjects extends StatelessWidget {
     String completeddate = project.completion.toDate().day.toString();
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        kopenPage(
             context,
-            MaterialPageRoute(
-                builder: (context) => MyProject(
-                  userType: userType,
-                      project: project,
-                      val: true,
-                      allProject: true,
-                    )));
+            MyProject(
+              userType: userType,
+              project: project,
+              val: true,
+              allProject: true,
+            ));
       },
       child: Container(
         height: MediaQuery.of(context).size.height / 6,
@@ -43,7 +41,8 @@ class AllProjects extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                child: Image(image: setImage(project.photo, ConstassetsString.welcome1)),
+                child: Image(
+                    image: setImage(project.photo, ConstassetsString.welcome1)),
               ),
               Spacer(
                 flex: 1,

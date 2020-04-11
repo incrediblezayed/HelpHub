@@ -218,6 +218,7 @@ class _StudentPageState extends State<StudentPage>
                         isDraggable: true,
                         verticalScalePercent: 99,
                         menu: buildMenu(
+                          context,
                             elevation: 5,
                             radius: 15,
                             user: 'Student',
@@ -283,7 +284,7 @@ class _StudentPageState extends State<StudentPage>
                                                   project,
                                                   projects));
                                         } else {
-                                          return progressIndicator();
+                                          return kBuzyPage();
                                         }
                                       })
                                   : FutureBuilder<List<Developer>>(
@@ -307,12 +308,12 @@ class _StudentPageState extends State<StudentPage>
                                                 projects),
                                           );
                                         } else {
-                                          return progressIndicator();
+                                          return kBuzyPage();
                                         }
                                       }));
                         });
                   } else {
-                    return progressIndicator();
+                    return kBuzyPage();
                   }
                 }),
             bottomNavigationBar: student != null
@@ -354,7 +355,7 @@ class _StudentPageState extends State<StudentPage>
                       project: projects[index],
                       enrolled: isEnrolled);
                 })
-        : progressIndicator();
+        : kBuzyPage();
   }
 
   Widget buildChat(Developer developer) {

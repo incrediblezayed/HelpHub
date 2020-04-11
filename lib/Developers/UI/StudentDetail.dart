@@ -324,7 +324,7 @@ class _DeveloperDetailState extends State<StudentDetail> {
                                                     Text("Accept"),
                                                   ],
                                                 )
-                                              : progressIndicator()),
+                                              : kBuzyPage()),
                                     ),
                                   ],
                                 ),
@@ -353,7 +353,7 @@ class _DeveloperDetailState extends State<StudentDetail> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      progressIndicator(),
+                                      kBuzyPage(),
                                     ],
                                   )),
                       )

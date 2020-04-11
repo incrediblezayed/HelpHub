@@ -521,7 +521,7 @@ class _MyProjectState extends State<MyProject> {
         );
       }
     } else {
-      return progressIndicator();
+      return kBuzyPage();
     }
   }
 
@@ -580,7 +580,7 @@ class _MyProjectState extends State<MyProject> {
         return Container();
       }
     } else {
-      progressIndicator();
+      kBuzyPage();
       Future.delayed((Duration(milliseconds: 500)), () {
         setState(() {});
       });

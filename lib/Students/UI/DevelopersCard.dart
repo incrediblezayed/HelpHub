@@ -6,7 +6,9 @@ class DevelopersCard extends StatelessWidget {
   final Developer developer;
   final Student student;
   DevelopersCard({Key key, this.developer, this.student}) : super(key: key);
-  final StudentProfileServices studentProfileServices = locator<StudentProfileServices>();/* 
+  final StudentProfileServices studentProfileServices =
+      locator<StudentProfileServices>();
+  /* 
   DateTime dateTime = DateTime.now();
   String requestText = "Request For Enrollment"; */
 
@@ -75,7 +77,7 @@ class DevelopersCard extends StatelessWidget {
       Positioned(
         bottom: height / 8.2 - 25,
         left: 23,
-        child: Text(developer.language??'',
+        child: Text(developer.language ?? '',
             style: TextStyle(
               backgroundColor: Colors.transparent,
               fontSize: 22,
@@ -99,13 +101,8 @@ class DevelopersCard extends StatelessWidget {
         right: width / 12 - 8,
         child: FlatButton(
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        DeveloperDetail(card: true, developer: developer)));
-          },
+          onPressed: () => kopenPage(
+              context, DeveloperDetail(card: true, developer: developer)),
           child: Row(
             children: <Widget>[
               Text("View more details",

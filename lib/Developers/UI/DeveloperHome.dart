@@ -1,4 +1,3 @@
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:helphub/imports.dart';
 
@@ -136,15 +135,14 @@ class _DeveloperHomeState extends State<DeveloperHome>
               .singleWhere((student) => student.displayName == message['title'])
           : student = null;
       student != null
-          ? Navigator.push(
+          ? kopenPage(
               context,
-              MaterialPageRoute(
-                  builder: (context) => Chat(
-                        peerId: student.email,
-                        peerAvatar: student.photoUrl,
-                        userType: UserType.DEVELOPERS,
-                        student: student,
-                      )))
+              ChatScreen(
+                peerId: student.email,
+                peerAvatar: student.photoUrl,
+                userType: UserType.DEVELOPERS,
+                student: student,
+              ))
           : setState(() {
               selectedIndex = 3;
             });
@@ -199,7 +197,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
               enableCornerAnimin: true,
               isDraggable: true,
               verticalScalePercent: 99,
-              menu: buildMenu(
+              menu: buildMenu(context,
                   user: 'Developer',
                   name: developer.displayName,
                   imageUrl: developer.photoUrl,
@@ -260,7 +258,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                                   child: buildEnrolled(developer,
                                       snapshot.data ?? enrolledstudents));
                             } else {
-                              return progressIndicator();
+                              return kBuzyPage();
                             }
                           }),
                       FutureBuilder<List<Student>>(
@@ -276,7 +274,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                                   child: buildRequest(
                                       model, snapshot.data ?? requests));
                             } else {
-                              return progressIndicator();
+                              return kBuzyPage();
                             }
                           }),
                       RefreshIndicator(
@@ -298,7 +296,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                                     snapshot.data ?? enrolledstudents),
                               );
                             } else {
-                              return progressIndicator();
+                              return kBuzyPage();
                             }
                           }),
                       FutureBuilder<List<Project>>(
@@ -314,7 +312,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                                   child: buildAllProject(
                                       snapshot.data ?? allProject));
                             } else {
-                              return progressIndicator();
+                              return kBuzyPage();
                             }
                           })
                     ],
@@ -417,21 +415,19 @@ class _DeveloperHomeState extends State<DeveloperHome>
   Widget chatList(Student student) {
     return ListTile(
       isThreeLine: true,
-      onLongPress: () {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => StudentDetail(
-                  isARequest: false,
-                  student: student,
-                )));
-      },
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => Chat(
-                peerId: student.email,
-                peerAvatar: student.photoUrl,
-                student: student,
-                userType: UserType.DEVELOPERS)));
-      },
+      onLongPress: () => kopenPage(
+          context,
+          StudentDetail(
+            isARequest: false,
+            student: student,
+          )),
+      onTap: () => kopenPage(
+          context,
+          Chat(
+              peerId: student.email,
+              peerAvatar: student.photoUrl,
+              student: student,
+              userType: UserType.DEVELOPERS)),
       leading: Hero(
         tag: '${student.displayName}+1',
         child: CircleAvatar(
@@ -506,7 +502,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                   },
                 ));
     else
-      return progressIndicator();
+      return kBuzyPage();
   }
 
   failed(String state) {
@@ -529,11 +525,12 @@ class _DeveloperHomeState extends State<DeveloperHome>
 
   Widget requestList({Student student, DeveloperHomeModel model}) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => StudentDetail(
-                isARequest: true,
-                student: student,
-              ))),
+      onTap: () => kopenPage(
+          context,
+          StudentDetail(
+            isARequest: true,
+            student: student,
+          )),
       child: Padding(
         padding: EdgeInsets.all(8),
         child: Card(
@@ -614,7 +611,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
 
   Widget buildEnrolled(Developer developer, List<Student> student) {
     if (student == null) {
-      return progressIndicator();
+      return kBuzyPage();
     } else {
       return student.length != 0
           ? ListView.builder(
@@ -641,13 +638,12 @@ class _DeveloperHomeState extends State<DeveloperHome>
 
     String lastName = (name.length > 1) ? name[1] : " "; //Ali
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => StudentDetail(
-                  student: student,
-                  isARequest: false,
-                )));
-      },
+      onTap: () => kopenPage(
+          context,
+          StudentDetail(
+            student: student,
+            isARequest: false,
+          )),
       child: Padding(
         padding: EdgeInsets.only(top: 18.0),
         child: Container(

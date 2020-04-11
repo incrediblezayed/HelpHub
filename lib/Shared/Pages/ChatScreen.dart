@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:helphub/imports.dart';
 import 'package:intl/intl.dart';
 import 'package:photo_view/photo_view.dart';
@@ -269,13 +271,12 @@ class ChatScreenState extends State<ChatScreen> {
                           clipBehavior: Clip.hardEdge,
                         ),
                         onPressed: () {
-                          Navigator.push(
+                          kopenPage(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => Container(
-                                      child: PhotoView(
-                                          imageProvider: NetworkImage(
-                                              document['content'])))));
+                              Container(
+                                  child: PhotoView(
+                                      imageProvider:
+                                          NetworkImage(document['content']))));
                         },
                         padding: EdgeInsets.all(0),
                       ),
@@ -336,11 +337,12 @@ class ChatScreenState extends State<ChatScreen> {
                         padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                         width: 200.0,
                         decoration: BoxDecoration(
-                            color: primaryColor,
-                            borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(17),
-                          topLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(17)),),
+                          color: primaryColor,
+                          borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(17),
+                              topLeft: Radius.circular(20),
+                              bottomRight: Radius.circular(17)),
+                        ),
                         margin: EdgeInsets.only(left: 10.0),
                       )
                     : document['type'] == 1
@@ -385,15 +387,12 @@ class ChatScreenState extends State<ChatScreen> {
                                     BorderRadius.all(Radius.circular(8.0)),
                                 clipBehavior: Clip.hardEdge,
                               ),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Container(
-                                            child: PhotoView(
-                                                imageProvider: NetworkImage(
-                                                    document['content'])))));
-                              },
+                              onPressed: () => kopenPage(
+                                  context,
+                                  Container(
+                                      child: PhotoView(
+                                          imageProvider: NetworkImage(
+                                              document['content'])))),
                               padding: EdgeInsets.all(0),
                             ),
                             margin: EdgeInsets.only(left: 10.0),
@@ -480,11 +479,10 @@ class ChatScreenState extends State<ChatScreen> {
     return Positioned(
       child: isLoading
           ? Container(
-              child: Center(
-                child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(themeColor)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                child: kBuzyPage(color: Colors.blue),
               ),
-              color: Colors.white.withOpacity(0.8),
             )
           : Container(),
     );
@@ -506,7 +504,25 @@ class ChatScreenState extends State<ChatScreen> {
                       setState(() {
                         isLoading = true;
                       });
-                      uploadFile();
+                      storageServices
+                          .sendImage(
+                        path: path,
+                        sender: id,
+                        reciever: peerId,
+                        name: DateTime.now().millisecondsSinceEpoch.toString(),
+                      )
+                          .then((imageUrl) {
+                        setState(() {
+                          isLoading = false;
+                          onSendMessage(imageUrl, 1);
+                        });
+                      }, onError: (err) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Fluttertoast.showToast(
+                            msg: 'This file is not an image');
+                      });
                     }
                   });
                 },
