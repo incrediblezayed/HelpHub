@@ -51,4 +51,9 @@ class StorageServices extends Services {
 
     return profileUrl;
   }
+
+  /* Future<String> sendImage(String path) async {
+    String 
+  } */
+
 }

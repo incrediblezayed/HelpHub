@@ -1,6 +1,6 @@
 import 'package:helphub/imports.dart';
 import 'package:intl/intl.dart';
-
+import 'package:photo_view/photo_view.dart';
 
 class Chat extends StatelessWidget {
   final String peerId;
@@ -96,6 +96,7 @@ class ChatScreenState extends State<ChatScreen> {
 
   var listMessage;
   String groupChatId;
+  StorageServices storageServices = locator<StorageServices>();
 
   SharedPreferencesHelper sharedPreferencesHelper =
       locator<SharedPreferencesHelper>();
@@ -156,17 +157,6 @@ class ChatScreenState extends State<ChatScreen> {
             .updateData({'chattingWith': peerId});
 
     setState(() {});
-  }
-
-  Future getImage() async {
-    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-
-    if (imageFile != null) {
-      setState(() {
-        isLoading = true;
-      });
-      uploadFile();
-    }
   }
 
   Future uploadFile() async {
@@ -232,7 +222,10 @@ class ChatScreenState extends State<ChatScreen> {
                   padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                   width: 200.0,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(17),
+                          topRight: Radius.circular(20),
+                          bottomLeft: Radius.circular(17)),
                       color: greyColor2),
                   margin: EdgeInsets.only(
                       bottom: isLastMessageRight(index) ? 20.0 : 10.0,
@@ -279,8 +272,10 @@ class ChatScreenState extends State<ChatScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      FullPhoto(url: document['content'])));
+                                  builder: (context) => Container(
+                                      child: PhotoView(
+                                          imageProvider: NetworkImage(
+                                              document['content'])))));
                         },
                         padding: EdgeInsets.all(0),
                       ),
@@ -342,7 +337,10 @@ class ChatScreenState extends State<ChatScreen> {
                         width: 200.0,
                         decoration: BoxDecoration(
                             color: primaryColor,
-                            borderRadius: BorderRadius.circular(8.0)),
+                            borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(17),
+                          topLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(17)),),
                         margin: EdgeInsets.only(left: 10.0),
                       )
                     : document['type'] == 1
@@ -391,8 +389,10 @@ class ChatScreenState extends State<ChatScreen> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => FullPhoto(
-                                            url: document['content'])));
+                                        builder: (context) => Container(
+                                            child: PhotoView(
+                                                imageProvider: NetworkImage(
+                                                    document['content'])))));
                               },
                               padding: EdgeInsets.all(0),
                             ),
@@ -457,24 +457,6 @@ class ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<bool> onBackPress() {
-    if (isShowSticker) {
-      setState(() {
-        isShowSticker = false;
-      });
-    } else {
-      Firestore.instance
-          .collection('users')
-          .document('Profile')
-          .collection('Developers')
-          .document(id)
-          .updateData({'chattingWith': null});
-      Navigator.pop(context);
-    }
-
-    return Future.value(false);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -518,7 +500,16 @@ class ChatScreenState extends State<ChatScreen> {
               margin: new EdgeInsets.symmetric(horizontal: 1.0),
               child: new IconButton(
                 icon: new Icon(Icons.image),
-                onPressed: getImage,
+                onPressed: () {
+                  getImage(mounted, context).then((path) {
+                    if (path != null && path != '') {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      uploadFile();
+                    }
+                  });
+                },
                 color: primaryColor,
               ),
             ),

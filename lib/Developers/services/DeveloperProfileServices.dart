@@ -14,6 +14,8 @@ class DeveloperProfileServices extends Services {
 
   setProfileData(Developer developer) async {
     if (developer.photoUrl.contains('https')) {
+     /*  developer.photoUrl =
+          await storageServices.setProfilePhoto(developer.photoUrl); */
     } else if (developer.photoUrl == 'default') {
       developer.photoUrl = developer.photoUrl;
     } else {

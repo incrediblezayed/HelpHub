@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helphub/imports.dart';
 import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
-import 'ImageCompress.dart' as CompressImage;
+import 'ImageCompress.dart';
 
 var kTextFieldDecoration = InputDecoration(
   border: OutlineInputBorder(
@@ -42,7 +40,6 @@ kopenPage(BuildContext context, Widget page) {
   );
 }
 
-
 kBuzyPage({Color color = Colors.white}) {
   return Align(
     alignment: Alignment.center,
@@ -57,33 +54,16 @@ kbackBtn(BuildContext context) {
   Navigator.pop(context);
 }
 
-
-Future openFileExplorer(
-    FileType _pickingType, bool mounted, BuildContext context,
-    {String extension}) async {
+Future<String> getImage(
+  bool mounted,
+  BuildContext context,
+) async {
   String _path;
-  if (_pickingType == FileType.image) {
-    if (extension == null) {
-      File file = await CompressImage.takeCompressedPicture(context);
-      if (file != null) _path = file.path;
-      if (!mounted) return '';
+  File file = await takeCompressedPicture(context);
+  if (file != null) _path = file.path;
+  if (!mounted) return '';
+  return _path;
 
-      return _path;
-    } else {
-      _path = await FilePicker.getFilePath(type: _pickingType);
-      if (!mounted) return '';
-      return _path;
-    }
-  } else if (_pickingType != FileType.custom) {
-    try {
-      _path = await FilePicker.getFilePath(type: _pickingType);
-    } on PlatformException catch (e) {
-      print("Unsupported operation" + e.toString());
-    }
-    if (!mounted) return '';
-
-    return _path;
-  } 
   // TODO: FileType custom
   //else if (_pickingType == FileType.custom) {
   //   try {
@@ -123,13 +103,13 @@ TextStyle infoStyle() {
   return TextStyle(fontSize: 17, fontWeight: FontWeight.w300);
 }
 
-Widget profileMaterialButton(BuildContext context,
+Widget profileMaterialButton(Size size,
     {@required Function onPressed,
     @required String text,
     double elevation,
     double radius}) {
   return Container(
-      width: MediaQuery.of(context).size.height / 4,
+      width: size.height / 4,
       child: MaterialButton(
           color: Colors.white,
           shape: bordershape(radius ?? 10),
@@ -143,7 +123,7 @@ Widget profileMaterialButton(BuildContext context,
           }));
 }
 
-Widget profileFlatButton(context,
+Widget profileFlatButton(Size size,
     {@required Function onPressed,
     @required text,
     BorderRadiusGeometry radius}) {
@@ -151,8 +131,8 @@ Widget profileFlatButton(context,
     borderRadius: radius ?? BorderRadius.circular(0),
     onTap: () => onPressed,
     child: Container(
-      width: MediaQuery.of(context).size.height / 4,
-      height: MediaQuery.of(context).size.height / 20 - 7,
+      width: size.height / 4,
+      height: size.height / 20 - 7,
       margin: EdgeInsets.only(left: 10),
       decoration:
           BoxDecoration(borderRadius: radius ?? BorderRadius.circular(0)),
@@ -161,15 +141,15 @@ Widget profileFlatButton(context,
   );
 }
 
-Card drawerProfileImageCard(BuildContext context,
+Card drawerProfileImageCard(Size size,
     {ImageProvider image, double elevation, double radius}) {
   return Card(
     elevation: elevation ?? 3,
     shape: bordershape(radius ?? 22),
     margin: EdgeInsets.all(0),
     child: Container(
-      height: MediaQuery.of(context).size.height / 3.5,
-      width: MediaQuery.of(context).size.height / 3.8,
+      height: size.height / 3.5,
+      width: size.height / 3.8,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.horizontal(right: Radius.circular(22)),
           image: DecorationImage(fit: BoxFit.cover, image: image)),
@@ -190,14 +170,14 @@ TextStyle detailvalueStyle(context) {
       fontWeight: FontWeight.w300);
 }
 
-Widget drawerProfileInfo(BuildContext context,
+Widget drawerProfileInfo(Size size,
     {List<Widget> children, double elevation, double radius}) {
   return Card(
     margin: EdgeInsets.only(left: 0),
     shape: bordershape(radius ?? 15),
     elevation: elevation ?? 3,
     child: Container(
-      width: MediaQuery.of(context).size.height / 4,
+      width: size.height / 4,
       margin: EdgeInsets.only(left: 10, right: 0, top: 12, bottom: 10),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,14 +187,14 @@ Widget drawerProfileInfo(BuildContext context,
   );
 }
 
-Card drawerNameCard(BuildContext context,
+Card drawerNameCard(Size size,
     {String user, String name, double elevation, double radius}) {
   return Card(
     margin: EdgeInsets.only(left: 0),
     shape: bordershape(radius ?? 15),
     elevation: elevation ?? 3,
     child: Container(
-      width: MediaQuery.of(context).size.height / 4,
+      width: size.height / 4,
       margin: EdgeInsets.only(left: 10, right: 0, top: 12, bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,6 +230,7 @@ LayoutBuilder buildMenu({
 }) {
   LoginPageModel model = locator<LoginPageModel>();
   return LayoutBuilder(builder: (context, snapshot) {
+    Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: GestureDetector(
         onHorizontalDragEnd: (details) {
@@ -274,13 +255,13 @@ LayoutBuilder buildMenu({
                   children: [
                     Spacer(),
                     drawerNameCard(
-                      context,
+                      size,
                       elevation: elevation,
                       user: user,
                       name: name,
                     ),
                     Spacer(),
-                    drawerProfileImageCard(context,
+                    drawerProfileImageCard(size,
                         image: setImage(
                             imageUrl,
                             user == 'Student'
@@ -288,13 +269,14 @@ LayoutBuilder buildMenu({
                                 : ConstassetsString.developer),
                         elevation: elevation),
                     Spacer(),
-                    drawerProfileInfo(context,
-                        children: infoChildren, elevation: elevation),
+                    drawerProfileInfo(size,
+                        children: infoChildren, 
+                        elevation: elevation),
                     Spacer(),
                     Card(
                       elevation: elevation,
                       margin: EdgeInsets.all(0),
-                      child: profileFlatButton(context,
+                      child: profileFlatButton(size,
                           radius: BorderRadius.horizontal(
                               right: Radius.circular(radius ?? 15)),
                           onPressed: () {
@@ -304,16 +286,17 @@ LayoutBuilder buildMenu({
                       }, text: 'Edit Profile'),
                     ),
                     Spacer(),
-                    Container(
-                      width: MediaQuery.of(context).size.height / 4,
-                      child: Card(
-                        shape: bordershape(15),
-                        margin: EdgeInsets.all(0),
+                    Card(
+                      shape: bordershape(15),
+                      elevation: elevation??5,
+                      margin: EdgeInsets.all(0),
+                      child: Container(
+                        width: size.height/3.86,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            profileFlatButton(context,
+                            profileFlatButton(size,
                                 radius: BorderRadius.only(
                                     topRight: Radius.circular(radius ?? 15)),
                                 onPressed: () {
@@ -323,13 +306,13 @@ LayoutBuilder buildMenu({
                               model.logoutUser();
                             }, text: "Logout"),
                             Divider(color: Colors.black, height: 3),
-                            profileFlatButton(context, onPressed: () {
+                            profileFlatButton(size, onPressed: () {
                               animateIcon();
                               SimpleHiddenDrawerProvider.of(context).toggle();
                               // Navigator.of(context).pushNamed(//TODO: Feedback route);
                             }, text: "Complaints & Feedback"),
                             Divider(color: Colors.black, height: 3),
-                            profileFlatButton(context,
+                            profileFlatButton(size,
                                 radius: BorderRadius.only(
                                     bottomRight: Radius.circular(radius ?? 15)),
                                 onPressed: () {

@@ -273,8 +273,8 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
                         size: 25,
                       ),
                       onPressed: () async {
-                        String _path = await openFileExplorer(
-                            FileType.image, mounted, context);
+                        String _path = await getImage(
+                             mounted, context);
                         setState(() {
                           path = _path;
                           // tempPath = _path;

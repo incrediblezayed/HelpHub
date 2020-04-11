@@ -12,6 +12,8 @@ class StudentProfileServices extends Services {
 
   setProfileData({Student student}) async {
     if (student.photoUrl.contains('https')) {
+     /*  student.photoUrl =
+          await storageServices.setProfilePhoto(student.photoUrl); */
     } else if (student.photoUrl == 'default') {
       student.photoUrl = student.photoUrl;
     } else {

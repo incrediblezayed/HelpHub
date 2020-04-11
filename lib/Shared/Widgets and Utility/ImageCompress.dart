@@ -16,9 +16,9 @@ Future<File> takeCompressedPicture(BuildContext context) async {
   // You can have a loading dialog here but don't forget to pop before return file;
 
   final tempDir = await getTemporaryDirectory();
-  final rand = Math.Random().nextInt(10000);
+  final random = Math.Random().nextInt(10000);
   _CompressImage compressObject =
-      _CompressImage(_imageFile, tempDir.path, rand);
+      _CompressImage(_imageFile, tempDir.path, random);
   String filePath = await _compressImage(compressObject);
   print('new path: ' + filePath);
   File file = File(filePath);

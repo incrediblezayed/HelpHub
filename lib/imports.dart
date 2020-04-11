@@ -94,6 +94,5 @@ export 'package:helphub/Shared/Pages/MyProject.dart';
 export 'package:helphub/Shared/Widgets%20and%20Utility/chatback.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:helphub/Shared/Widgets%20and%20Utility/colors.dart';
-export 'package:helphub/Shared/Widgets and Utility/fullPhoto.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:firebase_storage/firebase_storage.dart';
