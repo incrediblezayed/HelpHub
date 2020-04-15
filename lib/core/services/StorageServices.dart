@@ -60,7 +60,7 @@ class StorageServices extends Services {
     String _extension = p.extension(path);
     String filename = name + _extension;
     uploadTask = storageReference
-        .child("Messages" + "/" + sender + " - " + reciever + filename)
+        .child("Messages" + "/" + sender + " - " + reciever + "/" + filename)
         .putFile(
             File(path),
             StorageMetadata(contentType: "image", customMetadata: {

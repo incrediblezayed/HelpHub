@@ -5,7 +5,7 @@ class ChatProfilePic extends StatelessWidget {
   final String imageHero;
   final String arrowHero;
   final Widget child;
-  final ImageProvider image;
+  final String image;
   const ChatProfilePic(
       {Key key, this.imageHero, this.arrowHero, this.child, this.image})
       : super(key: key);
@@ -22,9 +22,16 @@ class ChatProfilePic extends StatelessWidget {
           Hero(
             transitionOnUserGestures: true,
             tag: imageHero,
-            child: CircleAvatar(
-              radius: 18,
-              backgroundImage: image,
+            child: imageBuilder(
+              image,
+              placeHolder: CircleAvatar(
+                radius: 18,
+                backgroundImage: setImage(null, ConstassetsString.student),
+              ),
+              child: CircleAvatar(
+                radius: 18,
+                backgroundImage: setImage(image, ConstassetsString.student),
+              ),
             ),
           ),
         ],

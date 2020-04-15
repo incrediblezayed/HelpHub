@@ -68,8 +68,8 @@ class _StudentProfileState extends State<StudentProfile> {
       Student student, FirebaseUser firebaseUser) async {
     bool res = false;
     if (_name.isEmpty || _qualification.isEmpty || _yearofcompletion.isEmpty) {
-      _scaffoldKey.currentState.showSnackBar(ksnackBar(
-          context, 'You Need to fill all the details and a profile Photo'));
+      _scaffoldKey.currentState.showSnackBar(ksnackBar(context,
+          'You Need to fill all the details and a profile Photo', false));
     } else {
       if (model.state == ViewState.Idle) {
         if (model.studentProfile == null) {

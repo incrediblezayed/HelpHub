@@ -43,7 +43,7 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
         _city.isEmpty ||
         _country.isEmpty) {
       _scaffoldKey.currentState.showSnackBar(ksnackBar(
-          context, 'You Need to fill all the details and a profile Photo'));
+          context, 'You Need to fill all the details and a profile Photo',false), );
     } else {
       if (model.state == ViewState.Idle) {
         developer = Developer(
@@ -76,10 +76,13 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
   }
 
   String buildTitle(Developer developer) {
-    if (developer.displayName != null) {
-      return developer.displayName != ""
-          ? developer.displayName
-          : ConstString.profile;
+    if (developer != null) {
+      if (developer.displayName != null) {
+        return developer.displayName != ""
+            ? developer.displayName
+            : ConstString.profile;
+      }
+      return ConstString.profile;
     } else {
       return ConstString.profile;
     }
@@ -189,8 +192,7 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
                               width: width,
                               labelText: "Preferred Language",
                               textInputType: TextInputType.text,
-                              controller:
-                                  TextEditingController(text: language),
+                              controller: TextEditingController(text: language),
                               onChanged: (value) {
                                 language = value;
                               },
@@ -272,8 +274,7 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
                         size: 25,
                       ),
                       onPressed: () async {
-                        String _path = await getImage(
-                             mounted);
+                        String _path = await getImage(mounted);
                         setState(() {
                           path = _path;
                           // tempPath = _path;

@@ -71,7 +71,7 @@ class DeveloperProfileServices extends Services {
         loggedInDeveloperStream.add(developer);
       }
     } else {
-      developer = Developer();
+      developer = await getDeveloper();
     }
     return developer;
   }

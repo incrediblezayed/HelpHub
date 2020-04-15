@@ -11,33 +11,23 @@ dependencies:
     sdk: flutter
 
   intro_views_flutter:
-  file_picker: "^1.6.0"
   sortedmap:
-  flutter_fadein:
-  camera:
-  random_color:
   intl:
   division:
   flutter_spinkit:
   http:
   shared_preferences:
   permission_handler:
-  image:
   image_picker:
-  photo_view:
   path_provider:
-  flutter_plugin_pdf_viewer:
-  custom_radio_grouped_button:
   get_it:
   provider:
   cupertino_icons:
   font_awesome_flutter:
-  community_material_icon:
   firebase_auth:
   firebase_core:
   cloud_firestore:
   firebase_storage:
-  datetime_picker_formfield:
   bottom_navy_bar:
   pull_to_refresh:
   firebase_messaging:
@@ -48,6 +38,7 @@ dependencies:
   flutter_swiper:
   percent_indicator:
   hidden_drawer_menu:
+  community_material_icons:
 
 dev_dependencies:
   flutter_test:

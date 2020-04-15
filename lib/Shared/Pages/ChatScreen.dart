@@ -1,8 +1,8 @@
 import 'dart:ui';
 
+import 'package:helphub/Shared/Widgets%20and%20Utility/FullImage.dart';
 import 'package:helphub/imports.dart';
 import 'package:intl/intl.dart';
-import 'package:photo_view/photo_view.dart';
 
 class Chat extends StatelessWidget {
   final String peerId;
@@ -38,7 +38,7 @@ class Chat extends StatelessWidget {
               child1: ChatProfilePic(
                 imageHero: '${student.displayName}+1',
                 arrowHero: student.displayName,
-                image: setImage(student.photoUrl),
+                image: student.photoUrl,
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -110,14 +110,15 @@ class ChatScreenState extends State<ChatScreen> {
 
   final TextEditingController textEditingController =
       new TextEditingController();
-  final ScrollController listScrollController = new ScrollController();
+  ScrollController listScrollController;
   final FocusNode focusNode = new FocusNode();
 
   @override
   void initState() {
     super.initState();
     focusNode.addListener(onFocusChange);
-
+    listScrollController = ScrollController();
+    listScrollController.addListener(_scrollListener);
     groupChatId = '';
 
     isLoading = false;
@@ -161,26 +162,23 @@ class ChatScreenState extends State<ChatScreen> {
     setState(() {});
   }
 
-  Future uploadFile() async {
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
-    StorageUploadTask uploadTask = reference.putFile(imageFile);
-    StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
-    storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
-      imageUrl = downloadUrl;
+  _scrollListener() {
+    if (listScrollController.offset <=
+            listScrollController.position.minScrollExtent &&
+        !listScrollController.position.outOfRange) {
       setState(() {
-        isLoading = false;
-        onSendMessage(imageUrl, 1);
+        limit = limit + 20;
       });
-    }, onError: (err) {
+    }
+/*         if (listScrollController.offset >=
+            listScrollController.position.minScrollExtent &&
+        !listScrollController.position.outOfRange) {
       setState(() {
-        isLoading = false;
-      });
-      Fluttertoast.showToast(msg: 'This file is not an image');
-    });
+        limit = limit + 20;
+      }); */
   }
 
-  void onSendMessage(String content, int type) {
+  void onSendMessage(String content, int type) async {
     // type: 0 = text, 1 = image, 2 = sticker
     if (content.trim() != '') {
       textEditingController.clear();
@@ -189,8 +187,16 @@ class ChatScreenState extends State<ChatScreen> {
           .document(groupChatId)
           .collection(groupChatId)
           .document(DateTime.now().millisecondsSinceEpoch.toString());
-
-      Firestore.instance.runTransaction((transaction) async {
+      await documentReference.setData({
+        'idFrom': id,
+        'idTo': peerId,
+        'userType': UserTypeHelper.getValue(userType),
+        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+        'content': content,
+        'type': type
+      });
+      /* Firestore.instance.runTransaction((transaction) async {
+        print("check");
         await transaction.set(
           documentReference,
           {
@@ -201,8 +207,10 @@ class ChatScreenState extends State<ChatScreen> {
             'content': content,
             'type': type
           },
-        );
-      });
+        ).then((value){
+          print("success");
+        });
+      }); */
       listScrollController.animateTo(0.0,
           duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     } else {
@@ -273,10 +281,9 @@ class ChatScreenState extends State<ChatScreen> {
                         onPressed: () {
                           kopenPage(
                               context,
-                              Container(
-                                  child: PhotoView(
-                                      imageProvider:
-                                          NetworkImage(document['content']))));
+                              FullImage(
+                                image: NetworkImage(document['content']),
+                              ));
                         },
                         padding: EdgeInsets.all(0),
                       ),
@@ -389,10 +396,9 @@ class ChatScreenState extends State<ChatScreen> {
                               ),
                               onPressed: () => kopenPage(
                                   context,
-                                  Container(
-                                      child: PhotoView(
-                                          imageProvider: NetworkImage(
-                                              document['content'])))),
+                                  FullImage(
+                                    image: NetworkImage(document['content']),
+                                  )),
                               padding: EdgeInsets.all(0),
                             ),
                             margin: EdgeInsets.only(left: 10.0),
@@ -509,7 +515,7 @@ class ChatScreenState extends State<ChatScreen> {
                         path: path,
                         sender: id,
                         reciever: peerId,
-                        name: DateTime.now().millisecondsSinceEpoch.toString(),
+                        name: DateTime.now().toString(),
                       )
                           .then((imageUrl) {
                         setState(() {
@@ -570,6 +576,7 @@ class ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  int limit = 20;
   Widget buildListMessage() {
     return Flexible(
       child: groupChatId == ''
@@ -582,7 +589,7 @@ class ChatScreenState extends State<ChatScreen> {
                   .document(groupChatId)
                   .collection(groupChatId)
                   .orderBy('timestamp', descending: true)
-                  .limit(20)
+                  .limit(limit)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
@@ -590,13 +597,13 @@ class ChatScreenState extends State<ChatScreen> {
                 } else {
                   listMessage = snapshot.data.documents;
                   return ListView.builder(
-                    padding: EdgeInsets.all(10.0),
-                    itemBuilder: (context, index) =>
-                        buildItem(index, snapshot.data.documents[index]),
-                    itemCount: snapshot.data.documents.length,
-                    reverse: true,
-                    controller: listScrollController,
-                  );
+                      padding: EdgeInsets.all(10.0),
+                      itemBuilder: (context, index) =>
+                          buildItem(index, snapshot.data.documents[index]),
+                      itemCount: snapshot.data.documents.length,
+                      reverse: true,
+                      controller: listScrollController,
+                      physics: BouncingScrollPhysics());
                 }
               },
             ),

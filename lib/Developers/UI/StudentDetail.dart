@@ -66,14 +66,6 @@ class _DeveloperDetailState extends State<StudentDetail> {
     );
   }
 
-  ImageProvider<dynamic> setImage(String photo) {
-    return photo != "default"
-        ? NetworkImage(
-            photo,
-          )
-        : AssetImage(ConstassetsString.student);
-  }
-
   TextStyle titleStyle() {
     return TextStyle(
         fontSize: MediaQuery.of(context).size.width / 24,
@@ -123,7 +115,7 @@ class _DeveloperDetailState extends State<StudentDetail> {
           }
         });
         return Scaffold(
-          backgroundColor: Colors.white,
+            backgroundColor: Colors.white,
             appBar: Navigator.canPop(context) == true
                 ? TopBar(
                     title: // Text(
@@ -142,13 +134,26 @@ class _DeveloperDetailState extends State<StudentDetail> {
                         [
                           Hero(
                               tag: '${student.displayName}+1',
-                              child: Container(
-                                width: width,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: setImage(student.photoUrl))),
+                              child: imageBuilder(
+                                student.photoUrl,
+                                placeHolder:Container(
+                                  width: width,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: setImage(null,
+                                              ConstassetsString.student))),
+                                ) ,
+                                child: Container(
+                                  width: width,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: setImage(student.photoUrl,
+                                              ConstassetsString.student))),
+                                ),
                               ))
                         ],
                       ),

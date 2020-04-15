@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:helphub/Students/UI/DeveloperDetail.dart';
 import 'package:helphub/imports.dart';
+import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'DevelopersCard.dart';
 
@@ -17,7 +19,7 @@ class _StudentPageState extends State<StudentPage>
     with SingleTickerProviderStateMixin {
   SwiperController _swiperController;
   PageController pageController;
-
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       new FlutterLocalNotificationsPlugin();
@@ -33,8 +35,8 @@ class _StudentPageState extends State<StudentPage>
         AnimationController(vsync: this, duration: Duration(milliseconds: 250));
     super.initState();
 
-    registerNotification();
-    configLocalNotification();
+    //  registerNotification();
+    //configLocalNotification();
     _swiperController = SwiperController();
     pageController = PageController();
   }
@@ -54,17 +56,27 @@ class _StudentPageState extends State<StudentPage>
 
   void registerNotification() async {
     String currentUser = await sharedPreferencesHelper.getStudentsEmail();
-
     firebaseMessaging.requestNotificationPermissions();
-    firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
+    firebaseMessaging.configure(
+      onBackgroundMessage: (message) {
+        print(message);
+      configureNotificationToShow(message);
+      return;
+    }, onMessage: (Map<String, dynamic> message) {
       print('onMessage: $message');
-      showNotification(message['notification']);
+      //TODO: Implement Foreground message
+      // configureNotificationToShow(message);
       return;
     }, onResume: (Map<String, dynamic> message) {
       print('onResume: $message');
+      //TODO: Implement onClick
+      // configureNotificationToShow(message);
       return;
     }, onLaunch: (Map<String, dynamic> message) {
       print('onLaunch: $message');
+      //TODO: Implement onLaunch
+
+      // configureNotificationToShow(message);
       return;
     });
 
@@ -90,7 +102,59 @@ class _StudentPageState extends State<StudentPage>
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  void showNotification(message) async {
+  Future<String> downloadAndSaveFile(String url, String name) async {
+    var directory = await getApplicationDocumentsDirectory();
+    var path = '${directory.path}/$name';
+    var res = await get(url);
+    var file = File(path);
+    await file.writeAsBytes(res.bodyBytes);
+    return path;
+  }
+
+  List<Message> messages = List(5);
+  BigPictureStyleInformation photo;
+  Person person;
+  MessagingStyleInformation messageStyle;
+
+  void configureNotificationToShow(Map message) async {
+    Map notification = message['notification'];
+    Map data = message["data"];
+    var senderImage = await downloadAndSaveFile(data['sender_image'], "Icon");
+    if (data['messageType'] == "photo") {
+      var picturePath =
+          await downloadAndSaveFile(notification['body'], "Photo");
+      photo = BigPictureStyleInformation(FilePathAndroidBitmap(picturePath),
+          largeIcon: FilePathAndroidBitmap(senderImage));
+      showNotification(notification, notification['titile'], "Photo", photo);
+    } else {
+      person = Person(
+        icon: BitmapFilePathAndroidIcon(senderImage),
+        name: notification['title'],
+      );
+      Message message = Message(notification['body'], DateTime.now(), person);
+      for (int i = 0; i <= messages.length; i++) {
+        if (messages.length != 0) {
+          if (messages[i].text != message.text) {
+            if (messages.length != 5) {
+              messages.add(message);
+              print(message.text);
+            } else {
+              messages.removeAt(0);
+              messages.add(message);
+            }
+          }
+        } else {
+          messages.add(message);
+        }
+      }
+      messageStyle = MessagingStyleInformation(person, messages: messages);
+
+      showSnackBarNotfication("New message: ${notification['body']}");
+    }
+  }
+
+  void showNotification(Map notification, String title, String body,
+      StyleInformation styleInformation) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
       Platform.isAndroid ? 'com.h2.helphub' : 'com.h2.helphub',
       'Help Hub',
@@ -98,14 +162,32 @@ class _StudentPageState extends State<StudentPage>
       playSound: true,
       enableVibration: true,
       importance: Importance.Max,
+      groupKey: title,
+      autoCancel: true,
+      styleInformation: styleInformation,
       priority: Priority.High,
     );
     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
     var platformChannelSpecifics = new NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(0, message['title'].toString(),
-        message['body'].toString(), platformChannelSpecifics,
-        payload: json.encode(message));
+    await flutterLocalNotificationsPlugin.show(
+        0, title, body, platformChannelSpecifics,
+        payload: json.encode(notification));
+  }
+
+  void showSnackBarNotfication(String message) {
+    SnackBar(
+        content: Text("New Message"),
+        action: SnackBarAction(
+            label: message,
+            onPressed: () {
+              setState(() {
+                _selectedIndex = 2;
+                pageController.animateToPage(2,
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.bounceInOut);
+              });
+            }));
   }
 
   int _selectedIndex = 0;
@@ -205,117 +287,90 @@ class _StudentPageState extends State<StudentPage>
           }
         }
         return Scaffold(
+            key: _scaffoldKey,
             backgroundColor: Colors.white,
-            body: FutureBuilder<Student>(
-                future: student == null
-                    ? model.getStudentProfile()
-                    : Future.delayed(Duration(milliseconds: 300)),
-                builder: (context, studentsnapshot) {
-                  if (studentsnapshot.data != null || student != null) {
-                    return SimpleHiddenDrawer(
-                        slidePercent: 53,
-                        enableCornerAnimin: true,
-                        isDraggable: true,
-                        verticalScalePercent: 99,
-                        menu: buildMenu(
-                          context,
-                            elevation: 5,
-                            radius: 15,
-                            user: 'Student',
-                            name: student.displayName ??
-                                studentsnapshot.data.displayName,
-                            imageUrl: student.photoUrl,
-                            profileRoute: StudentProfile.id,
-                            animateIcon: handleOnPressed,
-                            infoChildren: [
-                              SizedBox(height: 7),
-                              Text(student.email ?? '', style: infoStyle()),
-                              SizedBox(height: 7),
-                              Text(student.qualification ?? '',
-                                  style: infoStyle()),
-                              SizedBox(height: 7),
-                              Text(student.yearofcompletion ?? '',
-                                  style: infoStyle()),
-                              SizedBox(height: 7),
-                              Text(student.city ?? '', style: infoStyle()),
-                              SizedBox(height: 7),
-                              Text(student.country ?? '', style: infoStyle()),
-                              SizedBox(height: 7),
-                            ]),
-                        screenSelectedBuilder: (position, bloc) {
-                          return Scaffold(
-                              appBar: TopBar(
-                                  rightButton: IconButton(
-                                      icon: Icon(Icons.refresh),
-                                      onPressed: () {
-                                        refresh(model);
-                                      }),
-                                  title: student.enrolled == true
-                                      ? buildenrolledtitle()
-                                      : buildtitle(),
-                                  child: AnimatedIcon(
-                                      icon: AnimatedIcons.menu_close,
-                                      progress: _animationController),
-                                  onPressed: () {
-                                    handleOnPressed();
-                                    bloc.toggle();
-                                  }),
-                              body: student.enrolled == true
-                                  ? FutureBuilder<Developer>(
-                                      future: developer == null
-                                          ? model.getEnrolledDeveloperProfile()
-                                          : Future.delayed(
-                                              Duration(milliseconds: 300)),
-                                      builder: (context, developersnapshot) {
-                                        if (developersnapshot.data != null ||
-                                            developer != null) {
-                                          return PageView(
-                                              physics: BouncingScrollPhysics(),
-                                              controller: pageController,
-                                              onPageChanged: (index) {
-                                                _onItemTapped(index);
-                                              },
-                                              children: enrolledbody(
-                                                  studentsnapshot.data ??
-                                                      student,
-                                                  developersnapshot.data ??
-                                                      developer,
-                                                  model,
-                                                  project,
-                                                  projects));
-                                        } else {
-                                          return kBuzyPage();
-                                        }
-                                      })
-                                  : FutureBuilder<List<Developer>>(
-                                      future: developers == null
-                                          ? model.getDevelopers()
-                                          : Future.delayed(
-                                              Duration(milliseconds: 300)),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.data != null ||
-                                            developers != null) {
-                                          return PageView(
-                                            physics: BouncingScrollPhysics(),
-                                            controller: pageController,
-                                            onPageChanged: (index) {
-                                              _onItemTapped(index);
-                                            },
-                                            children: notEnrolledbody(
-                                                student ?? studentsnapshot.data,
-                                                model,
-                                                snapshot.data ?? developers,
-                                                projects),
-                                          );
-                                        } else {
-                                          return kBuzyPage();
-                                        }
-                                      }));
-                        });
-                  } else {
-                    return kBuzyPage();
-                  }
-                }),
+            body: futurePageBuilder<Student>(student, model.getStudentProfile(),
+                child: (studentSnap) {
+              return SimpleHiddenDrawer(
+                  slidePercent: 65,
+                  enableCornerAnimin: true,
+                  isDraggable: true,
+                  verticalScalePercent: 99,
+                  menu: buildMenu(
+                      elevation: 5,
+                      radius: 15,
+                      user: 'Student',
+                      name: student.displayName ?? studentSnap.displayName,
+                      imageUrl: student.photoUrl,
+                      profileRoute: StudentProfile.id,
+                      animateIcon: handleOnPressed,
+                      infoChildren: [
+                        SizedBox(height: 7),
+                        Text(student.email ?? '', style: infoStyle()),
+                        SizedBox(height: 7),
+                        Text(student.qualification ?? '', style: infoStyle()),
+                        SizedBox(height: 7),
+                        Text(student.yearofcompletion ?? '',
+                            style: infoStyle()),
+                        SizedBox(height: 7),
+                        Text(student.city ?? '', style: infoStyle()),
+                        SizedBox(height: 7),
+                        Text(student.country ?? '', style: infoStyle()),
+                        SizedBox(height: 7),
+                      ]),
+                  screenSelectedBuilder: (position, bloc) {
+                    return Scaffold(
+                      appBar: TopBar(
+                          rightButton: IconButton(
+                              icon: Icon(Icons.refresh),
+                              onPressed: () {
+                                refresh(model);
+                              }),
+                          title: student.enrolled == true
+                              ? buildenrolledtitle()
+                              : buildtitle(),
+                          child: AnimatedIcon(
+                              icon: AnimatedIcons.menu_close,
+                              progress: _animationController),
+                          onPressed: () {
+                            handleOnPressed();
+                            bloc.toggle();
+                          }),
+                      body: student.enrolled == true
+                          ? futurePageBuilder<Developer>(
+                              developer, model.getEnrolledDeveloperProfile(),
+                              child: (snap) {
+                              return PageView(
+                                  physics: BouncingScrollPhysics(),
+                                  controller: pageController,
+                                  onPageChanged: (index) {
+                                    _onItemTapped(index);
+                                  },
+                                  children: enrolledbody(
+                                      studentSnap ?? student,
+                                      snap ?? developer,
+                                      model,
+                                      project,
+                                      projects));
+                            })
+                          : futurePageBuilder<List<Developer>>(
+                              developers, model.getDevelopers(), child: (snap) {
+                              return PageView(
+                                physics: BouncingScrollPhysics(),
+                                controller: pageController,
+                                onPageChanged: (index) {
+                                  _onItemTapped(index);
+                                },
+                                children: notEnrolledbody(
+                                    student ?? studentSnap,
+                                    model,
+                                    snap ?? developers,
+                                    projects),
+                              );
+                            }),
+                    );
+                  });
+            }),
             bottomNavigationBar: student != null
                 ? BottomNavyBar(
                     itemCornerRadius: 15,
@@ -456,30 +511,16 @@ from below and get to work''',
   }
 
   List<BottomNavyBarItem> notEnrolled = [
-    BottomNavyBarItem(
-        activeColor: Colors.blue,
-        icon: Icon(Icons.person_outline),
-        title: Text('Explore Developers')),
-    BottomNavyBarItem(
-        activeColor: Colors.blue,
-        icon: Icon(Icons.personal_video),
-        title: Text('Projects')),
+    bottomNavyBarItem(
+        icon: Icon(Icons.person_outline), text: 'Explore Developers'),
+    bottomNavyBarItem(icon: Icon(Icons.personal_video), text: 'Projects'),
   ];
 
   List<BottomNavyBarItem> enrolled = [
-    BottomNavyBarItem(
-        activeColor: Colors.blue,
-        icon: Icon(Icons.person_outline),
-        title: Text('Developer')),
-    BottomNavyBarItem(
-        activeColor: Colors.blue,
-        icon: Icon(Icons.personal_video),
-        title: Text('My Project')),
-    BottomNavyBarItem(
-        activeColor: Colors.blue, icon: Icon(Icons.chat), title: Text('Chat')),
-    BottomNavyBarItem(
-        activeColor: Colors.blue,
-        icon: Icon(Icons.pie_chart_outlined),
-        title: Text('All Projects'))
+    bottomNavyBarItem(icon: Icon(Icons.person_outline), text: 'Developer'),
+    bottomNavyBarItem(icon: Icon(Icons.personal_video), text: 'My Project'),
+    bottomNavyBarItem(icon: Icon(Icons.chat), text: 'Chat'),
+    bottomNavyBarItem(
+        icon: Icon(Icons.pie_chart_outlined), text: 'All Projects')
   ];
 }

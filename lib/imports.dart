@@ -10,8 +10,6 @@ export 'dart:convert';
 export 'locator.dart';
 export 'dart:io';
 export 'dart:async';
-export 'package:random_color/random_color.dart';
-export 'package:file_picker/file_picker.dart';
 export 'package:flutter_spinkit/flutter_spinkit.dart';
 export 'package:flutter/services.dart';
 
@@ -67,7 +65,6 @@ export 'package:helphub/Shared/Widgets%20and%20Utility/Flutter%20Login/src/widge
 export 'package:helphub/Shared/Widgets%20and%20Utility/Flutter%20Login/src/widgets/fade_in.dart';
 export 'dart:convert';
 export 'package:firebase_auth/firebase_auth.dart';
-export 'package:file_picker/file_picker.dart';
 export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';
 export 'package:helphub/Shared/Widgets%20and%20Utility/ProfileFields.dart';
@@ -78,7 +75,6 @@ export 'package:provider/provider.dart';
 export 'package:helphub/Shared/Model/projectmodel.dart';
 
 export 'package:bottom_navy_bar/bottom_navy_bar.dart';
-export 'package:community_material_icon/community_material_icon.dart';
 export 'package:flutter/material.dart';
 export 'package:flutter_local_notifications/flutter_local_notifications.dart';
 export 'package:fluttertoast/fluttertoast.dart';

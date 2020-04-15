@@ -48,8 +48,6 @@ class HelpHub extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           accentColor: Colors.blue,
-          //platform: TargetPlatform.fuchsia,
-
           pageTransitionsTheme: PageTransitionsTheme(builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder()
           })),
@@ -80,16 +78,18 @@ class HelpHub extends StatelessWidget {
 
     if (isUserLoggedIn) {
       if (userType == UserType.STUDENT) {
-        return currentStudent.displayName == null ||
+        return currentStudent != null ?
+                currentStudent.displayName == null ||
                 currentStudent.displayName == ""
             ? StudentProfile()
-            : StudentPage();
+            : StudentPage() : StudentProfile();
       }
       if (userType == UserType.DEVELOPERS) {
-        return currentDeveloper.displayName == null ||
+        return currentDeveloper != null ?
+                currentDeveloper.displayName == null ||
                 currentDeveloper.displayName == ""
             ? DeveloperProfile()
-            : DeveloperHome();
+            : DeveloperHome() : DeveloperProfile();
       }
     } else {
       return WelcomeScreen();

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helphub/imports.dart';
 import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
+import 'package:http/http.dart';
 import 'ImageCompress.dart';
 
 var kTextFieldDecoration = InputDecoration(
@@ -62,33 +63,29 @@ Future<String> getImage(
   if (file != null) _path = file.path;
   if (!mounted) return '';
   return _path;
-
-  // TODO: FileType custom
-  //else if (_pickingType == FileType.custom) {
-  //   try {
-  //     if (extension == null) extension = 'PDF';
-  //     _path = await FilePicker.getFilePath(
-  //         type: _pickingType, fileExtension: extension);
-  //   } on PlatformException catch (e) {
-  //     print("Unsupported operation" + e.toString());
-  //   }
-  //   if (!mounted) return '';
-  //   return _path;
-  // }
 }
+
 ShapeBorder bordershape(double radius) {
   return RoundedRectangleBorder(
     borderRadius: BorderRadius.horizontal(right: Radius.circular(radius ?? 15)),
   );
 }
 
-SnackBar ksnackBar(BuildContext context, String message) {
+SnackBar ksnackBar(BuildContext context, String message, bool actionenabled,
+    {Function onPressed}) {
   return SnackBar(
     duration: Duration(seconds: 2),
     content: Text(
       message,
       textAlign: TextAlign.center,
     ),
+    action: actionenabled
+        ? SnackBarAction(
+            label: "Open",
+            onPressed: () {
+              onPressed();
+            })
+        : null,
     backgroundColor: Theme.of(context).primaryColor,
   );
 }
@@ -123,7 +120,9 @@ Widget profileFlatButton(Size size,
     BorderRadiusGeometry radius}) {
   return InkWell(
     borderRadius: radius ?? BorderRadius.circular(0),
-    onTap: () => onPressed,
+    onTap: () {
+      onPressed();
+    },
     child: Container(
       width: size.height / 4,
       height: size.height / 20 - 7,
@@ -212,9 +211,7 @@ Card drawerNameCard(Size size,
   );
 }
 
-LayoutBuilder buildMenu(
-  pageContext,
-  {
+LayoutBuilder buildMenu({
   @required String user,
   @required String name,
   @required String imageUrl,
@@ -257,17 +254,26 @@ LayoutBuilder buildMenu(
                       name: name,
                     ),
                     Spacer(),
-                    drawerProfileImageCard(size,
-                        image: setImage(
-                            imageUrl,
-                            user == 'Student'
-                                ? ConstassetsString.student
-                                : ConstassetsString.developer),
-                        elevation: elevation),
+                    imageBuilder(
+                      imageUrl,
+                      child: drawerProfileImageCard(size,
+                          image: setImage(
+                              imageUrl,
+                              user == 'Student'
+                                  ? ConstassetsString.student
+                                  : ConstassetsString.developer),
+                          elevation: elevation),
+                      placeHolder: drawerProfileImageCard(size,
+                          image: setImage(
+                              null,
+                              user == 'Student'
+                                  ? ConstassetsString.student
+                                  : ConstassetsString.developer),
+                          elevation: elevation),
+                    ),
                     Spacer(),
                     drawerProfileInfo(size,
-                        children: infoChildren, 
-                        elevation: elevation),
+                        children: infoChildren, elevation: elevation),
                     Spacer(),
                     Card(
                       elevation: elevation,
@@ -278,16 +284,16 @@ LayoutBuilder buildMenu(
                           onPressed: () {
                         animateIcon();
                         SimpleHiddenDrawerProvider.of(context).toggle();
-                        Navigator.of(pageContext).pushNamed(profileRoute);
+                        Navigator.of(context).pushNamed(profileRoute);
                       }, text: 'Edit Profile'),
                     ),
                     Spacer(),
                     Card(
                       shape: bordershape(15),
-                      elevation: elevation??5,
+                      elevation: elevation ?? 5,
                       margin: EdgeInsets.all(0),
                       child: Container(
-                        width: size.height/3.86,
+                        width: size.height / 3.86,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,7 +304,7 @@ LayoutBuilder buildMenu(
                                 onPressed: () {
                               animateIcon();
                               SimpleHiddenDrawerProvider.of(context).toggle();
-                              Navigator.of(pageContext).pushNamed(WelcomeScreen.id);
+                              Navigator.of(context).pushNamed(WelcomeScreen.id);
                               model.logoutUser();
                             }, text: "Logout"),
                             Divider(color: Colors.black, height: 3),
@@ -329,10 +335,56 @@ LayoutBuilder buildMenu(
   });
 }
 
+FutureBuilder<Response> imageBuilder(url, {Widget child, Widget placeHolder}) {
+  return FutureBuilder<Response>(
+      future: get(url),
+      builder: (context, snapshot) {
+        if (snapshot != null && snapshot.data != null) {
+          if (snapshot.data.statusCode == 200) {
+            return child;
+          } else {
+            return placeHolder;
+          }
+        } else {
+          return placeHolder;
+        }
+      });
+}
+
+FutureBuilder<Object> futurePageBuilder<Object>(
+    Object object, Future<Object> future,
+    {@required Widget Function(Object snapshotData) child}) {
+  return FutureBuilder(
+      future:
+          object == null ? future : Future.delayed(Duration(milliseconds: 300)),
+      builder: (context, snapshot) {
+        if ((snapshot != null && snapshot.data != null) || object != null) {
+          return child(snapshot.data ?? object);
+        } else {
+          return kBuzyPage();
+        }
+      });
+}
+
+BottomNavyBarItem bottomNavyBarItem({Icon icon, String text}) {
+  return BottomNavyBarItem(
+      activeColor: mainColor,
+      textAlign: TextAlign.center,
+      inactiveColor: black,
+      icon: icon,
+      title: Text(text));
+}
+
 ImageProvider<dynamic> setImage(String url, String defaultImage) {
-  return url != "default"
+  return url != "default" && url != null && url != ''
       ? NetworkImage(
           url,
         )
       : AssetImage(defaultImage);
 }
+
+/* ImageProvider<dynamic> setImage(String url, String defaultImage) {
+  return url != "default"
+      ? FadeInImage.assetNetwork(placeholder: defaultImage, image: url)
+      : AssetImage(defaultImage);
+} */

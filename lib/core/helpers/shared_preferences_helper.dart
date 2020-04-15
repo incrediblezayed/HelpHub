@@ -12,6 +12,7 @@ class SharedPreferencesHelper {
   final String _studentName = 'StuName';
   final String _enrolledDeveloper = 'Developer';
   final String _currentProject = 'Project';
+  final String fcmtoken = 'token';
 
   Future<bool> setUserDataModel(String jsonModel) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -27,12 +28,26 @@ class SharedPreferencesHelper {
     return res;
   }
 
+  Future<bool> setSenderToken(String token) async{
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    bool res = await preferences.setString(fcmtoken, token);
+    return res;
+  }
+
+  Future<String> getSenderToken() async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    String res = preferences.getString(fcmtoken) ?? 'N.A';
+    return res;
+  }
+
   Future<bool> setDeveloper(String jsonModel) async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     bool res = await preferences.setString(_userModel, jsonModel);
     print(jsonModel);
     return res;
   }
+
+
 
   Future<String> getDeveloper() async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();

@@ -3,7 +3,6 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:sortedmap/sortedmap.dart';
 import 'dart:math' as math;
 
-
 class MyProject extends StatefulWidget {
   final bool val;
   final Project project;
@@ -81,8 +80,6 @@ class _MyProjectState extends State<MyProject> {
     );
   }
 
-
-
   TextStyle titleStyle() {
     return TextStyle(
         fontSize: MediaQuery.of(context).size.width / 24,
@@ -108,7 +105,11 @@ class _MyProjectState extends State<MyProject> {
     return ListTile(
       title: Text(student.displayName),
       subtitle: Text(student.email),
-      leading: Image(image: setImage(student.photoUrl, ConstassetsString.student)),
+      leading: imageBuilder(student.photoUrl,
+          child: Image(
+              image: setImage(student.photoUrl, ConstassetsString.student)),
+          placeHolder:
+              Image(image: setImage(null, ConstassetsString.student))),
       onTap: () {
         Navigator.of(context).pop();
         showStudentDetailSheet(context, student, developer, true);
@@ -222,12 +223,24 @@ class _MyProjectState extends State<MyProject> {
                   itemExtent: MediaQuery.of(context).size.height / 3,
                   delegate: SliverChildListDelegate(
                     [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: setImage(project.photo, ConstassetsString.welcome1))),
+                      imageBuilder(
+                        project.photo,
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: setImage(project.photo,
+                                      ConstassetsString.welcome1))),
+                        ),
+                        placeHolder: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: setImage(null,
+                                      ConstassetsString.welcome1))),
+                        ),
                       )
                     ],
                   ),

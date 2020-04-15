@@ -53,17 +53,14 @@ class LoginPageModel extends BaseModel {
 
   Future _loginUser(String email, String password, UserType userType) async {
     AuthErrors authError = await _authenticationService.emailPasswordSignIn(
-      email,
-      password,
-      userType
-    );
+        email, password, userType);
     currentLoggingStatus = AuthErrorsHelper.getValue(authError);
     return authError;
   }
 
   Future _registerUser(String email, String password) async {
-    AuthErrors authError = await _authenticationService.emailPasswordRegister(
-        email, password);
+    AuthErrors authError =
+        await _authenticationService.emailPasswordRegister(email, password);
     currentLoggingStatus = AuthErrorsHelper.getValue(authError);
     return authError;
   }

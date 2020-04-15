@@ -16,6 +16,9 @@ exports.sendNotification = functions.firestore
     const idTo = doc.idTo
     const userType = doc.userType
     const contentMessage = doc.content
+    const type = doc.type == "1" ? 'photo' : 'text'
+    const senderToken = doc.token
+
 
     // Get push token user to (receive)
     admin
@@ -25,42 +28,55 @@ exports.sendNotification = functions.firestore
       .collection(userType == 'STUDENT' ? 'Developers' : 'Students')
       .doc(idTo)
       .get()
-      .then(doc => {
-        console.log(`Found user to: ${doc.data().displayName}`)
-        console.log(doc.data().pushToken)
+      .then(userTo => {
+        console.log(`Found user to: ${userTo.data().displayName}`)
+        console.log(userTo.data().pushToken)
         console.log(`user to ${idTo}, user from ${idFrom}`)
-        // Get info user from (sent)
-        admin
-          .firestore()
-          .collection('users')
-          .doc('Profile')
-          .collection(userType == 'STUDENT' ? 'Students' : 'Developers')
-          .doc(idFrom)
-          .get()
-          .then(userFrom => {
-            console.log(`Found user from: ${userFrom.data().displayName}`)
-            const payload = {
-              notification: {
-                tag: 'chat',
-                title: userFrom.data().displayName,
-                body: contentMessage,
-                badge: '1',
-                sound: 'default',
-
+        if (senderToken == userTo.pushToken) {
+          console.log(`This is when the token is same`)
+        }
+        else {
+          // Get info user from (sent)
+          admin
+            .firestore()
+            .collection('users')
+            .doc('Profile')
+            .collection(userType == 'STUDENT' ? 'Students' : 'Developers')
+            .doc(idFrom)
+            .get()
+            .then(userFrom => {
+              console.log(`Found user from: ${userFrom.data().displayName}`)
+              const sendername = userFrom.data().displayName
+              const senderPhoto = userFrom.data().photoUrl
+              const payload = {
+                notification: {
+                  tag: 'chat',
+                  title: sendername,
+                  body: contentMessage,
+                  badge: '1',
+                  sound: 'default',
+                  click_action: 'FLUTTER_NOTFICATION_CLICK'
+                },
+                "data": {
+                  "messageType": type,
+                  "sender": sendername,
+                  "senderId": idFrom,
+                  "sender_image": senderPhoto,
+                  "to": idTo,
+                }
               }
-            }
-            // Let push to the target device
-            admin
-              .messaging()
-              .sendToDevice(doc.data().pushToken, payload)
-              .then(response => {
-                console.log('Successfully sent message:', response)
-              })
-              .catch(error => {
-                console.log('Error sending message:', error)
-              })
-
-          })
+              // Let push to the target device
+              admin
+                .messaging()
+                .sendToDevice(doc.data().pushToken, payload)
+                .then(response => {
+                  console.log('Successfully sent message:', response)
+                })
+                .catch(error => {
+                  console.log('Error sending message:', error)
+                })
+            })
+        }
         /* } else {
           console.log('Can not find pushToken target user')
         } */

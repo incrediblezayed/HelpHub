@@ -1,11 +1,88 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:helphub/imports.dart';
+import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 
 class DeveloperHome extends StatefulWidget {
   static const id = 'DeveloperHome';
 
   @override
   _DeveloperHomeState createState() => _DeveloperHomeState();
+}
+
+List<Message> messages = List(5);
+BigPictureStyleInformation photo;
+Person person;
+MessagingStyleInformation messageStyle;
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    new FlutterLocalNotificationsPlugin();
+Future<void> configureNotificationToShow(Map message) async {
+  Map notification = message['notification'];
+  Map data = message["data"];
+  var senderImage = await downloadAndSaveFile(data['sender_image'], "Icon");
+  if (data['messageType'] == "photo") {
+    var picturePath = await downloadAndSaveFile(notification['body'], "Photo");
+    photo = BigPictureStyleInformation(FilePathAndroidBitmap(picturePath),
+        largeIcon: FilePathAndroidBitmap(senderImage));
+    showNotification(notification, notification['titile'], "Photo", photo);
+  } else {
+    person = Person(
+      icon: BitmapFilePathAndroidIcon(senderImage),
+      name: notification['title'],
+    );
+    Message message = Message(notification['body'], DateTime.now(), person);
+    for (int i = 0; i <= messages.length; i++) {
+      if (messages.length != 0) {
+        if (messages[i].text != message.text) {
+          if (messages.length != 5) {
+            messages.add(message);
+            print(message.text);
+          } else {
+            messages.removeAt(0);
+            messages.add(message);
+          }
+        }
+      } else {
+        messages.add(message);
+      }
+    }
+    messageStyle = MessagingStyleInformation(person, messages: messages);
+    showNotification(notification, notification['titile'], notification['body'],
+        messageStyle);
+  }
+}
+
+Future<String> downloadAndSaveFile(String url, String name) async {
+  var directory = await getApplicationDocumentsDirectory();
+  var path = '${directory.path}/$name';
+  var res = await get(url);
+  var file = File(path);
+  await file.writeAsBytes(res.bodyBytes);
+  return path;
+}
+
+void showNotification(Map notification, String title, String body,
+    StyleInformation styleInformation) async {
+  var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+    Platform.isAndroid ? 'com.h2.helphub' : 'com.h2.helphub',
+    'Help Hub',
+    'your channel description',
+    playSound: true,
+    enableVibration: true,
+    importance: Importance.Max,
+    groupKey: title,
+    autoCancel: true,
+    channelShowBadge: true,
+    styleInformation: styleInformation,
+    priority: Priority.High,
+  );
+  var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+  var platformChannelSpecifics = new NotificationDetails(
+      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+  await flutterLocalNotificationsPlugin.show(
+      0, title, body, platformChannelSpecifics,
+      payload: json.encode(notification));
 }
 
 class _DeveloperHomeState extends State<DeveloperHome>
@@ -60,18 +137,20 @@ class _DeveloperHomeState extends State<DeveloperHome>
     String currentUser = await sharedPreferencesHelper.getDevelopersId();
 
     firebaseMessaging.requestNotificationPermissions();
-    firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
+    firebaseMessaging.configure(onBackgroundMessage: (message) {
+      configureNotificationToShow(message);
+      return;
+    }, onMessage: (Map<String, dynamic> message) {
       print('onMessage: $message');
-      showNotification(message['notification'], true);
+      //TODO: Implement Foreground message
       return;
     }, onResume: (Map<String, dynamic> message) {
       print('onResume: $message');
-      showNotification(message['notification'], false);
-
+      //TODO: Implement onClick
       return;
     }, onLaunch: (Map<String, dynamic> message) {
       print('onLaunch: $message');
-      showNotification(message['notification'], false);
+      //TODO: Implement onLaunch
       return;
     });
 
@@ -96,36 +175,6 @@ class _DeveloperHomeState extends State<DeveloperHome>
         initializationSettingsAndroid, initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelect);
-  }
-
-  void showNotification(message, bool foreground) async {
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      Platform.isAndroid ? 'com.h2.helphub' : 'com.h2.helphub',
-      'Help Hub',
-      'your channel description',
-      playSound: true,
-      enableVibration: true,
-      autoCancel: true,
-      channelShowBadge: true,
-      enableLights: true,
-      // style: message['tag'] == 'chat'
-      //     ? AndroidNotificationStyle.Messaging
-      //     : AndroidNotificationStyle.Default,
-      groupKey: message['tag'],
-      importance: Importance.Max,
-      priority: Priority.High,
-    );
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    if (foreground) {
-      scaffoldKey.currentState
-          .showSnackBar(SnackBar(content: Text(message['body'])));
-    } else {
-      await flutterLocalNotificationsPlugin.show(0, message['title'].toString(),
-          message['body'].toString(), platformChannelSpecifics,
-          payload: json.encode(message));
-    }
   }
 
   Future onSelect(message) {
@@ -193,11 +242,11 @@ class _DeveloperHomeState extends State<DeveloperHome>
           return Scaffold(
             backgroundColor: Colors.white,
             body: SimpleHiddenDrawer(
-              slidePercent: 53,
+              slidePercent: 65,
               enableCornerAnimin: true,
               isDraggable: true,
               verticalScalePercent: 99,
-              menu: buildMenu(context,
+              menu: buildMenu(
                   user: 'Developer',
                   name: developer.displayName,
                   imageUrl: developer.photoUrl,
@@ -245,76 +294,41 @@ class _DeveloperHomeState extends State<DeveloperHome>
                     controller: pageController,
                     onPageChanged: (index) => onItemTapped(index),
                     children: <Widget>[
-                      FutureBuilder(
-                          future: enrolledstudents == null
-                              ? model.getenrolledStudents()
-                              : Future.delayed(Duration(milliseconds: 300)),
-                          builder: (context, snapshot) {
-                            if (snapshot != null || enrolledstudents != null) {
-                              return RefreshIndicator(
-                                  onRefresh: () {
-                                    return refresh(model);
-                                  },
-                                  child: buildEnrolled(developer,
-                                      snapshot.data ?? enrolledstudents));
-                            } else {
-                              return kBuzyPage();
-                            }
-                          }),
-                      FutureBuilder<List<Student>>(
-                          future: requests == null
-                              ? model.getrequestList()
-                              : Future.delayed(Duration(milliseconds: 300)),
-                          builder: (context, snapshot) {
-                            if (snapshot != null || requests != null) {
-                              return RefreshIndicator(
-                                  onRefresh: () {
-                                    return refresh(model);
-                                  },
-                                  child: buildRequest(
-                                      model, snapshot.data ?? requests));
-                            } else {
-                              return kBuzyPage();
-                            }
-                          }),
+                      futurePageBuilder(
+                          enrolledstudents, model.getenrolledStudents(),
+                          child: (snap) => RefreshIndicator(
+                                onRefresh: () {
+                                  return refresh(model);
+                                },
+                                child: buildEnrolled(
+                                    developer, snap ?? enrolledstudents),
+                              )),
+                      futurePageBuilder(requests, model.getrequestList(),
+                          child: (snap) => RefreshIndicator(
+                                onRefresh: () {
+                                  return refresh(model);
+                                },
+                                child: buildRequest(model, snap ?? requests),
+                              )),
                       RefreshIndicator(
                           onRefresh: () {
                             return refresh(model);
                           },
                           child: buildMyProject()),
-                      FutureBuilder<List<Student>>(
-                          future: enrolledstudents == null
-                              ? model.getenrolledStudents()
-                              : Future.delayed(Duration(milliseconds: 300)),
-                          builder: (context, snapshot) {
-                            if (snapshot != null || enrolledstudents != null) {
-                              return RefreshIndicator(
+                      futurePageBuilder(
+                          enrolledstudents, model.getenrolledStudents(),
+                          child: (snap) => RefreshIndicator(
                                 onRefresh: () {
                                   return refresh(model);
                                 },
-                                child: buildChat(
-                                    snapshot.data ?? enrolledstudents),
-                              );
-                            } else {
-                              return kBuzyPage();
-                            }
-                          }),
-                      FutureBuilder<List<Project>>(
-                          future: allProject == null
-                              ? model.getAllProjects()
-                              : Future.delayed(Duration(milliseconds: 300)),
-                          builder: (context, snapshot) {
-                            if (snapshot != null || allProject != null) {
-                              return RefreshIndicator(
-                                  onRefresh: () {
-                                    return refresh(model);
-                                  },
-                                  child: buildAllProject(
-                                      snapshot.data ?? allProject));
-                            } else {
-                              return kBuzyPage();
-                            }
-                          })
+                                child: buildChat(snap ?? enrolledstudents),
+                              )),
+                      futurePageBuilder(allProject, model.getAllProjects(),
+                          child: (snap) => RefreshIndicator(
+                              onRefresh: () {
+                                return refresh(model);
+                              },
+                              child: buildAllProject(snap ?? allProject))),
                     ],
                   ),
                 );
@@ -332,36 +346,19 @@ class _DeveloperHomeState extends State<DeveloperHome>
                 curve: Curves.bounceInOut,
                 backgroundColor: Colors.white,
                 items: [
-                  BottomNavyBarItem(
-                      activeColor: Colors.blue,
-                      inactiveColor: Colors.black,
-                      textAlign: TextAlign.center,
-                      icon: Icon(Icons.supervisor_account),
-                      title: Text("Enrolled")),
-                  BottomNavyBarItem(
-                      activeColor: Colors.blue,
-                      inactiveColor: Colors.black,
-                      textAlign: TextAlign.center,
-                      icon: Icon(Icons.recent_actors),
-                      title: Text("Requests")),
-                  BottomNavyBarItem(
-                      activeColor: Colors.blue,
-                      inactiveColor: Colors.black,
-                      textAlign: TextAlign.center,
+                  bottomNavyBarItem(
+                      icon: Icon(Icons.supervisor_account), text: "Enrolled"),
+                  bottomNavyBarItem(
+                      icon: Icon(Icons.recent_actors), text: "Requests"),
+                  bottomNavyBarItem(
                       icon: Icon(Icons.personal_video),
-                      title: Text("Current Project")),
-                  BottomNavyBarItem(
-                      inactiveColor: Colors.black,
-                      activeColor: Colors.blue,
-                      textAlign: TextAlign.center,
+                      text: "Current Project"),
+                  bottomNavyBarItem(
                       icon: Icon(CommunityMaterialIcons.chat_processing),
-                      title: Text("Chats")),
-                  BottomNavyBarItem(
-                      inactiveColor: Colors.black,
-                      activeColor: Colors.blue,
-                      textAlign: TextAlign.center,
+                      text: "Chats"),
+                  bottomNavyBarItem(
                       icon: Icon(Icons.pie_chart_outlined),
-                      title: Text("All Projects")),
+                      text: "All Projects"),
                 ]),
           );
         });
@@ -430,9 +427,15 @@ class _DeveloperHomeState extends State<DeveloperHome>
               userType: UserType.DEVELOPERS)),
       leading: Hero(
         tag: '${student.displayName}+1',
-        child: CircleAvatar(
-          backgroundImage:
-              setImage(student.photoUrl, ConstassetsString.student),
+        child: imageBuilder(
+          student.photoUrl,
+          placeHolder: CircleAvatar(
+            backgroundImage: setImage(null, ConstassetsString.student),
+          ),
+          child: CircleAvatar(
+            backgroundImage:
+                setImage(student.photoUrl, ConstassetsString.student),
+          ),
         ),
       ),
       title: Hero(
@@ -536,13 +539,23 @@ class _DeveloperHomeState extends State<DeveloperHome>
         child: Card(
           child: Row(
             children: <Widget>[
-              Container(
-                height: 100,
-                width: 100,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: setImage(
-                            student.photoUrl, ConstassetsString.student))),
+              imageBuilder(
+                student.photoUrl,
+                placeHolder: Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: setImage(null, ConstassetsString.student))),
+                ),
+                child: Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: setImage(
+                              student.photoUrl, ConstassetsString.student))),
+                ),
               ),
               SizedBox(
                 width: 20,
@@ -678,14 +691,21 @@ class _DeveloperHomeState extends State<DeveloperHome>
                       Container(
                         margin: EdgeInsets.all(5),
                         child: CircleAvatar(
-                          backgroundColor: Colors.blue[900],
-                          radius: 70,
-                          child: CircleAvatar(
-                            backgroundImage: NetworkImage(student.photoUrl),
-                            backgroundColor: Colors.blue,
-                            radius: 68,
-                          ),
-                        ),
+                            backgroundColor: Colors.blue[900],
+                            radius: 70,
+                            child: imageBuilder(student.photoUrl,
+                                child: CircleAvatar(
+                                  backgroundImage: setImage(student.photoUrl,
+                                      ConstassetsString.student),
+                                  backgroundColor: Colors.blue,
+                                  radius: 68,
+                                ),
+                                placeHolder: CircleAvatar(
+                                  backgroundImage:
+                                      setImage(null, ConstassetsString.student),
+                                  backgroundColor: Colors.blue,
+                                  radius: 68,
+                                ))),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 15, left: 150),

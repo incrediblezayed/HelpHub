@@ -27,14 +27,25 @@ class DevelopersCard extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           elevation: 6,
-          child: Container(
-              decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: setImage(developer.photoUrl, ConstassetsString.developer),
-            ),
-          )),
+          child: imageBuilder(
+            developer.photoUrl,
+            placeHolder: Container(
+                decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: setImage(null, ConstassetsString.developer),
+              ),
+            )),
+                      child: Container(
+                decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                image: setImage(developer.photoUrl, ConstassetsString.developer),
+              ),
+            )),
+          ),
         ),
       ),
       Positioned(

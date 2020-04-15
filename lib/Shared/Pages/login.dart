@@ -31,11 +31,11 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       ButtonType buttonType) async {
     if (email == null || password == null) {
       _scaffoldKey.currentState
-          .showSnackBar(ksnackBar(context, 'Please enter details properly'));
+          .showSnackBar(ksnackBar(context, 'Please enter details properly',false));
     } else {
       if (email.trim().isEmpty || password.trim().isEmpty) {
         _scaffoldKey.currentState
-            .showSnackBar(ksnackBar(context, 'Please enter details properly'));
+            .showSnackBar(ksnackBar(context, 'Please enter details properly',false));
       } else {
         bool response = await model.checkUserDetails(
           email: email,
@@ -57,13 +57,13 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                 context,
                 StudentProfile.id,
                 (r) => false);
-          }
+          } 
         } else {
           _scaffoldKey.currentState
-              .showSnackBar(ksnackBar(context, 'something went wrong...'));
+              .showSnackBar(ksnackBar(context, 'something went wrong...',false));
         }
         _scaffoldKey.currentState
-            .showSnackBar(ksnackBar(context, model.currentLoggingStatus));
+            .showSnackBar(ksnackBar(context, model.currentLoggingStatus,false));
       }
     }
   }

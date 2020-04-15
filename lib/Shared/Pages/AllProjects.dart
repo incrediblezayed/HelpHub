@@ -41,8 +41,12 @@ class AllProjects extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
-                child: Image(
-                    image: setImage(project.photo, ConstassetsString.welcome1)),
+                child: imageBuilder(project.photo,
+                    placeHolder: Image(
+                        image: setImage(null, ConstassetsString.welcome1)),
+                    child: Image(
+                        image: setImage(
+                            project.photo, ConstassetsString.welcome1))),
               ),
               Spacer(
                 flex: 1,

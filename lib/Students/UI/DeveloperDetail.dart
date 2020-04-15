@@ -1,6 +1,8 @@
 import 'package:helphub/imports.dart';
 import 'dart:math' as math;
 
+import 'package:http/http.dart';
+
 class DeveloperDetail extends StatefulWidget {
   final Developer developer;
   final bool card;
@@ -72,8 +74,6 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
     );
   }
 
-
-
   int a = 0;
   @override
   Widget build(BuildContext context) {
@@ -112,13 +112,60 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
               [
                 Hero(
                   tag: widget.developer.photoUrl,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: setImage(developer.photoUrl, ConstassetsString.developer))),
-                  ),
+                  child: FutureBuilder<Response>(
+                      future: get(developer.photoUrl),
+                      builder: (context, snapshot) {
+                        if (snapshot != null && snapshot.data != null) {
+                          if (snapshot.data.statusCode==200) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: setImage(developer.photoUrl,
+                                          ConstassetsString.developer))),
+                            );
+                          } else {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: setImage(
+                                          null, ConstassetsString.developer))),
+                            );
+                          }
+                        } else {
+                          return Container(
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: setImage(
+                                        null, ConstassetsString.developer))),
+                          );
+                        }
+                      }),
+
+                  /* imageBuilder(
+                        developer.photoUrl,
+                        placeHolder: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: setImage(null,
+                                      ConstassetsString.developer))),
+                        ),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: setImage(developer.photoUrl,
+                                      ConstassetsString.developer))),
+                        ),
+                      ), */
                 )
               ],
             ),
@@ -162,18 +209,21 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
                                         style: detailtitleStyle(context),
                                       ),
                                       SizedBox(height: 5),
-                                      Text("Language:", style: detailtitleStyle(context)),
+                                      Text("Language:",
+                                          style: detailtitleStyle(context)),
                                       SizedBox(
                                         height: 5,
                                       ),
-                                      Text("Experience:", style: detailtitleStyle(context)),
+                                      Text("Experience:",
+                                          style: detailtitleStyle(context)),
                                       SizedBox(
                                         height: 5,
                                       ),
                                       Text("Qualification:",
                                           style: detailtitleStyle(context)),
                                       SizedBox(height: 5),
-                                      Text("Location:", style: detailtitleStyle(context))
+                                      Text("Location:",
+                                          style: detailtitleStyle(context))
                                     ],
                                   ),
                                   Column(

@@ -22,7 +22,7 @@ class Services {
   String schoolCode;
 
   final StorageReference _storageReference =
-      FirebaseStorage.instance.ref().child(country);
+      FirebaseStorage.instance.ref();
 
   Firestore get firestore => _firestore;
   FirebaseAuth get auth => _auth;
