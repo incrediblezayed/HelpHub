@@ -727,8 +727,6 @@ class ChatScreenState extends State<ChatScreen>
               ImagePicker.pickImage(source: ImageSource.camera)
                   .then((file) async {
                 if (file != null) {
-                  Navigator.pop(context);
-
                   setState(() {
                     isLoading = true;
                   });
@@ -785,7 +783,6 @@ class ChatScreenState extends State<ChatScreen>
                   setState(() {
                     isLoading = true;
                   });
-                  Navigator.pop(context);
                   String path = await cropImage(file.path);
                   storageServices
                       .sendImage(
