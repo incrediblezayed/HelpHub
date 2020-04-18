@@ -61,7 +61,7 @@ exports.sendNotification = functions.firestore
                   body: contentMessage,
                   badge: '1',
                   sound: 'default',
-                  click_action: 'FLUTTER_NOTFICATION_CLICK',
+                  "click_action": 'FLUTTER_NOTFICATION_CLICK',
                   "messageType": type,
                   "sender": userFrom.data().displayName,
                   "senderId": idFrom,
