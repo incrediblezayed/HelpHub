@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  easy_listview:
   intro_views_flutter:
   sortedmap:
   intl:
@@ -38,7 +38,14 @@ dependencies:
   flutter_swiper:
   percent_indicator:
   hidden_drawer_menu:
-  community_material_icons:
+  community_material_icon:
+  flushbar: ^1.10.0
+  image_cropper: ^1.2.1
+  image_gallery_saver: ^1.2.2
+  dio: ^3.0.9
+  video_player: ^0.10.8+1
+  image_downloader:
+  chewie: ^0.9.10
 
 dev_dependencies:
   flutter_test:

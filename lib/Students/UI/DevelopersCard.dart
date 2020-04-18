@@ -57,8 +57,8 @@ class DevelopersCard extends StatelessWidget {
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
             gradient: LinearGradient(colors: [
               Colors.transparent,
-              Colors.black.withOpacity(0.5),
-              Colors.black
+              black.withOpacity(0.5),
+              black
             ], stops: [
               0.3,
               0.6,

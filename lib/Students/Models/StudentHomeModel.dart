@@ -17,9 +17,9 @@ class StudentHomeModel extends BaseModel {
   getAll() async {
     setState(ViewState.Busy);
     setState2(ViewState.Busy);
-    await getStudentProfile();
-    await getEnrolledDeveloperProfile();
-    await getStudentProject();
+    getStudentProfile();
+    getEnrolledDeveloperProfile();
+    getStudentProject();
     // await checkEnrolled();
     setState2(ViewState.Idle);
     setState(ViewState.Idle);
@@ -83,9 +83,7 @@ class StudentHomeModel extends BaseModel {
   Future<Student> getStudentProfile() async {
     setState(ViewState.Busy);
     setState2(ViewState.Busy);
-    setState3(ViewState.Busy);
     student = await studentHomeServices.getStudentProfile();
-    setState3(ViewState.Idle);
     setState2(ViewState.Idle);
     setState(ViewState.Idle);
     return student;

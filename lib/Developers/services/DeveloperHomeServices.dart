@@ -15,7 +15,9 @@ class DeveloperHomeServices extends Services {
     String currentStudent = developer.currentlyworkingWith;
     await sharedPreferencesHelper.setStudentsEmail(currentStudent);
     await sharedPreferencesHelper.setCurrentProject(developer.currentProject);
-    if (currentStudent != ''&&currentStudent!=null&&currentStudent!='none') {
+    if (currentStudent != '' &&
+        currentStudent != null &&
+        currentStudent != 'none') {
       DocumentSnapshot snapshot =
           await getProfileReference(currentStudent, UserType.STUDENT).get();
       Student student;
@@ -154,23 +156,30 @@ class DeveloperHomeServices extends Services {
 
   Future<List<Student>> getRequest() async {
     String devId = await sharedPreferencesHelper.getDevelopersId();
-    QuerySnapshot snapshot = await firestore
-        .collection('users')
-        .document('Profile')
-        .collection('Developers')
-        .document(devId)
-        .collection('EnrollmentRequest')
-        .getDocuments();
-    List<Student> students = List<Student>();
-    if (snapshot.documents.length > 0) {
-      for (var i = 0; i < snapshot.documents.length; i++) {
-        students.add(Student.requestFromMap(snapshot.documents[i].data));
-        print(students[i].displayName);
+    try {
+      QuerySnapshot snapshot = await firestore
+          .collection('users')
+          .document('Profile')
+          .collection('Developers')
+          .document(devId)
+          .collection('EnrollmentRequest')
+          .getDocuments();
+      List<Student> students = List<Student>();
+      if (snapshot.documents.length > 0) {
+        for (var i = 0; i < snapshot.documents.length; i++) {
+          students.add(Student.requestFromMap(snapshot.documents[i].data));
+          print(students[i].displayName);
+        }
+      } else {
+        students = [];
       }
-    } else {
-      students = [];
+      return students;
+    } catch (e) {
+      print(e.details);
+      List<Student> students = [Student(displayName: "netException")];
+      print(e.code);
+      return students;
     }
-    return students;
   }
 
   Future<List<Project>> getProjects() async {
@@ -191,7 +200,7 @@ class DeveloperHomeServices extends Services {
   }
 
   Future<Project> getCurrentProject() async {
-     Project project;
+    Project project;
     //String name = await sharedPreferencesHelper.getCurrentProject();
     String devId = await sharedPreferencesHelper.getDevelopersId();
     QuerySnapshot snap = await firestore
@@ -200,9 +209,9 @@ class DeveloperHomeServices extends Services {
         .collection(devId)
         .where('view', isEqualTo: true)
         .getDocuments();
-    if(snap.documents.length!=0){
-    project = Project.fromMap(snap.documents.first.data);}
-    else{
+    if (snap.documents.length != 0) {
+      project = Project.fromMap(snap.documents.first.data);
+    } else {
       project = Project(name: 'none');
     }
     return project;

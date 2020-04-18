@@ -3,6 +3,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helphub/imports.dart';
 import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
 import 'package:http/http.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'ImageCompress.dart';
 
 var kTextFieldDecoration = InputDecoration(
@@ -29,7 +30,7 @@ ShapeBorder kCardCircularShape = RoundedRectangleBorder(
 
 Widget kBackBtn = Icon(
   Icons.arrow_back_ios,
-  // color: Colors.black54,
+  // color: black54,
 );
 
 kopenPage(BuildContext context, Widget page) {
@@ -61,8 +62,37 @@ Future<String> getImage(
   String _path;
   File file = await takeCompressedPicture();
   if (file != null) _path = file.path;
+  String croppedImage = await cropImage(_path);
   if (!mounted) return '';
-  return _path;
+  return croppedImage;
+}
+
+Future<String> cropImage(String path) async {
+  String imagepath;
+  File croppedImage = await ImageCropper.cropImage(
+      sourcePath: path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio16x9,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio5x3,
+        CropAspectRatioPreset.ratio5x4,
+        CropAspectRatioPreset.ratio7x5,
+        CropAspectRatioPreset.square,
+      ],
+      androidUiSettings: AndroidUiSettings(
+          cropFrameColor: mainColor,
+          cropGridColor: mainColor,
+          lockAspectRatio: false,
+          toolbarTitle: "Crop Image",
+          toolbarColor: mainColor,
+          activeWidgetColor: mainColor,
+          activeControlsWidgetColor: mainColor,
+          initAspectRatio: CropAspectRatioPreset.original,
+          toolbarWidgetColor: white));
+  if (croppedImage != null) imagepath = croppedImage.path;
+  return imagepath;
 }
 
 ShapeBorder bordershape(double radius) {
@@ -307,13 +337,13 @@ LayoutBuilder buildMenu({
                               Navigator.of(context).pushNamed(WelcomeScreen.id);
                               model.logoutUser();
                             }, text: "Logout"),
-                            Divider(color: Colors.black, height: 3),
+                            Divider(color: black, height: 3),
                             profileFlatButton(size, onPressed: () {
                               animateIcon();
                               SimpleHiddenDrawerProvider.of(context).toggle();
                               // Navigator.of(context).pushNamed(//TODO: Feedback route);
                             }, text: "Complaints & Feedback"),
-                            Divider(color: Colors.black, height: 3),
+                            Divider(color: black, height: 3),
                             profileFlatButton(size,
                                 radius: BorderRadius.only(
                                     bottomRight: Radius.circular(radius ?? 15)),

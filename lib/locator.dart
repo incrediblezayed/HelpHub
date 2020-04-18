@@ -21,6 +21,6 @@ void setupLocator() {
   locator.registerLazySingleton(() => StudentHomeServices());
   locator.registerLazySingleton(() => DeveloperHomeModel());
   locator.registerLazySingleton(() => DeveloperHomeServices());
-
+  locator.registerLazySingleton(()=>Chat());
   locator.registerLazySingleton(() => StorageServices());
 }

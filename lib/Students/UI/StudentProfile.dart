@@ -1,5 +1,7 @@
 import 'package:helphub/imports.dart';
 
+import 'StudentHome.dart';
+
 class StudentProfile extends StatefulWidget {
   static const id = 'StudentProfilePage';
   StudentProfile({Key key}) : super(key: key);

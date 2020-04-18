@@ -114,7 +114,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 messages: LoginMessages(
                                     recoverPasswordDescription: ""),
                                 theme: LoginTheme(
-                                    accentColor: Colors.blue,
+                                    accentColor: mainColor,
                                     cardTheme: CardTheme(
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -163,7 +163,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 messages: LoginMessages(
                                     recoverPasswordDescription: ""),
                                 theme: LoginTheme(
-                                    accentColor: Colors.blue,
+                                    accentColor: mainColor,
                                     cardTheme: CardTheme(
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -227,7 +227,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                       child: Text(
                                         'Hello!',
                                         style: TextStyle(
-                                            color: Colors.black,
+                                            color: black,
                                             fontSize: portrait
                                                 ? (heigth / 15) - 10
                                                 : (heigth / 8) - 13,

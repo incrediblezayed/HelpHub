@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:helphub/Shared/Widgets%20and%20Utility/Flutter%20Login/src/providers/login_theme.dart';
+import 'package:helphub/Shared/Widgets%20and%20Utility/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:transformer_page_view/transformer_page_view.dart';
@@ -649,7 +650,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
                       style: Theme.of(context)
                           .textTheme
                           .display2
-                          .copyWith(color: Colors.blue, fontSize: 40),
+                          .copyWith(color: mainColor, fontSize: 40),
                     )),
                 SizedBox(height: 20),
                 _buildNameField(textFieldWidth, messages, auth),
@@ -883,7 +884,7 @@ class _RecoverCardState extends State<_RecoverCard>
                       style: Theme.of(context)
                           .textTheme
                           .display2
-                          .copyWith(color: Colors.blue, fontSize: 40),
+                          .copyWith(color: mainColor, fontSize: 40),
                     )),
                 SizedBox(
                   height: 20,

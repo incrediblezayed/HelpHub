@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:helphub/Students/UI/DeveloperDetail.dart';
 import 'package:helphub/imports.dart';
@@ -13,6 +14,79 @@ class StudentPage extends StatefulWidget {
 
   @override
   _StudentPageState createState() => _StudentPageState();
+}
+
+Future<String> downloadAndSaveFile(String url, String name) async {
+  var directory = await getApplicationDocumentsDirectory();
+  var path = '${directory.path}/$name';
+  var res = await get(url);
+  var file = File(path);
+  await file.writeAsBytes(res.bodyBytes);
+  return path;
+}
+
+List<Message> messages = List(5);
+BigPictureStyleInformation photo;
+Person person;
+MessagingStyleInformation messageStyle;
+
+Future<dynamic> configureNotificationToShow(Map message) async {
+  Map notification = message['notification'];
+  Map data = message["data"];
+  var senderImage = await downloadAndSaveFile(data['sender_image'], "Icon");
+  if (data['messageType'] == "photo") {
+    var picturePath = await downloadAndSaveFile(notification['body'], "Photo");
+    photo = BigPictureStyleInformation(FilePathAndroidBitmap(picturePath),
+        largeIcon: FilePathAndroidBitmap(senderImage));
+    showNotification(notification, notification['titile'], "Photo", photo);
+  } else {
+    person = Person(
+      icon: BitmapFilePathAndroidIcon(senderImage),
+      name: notification['title'],
+    );
+    Message message = Message(notification['body'], DateTime.now(), person);
+    for (int i = 0; i <= messages.length; i++) {
+      if (messages.length != 0) {
+        if (messages[i].text != message.text) {
+          if (messages.length != 5) {
+            messages.add(message);
+            print(message.text);
+          } else {
+            messages.removeAt(0);
+            messages.add(message);
+          }
+        }
+      } else {
+        messages.add(message);
+      }
+    }
+    messageStyle = MessagingStyleInformation(person, messages: messages);
+    showNotification(
+        notification, notification['titile'], "Text", messageStyle);
+  }
+  return Future<void>.value();
+}
+
+void showNotification(Map notification, String title, String body,
+    StyleInformation styleInformation) async {
+  var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+    Platform.isAndroid ? 'com.h2.helphub' : 'com.h2.helphub',
+    'Help Hub',
+    'your channel description',
+    playSound: true,
+    enableVibration: true,
+    importance: Importance.Max,
+    groupKey: title,
+    autoCancel: true,
+    styleInformation: styleInformation,
+    priority: Priority.High,
+  );
+  var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+  var platformChannelSpecifics = new NotificationDetails(
+      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+  await flutterLocalNotificationsPlugin.show(
+      0, title, body, platformChannelSpecifics,
+      payload: json.encode(notification));
 }
 
 class _StudentPageState extends State<StudentPage>
@@ -35,8 +109,8 @@ class _StudentPageState extends State<StudentPage>
         AnimationController(vsync: this, duration: Duration(milliseconds: 250));
     super.initState();
 
-    //  registerNotification();
-    //configLocalNotification();
+    registerNotification();
+    configLocalNotification();
     _swiperController = SwiperController();
     pageController = PageController();
   }
@@ -58,29 +132,29 @@ class _StudentPageState extends State<StudentPage>
     String currentUser = await sharedPreferencesHelper.getStudentsEmail();
     firebaseMessaging.requestNotificationPermissions();
     firebaseMessaging.configure(
-      onBackgroundMessage: (message) {
-        print(message);
-      configureNotificationToShow(message);
-      return;
-    }, onMessage: (Map<String, dynamic> message) {
-      print('onMessage: $message');
-      //TODO: Implement Foreground message
-      // configureNotificationToShow(message);
-      return;
-    }, onResume: (Map<String, dynamic> message) {
-      print('onResume: $message');
-      //TODO: Implement onClick
-      // configureNotificationToShow(message);
-      return;
-    }, onLaunch: (Map<String, dynamic> message) {
-      print('onLaunch: $message');
-      //TODO: Implement onLaunch
+        onBackgroundMessage:
+            Platform.isIOS ? null : configureNotificationToShow,
+        onMessage: (Map<String, dynamic> message) {
+          print('onMessage: $message');
+          showSnackbar(message);
+          // configureNotificationToShow(message);
+          return;
+        },
+        onResume: (Map<String, dynamic> message) {
+          print('onResume: $message');
+          //TODO: Implement onClick
+          // configureNotificationToShow(message);
+          return;
+        },
+        onLaunch: (Map<String, dynamic> message) {
+          print('onLaunch: $message');
+          //TODO: Implement onLaunch
 
-      // configureNotificationToShow(message);
-      return;
-    });
+          // configureNotificationToShow(message);
+          return;
+        });
 
-    firebaseMessaging.getToken().then((token) {
+    firebaseMessaging.getToken().then((token) async {
       print('token: $token');
       Firestore.instance
           .collection('users')
@@ -88,6 +162,7 @@ class _StudentPageState extends State<StudentPage>
           .collection('Students')
           .document(currentUser)
           .updateData({'pushToken': token});
+      await sharedPreferencesHelper.setSenderToken(token);
     }).catchError((err) {
       Fluttertoast.showToast(msg: err.message.toString());
     });
@@ -102,92 +177,33 @@ class _StudentPageState extends State<StudentPage>
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<String> downloadAndSaveFile(String url, String name) async {
-    var directory = await getApplicationDocumentsDirectory();
-    var path = '${directory.path}/$name';
-    var res = await get(url);
-    var file = File(path);
-    await file.writeAsBytes(res.bodyBytes);
-    return path;
-  }
-
-  List<Message> messages = List(5);
-  BigPictureStyleInformation photo;
-  Person person;
-  MessagingStyleInformation messageStyle;
-
-  void configureNotificationToShow(Map message) async {
+  void showSnackbar(Map message) {
     Map notification = message['notification'];
-    Map data = message["data"];
-    var senderImage = await downloadAndSaveFile(data['sender_image'], "Icon");
-    if (data['messageType'] == "photo") {
-      var picturePath =
-          await downloadAndSaveFile(notification['body'], "Photo");
-      photo = BigPictureStyleInformation(FilePathAndroidBitmap(picturePath),
-          largeIcon: FilePathAndroidBitmap(senderImage));
-      showNotification(notification, notification['titile'], "Photo", photo);
-    } else {
-      person = Person(
-        icon: BitmapFilePathAndroidIcon(senderImage),
-        name: notification['title'],
-      );
-      Message message = Message(notification['body'], DateTime.now(), person);
-      for (int i = 0; i <= messages.length; i++) {
-        if (messages.length != 0) {
-          if (messages[i].text != message.text) {
-            if (messages.length != 5) {
-              messages.add(message);
-              print(message.text);
-            } else {
-              messages.removeAt(0);
-              messages.add(message);
-            }
-          }
-        } else {
-          messages.add(message);
-        }
-      }
-      messageStyle = MessagingStyleInformation(person, messages: messages);
-
-      showSnackBarNotfication("New message: ${notification['body']}");
-    }
-  }
-
-  void showNotification(Map notification, String title, String body,
-      StyleInformation styleInformation) async {
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      Platform.isAndroid ? 'com.h2.helphub' : 'com.h2.helphub',
-      'Help Hub',
-      'your channel description',
-      playSound: true,
-      enableVibration: true,
-      importance: Importance.Max,
-      groupKey: title,
-      autoCancel: true,
-      styleInformation: styleInformation,
-      priority: Priority.High,
-    );
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-        0, title, body, platformChannelSpecifics,
-        payload: json.encode(notification));
-  }
-
-  void showSnackBarNotfication(String message) {
-    SnackBar(
-        content: Text("New Message"),
-        action: SnackBarAction(
-            label: message,
+    Map data = message['data'];
+    if (student != null && student.enrolled && _selectedIndex != 2) {
+      Flushbar(
+        title: notification['title'],
+        messageText: data['messageType'] == 'photo'
+            ? Text("New Message: Photo", style: TextStyle(color: white))
+            : Text("New message: ${notification['body']}",
+                style: TextStyle(color: white)),
+        backgroundColor: mainColor.withOpacity(0.6),
+        barBlur: 50,
+        flushbarPosition: FlushbarPosition.TOP,
+        flushbarStyle: FlushbarStyle.FLOATING,
+        icon: Icon(Icons.chat, color: white),
+        borderRadius: 15,
+        //  padding: EdgeInsets.all(10),
+        margin: EdgeInsets.fromLTRB(10, 7, 10, 7),
+        animationDuration: Duration(milliseconds: 700),
+        mainButton: FlatButton(
             onPressed: () {
-              setState(() {
-                _selectedIndex = 2;
-                pageController.animateToPage(2,
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.bounceInOut);
-              });
-            }));
+              _onItemTapped(2);
+            },
+            child: Text("Open", style: TextStyle(color: white))),
+        duration: Duration(milliseconds: 2200),
+      )..show(context);
+    }
   }
 
   int _selectedIndex = 0;
@@ -248,128 +264,131 @@ class _StudentPageState extends State<StudentPage>
   Developer developer;
   Student student;
   Project project;
+
   @override
   Widget build(BuildContext context) {
     return BaseView<StudentHomeModel>(
-      onModelReady: (model) => model.getStudentProfile(),
+      onModelReady: (model) => model.getAll(),
       builder: (context, model, child) {
         if (student == null ||
             developer == null ||
             developers == null ||
             projects == null) {
-          if (model.state3 == ViewState.Idle) {
-            model.getStudentProfile();
-            student = model.student;
-            model.getEnrolledDeveloperProfile();
-            developer = model.enrolleddeveloper;
-            model.getDevelopers();
-            developers = model.developers;
-            model.getProjects();
-            projects = model.projects;
-            model.getStudentProject();
-            project = model.project;
-            a++;
-          }
+          //model.getStudentProfile();
+          student = model.student;
+          //model.getEnrolledDeveloperProfile();
+          developer = model.enrolleddeveloper;
+          // model.getDevelopers();
+          developers = model.developers;
+          // model.getProjects();
+          projects = model.projects;
+          // model.getStudentProject();
+          project = model.project;
+          a++;
         }
         if (model.state == ViewState.Idle) {
           if (a == 0) {
-            model.getStudentProfile();
+            //  model.getStudentProfile();
             student = model.student;
-            model.getEnrolledDeveloperProfile();
+            //  model.getEnrolledDeveloperProfile();
             developer = model.enrolleddeveloper;
-            model.getProjects();
+            //   model.getProjects();
             projects = model.projects;
-            model.getDevelopers();
+            //  model.getDevelopers();
             developers = model.developers;
-            model.getStudentProject();
+            //   model.getStudentProject();
             project = model.project;
             a++;
           }
         }
         return Scaffold(
-            key: _scaffoldKey,
             backgroundColor: Colors.white,
             body: futurePageBuilder<Student>(student, model.getStudentProfile(),
                 child: (studentSnap) {
-              return SimpleHiddenDrawer(
-                  slidePercent: 65,
-                  enableCornerAnimin: true,
-                  isDraggable: true,
-                  verticalScalePercent: 99,
-                  menu: buildMenu(
-                      elevation: 5,
-                      radius: 15,
-                      user: 'Student',
-                      name: student.displayName ?? studentSnap.displayName,
-                      imageUrl: student.photoUrl,
-                      profileRoute: StudentProfile.id,
-                      animateIcon: handleOnPressed,
-                      infoChildren: [
-                        SizedBox(height: 7),
-                        Text(student.email ?? '', style: infoStyle()),
-                        SizedBox(height: 7),
-                        Text(student.qualification ?? '', style: infoStyle()),
-                        SizedBox(height: 7),
-                        Text(student.yearofcompletion ?? '',
-                            style: infoStyle()),
-                        SizedBox(height: 7),
-                        Text(student.city ?? '', style: infoStyle()),
-                        SizedBox(height: 7),
-                        Text(student.country ?? '', style: infoStyle()),
-                        SizedBox(height: 7),
-                      ]),
-                  screenSelectedBuilder: (position, bloc) {
-                    return Scaffold(
-                      appBar: TopBar(
-                          rightButton: IconButton(
-                              icon: Icon(Icons.refresh),
-                              onPressed: () {
-                                refresh(model);
-                              }),
-                          title: student.enrolled == true
-                              ? buildenrolledtitle()
-                              : buildtitle(),
-                          child: AnimatedIcon(
-                              icon: AnimatedIcons.menu_close,
-                              progress: _animationController),
-                          onPressed: () {
-                            handleOnPressed();
-                            bloc.toggle();
-                          }),
-                      body: student.enrolled == true
-                          ? futurePageBuilder<Developer>(
-                              developer, model.getEnrolledDeveloperProfile(),
-                              child: (snap) {
-                              return PageView(
+              if (studentSnap != null)
+                return SimpleHiddenDrawer(
+                    slidePercent: 65,
+                    enableCornerAnimin: true,
+                    isDraggable: true,
+                    verticalScalePercent: 99,
+                    menu: buildMenu(
+                        elevation: 5,
+                        radius: 15,
+                        user: 'Student',
+                        name: student.displayName ?? studentSnap.displayName,
+                        imageUrl: student.photoUrl,
+                        profileRoute: StudentProfile.id,
+                        animateIcon: handleOnPressed,
+                        infoChildren: [
+                          SizedBox(height: 7),
+                          Text(student.email ?? '', style: infoStyle()),
+                          SizedBox(height: 7),
+                          Text(student.qualification ?? '', style: infoStyle()),
+                          SizedBox(height: 7),
+                          Text(student.yearofcompletion ?? '',
+                              style: infoStyle()),
+                          SizedBox(height: 7),
+                          Text(student.city ?? '', style: infoStyle()),
+                          SizedBox(height: 7),
+                          Text(student.country ?? '', style: infoStyle()),
+                          SizedBox(height: 7),
+                        ]),
+                    screenSelectedBuilder: (position, bloc) {
+                      return Scaffold(
+                        key: _scaffoldKey,
+                        appBar: TopBar(
+                            rightButton: IconButton(
+                                icon: Icon(Icons.refresh),
+                                onPressed: () {
+                                  refresh(model);
+                                }),
+                            title: student.enrolled == true
+                                ? buildenrolledtitle()
+                                : buildtitle(),
+                            child: AnimatedIcon(
+                                icon: AnimatedIcons.menu_close,
+                                progress: _animationController),
+                            onPressed: () {
+                              handleOnPressed();
+                              bloc.toggle();
+                            }),
+                        body: student.enrolled == true
+                            ? futurePageBuilder<Developer>(
+                                developer, model.getEnrolledDeveloperProfile(),
+                                child: (snap) {
+                                return PageView(
+                                    physics: BouncingScrollPhysics(),
+                                    controller: pageController,
+                                    onPageChanged: (index) {
+                                      _onItemTapped(index);
+                                    },
+                                    children: enrolledbody(
+                                        studentSnap ?? student,
+                                        snap ?? developer,
+                                        model,
+                                        project,
+                                        projects));
+                              })
+                            : futurePageBuilder<List<Developer>>(
+                                developers, model.getDevelopers(),
+                                child: (snap) {
+                                return PageView(
                                   physics: BouncingScrollPhysics(),
                                   controller: pageController,
                                   onPageChanged: (index) {
                                     _onItemTapped(index);
                                   },
-                                  children: enrolledbody(
-                                      studentSnap ?? student,
-                                      snap ?? developer,
+                                  children: notEnrolledbody(
+                                      student ?? studentSnap,
                                       model,
-                                      project,
-                                      projects));
-                            })
-                          : futurePageBuilder<List<Developer>>(
-                              developers, model.getDevelopers(), child: (snap) {
-                              return PageView(
-                                physics: BouncingScrollPhysics(),
-                                controller: pageController,
-                                onPageChanged: (index) {
-                                  _onItemTapped(index);
-                                },
-                                children: notEnrolledbody(
-                                    student ?? studentSnap,
-                                    model,
-                                    snap ?? developers,
-                                    projects),
-                              );
-                            }),
-                    );
-                  });
+                                      snap ?? developers,
+                                      projects),
+                                );
+                              }),
+                      );
+                    });
+              else
+                return kBuzyPage();
             }),
             bottomNavigationBar: student != null
                 ? BottomNavyBar(
@@ -415,8 +434,8 @@ class _StudentPageState extends State<StudentPage>
 
   Widget buildChat(Developer developer) {
     return Chat(
-      peerId: developer.id,
-      peerAvatar: developer.photoUrl,
+      recieverId: developer.id,
+      recieverImage: developer.photoUrl,
       userType: UserType.STUDENT,
       developer: developer,
     );

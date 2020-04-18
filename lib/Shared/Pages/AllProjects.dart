@@ -29,9 +29,9 @@ class AllProjects extends StatelessWidget {
         height: MediaQuery.of(context).size.height / 6,
         child: Card(
           color: enrolled == null
-              ? project.current == true ? Colors.blue : Colors.white
+              ? project.current == true ? mainColor : Colors.white
               : enrolled == true
-                  ? project.current == true ? Colors.blue : Colors.white
+                  ? project.current == true ? mainColor : Colors.white
                   : Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(

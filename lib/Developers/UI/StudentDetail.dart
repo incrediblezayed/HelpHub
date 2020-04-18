@@ -16,10 +16,10 @@ class StudentDetail extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _DeveloperDetailState createState() => _DeveloperDetailState();
+  _StudentDetailState createState() => _StudentDetailState();
 }
 
-class _DeveloperDetailState extends State<StudentDetail> {
+class _StudentDetailState extends State<StudentDetail> {
   Student get student => widget.student;
 
   bool get select => widget.isASelection == null ? true : false;
@@ -247,7 +247,7 @@ class _DeveloperDetailState extends State<StudentDetail> {
                                     ),
                                   ],
                                 ),
-                                // Divider(color: Colors.black),
+                                // Divider(color: black),
                               ],
                             ),
                           ),

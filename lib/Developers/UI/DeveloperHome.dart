@@ -1,4 +1,6 @@
+import 'package:community_material_icon/community_material_icon.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:helphub/imports.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,7 +19,8 @@ MessagingStyleInformation messageStyle;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     new FlutterLocalNotificationsPlugin();
-Future<void> configureNotificationToShow(Map message) async {
+Future<dynamic> configureNotificationToShow(Map message) async {
+  print(message);
   Map notification = message['notification'];
   Map data = message["data"];
   var senderImage = await downloadAndSaveFile(data['sender_image'], "Icon");
@@ -51,6 +54,7 @@ Future<void> configureNotificationToShow(Map message) async {
     showNotification(notification, notification['titile'], notification['body'],
         messageStyle);
   }
+  return Future<void>.value();
 }
 
 Future<String> downloadAndSaveFile(String url, String name) async {
@@ -101,6 +105,43 @@ class _DeveloperHomeState extends State<DeveloperHome>
   AnimationController _animationController;
   bool open = false;
 
+  void showSnackbar(Map message) {
+    Map notification = message['notification'];
+    Map data = message['data'];
+    Student student;
+    enrolledstudents.forEach((f) {
+      if (f.email == data['senderId']) student = f;
+    }); 
+    Flushbar(
+      title: notification['title'],
+      messageText: data['messageType'] == 'photo'
+            ? Text("New Message: Photo", style: TextStyle(color: white))
+            : Text("New message: ${notification['body']}",
+                style: TextStyle(color: white)),
+      backgroundColor: mainColor.withOpacity(0.6),
+      barBlur: 50,
+      flushbarPosition: FlushbarPosition.TOP,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      icon: Icon(Icons.chat, color: white),
+      borderRadius: 15,
+      //  padding: EdgeInsets.all(10),
+      margin: EdgeInsets.fromLTRB(10, 7, 10, 7),
+      animationDuration: Duration(milliseconds: 700),
+      mainButton: FlatButton(
+          onPressed: () {
+            kopenPage(
+                context,
+                Chat(
+                    recieverId: data['senderId'],
+                    userType: UserType.DEVELOPERS,
+                    recieverImage: data['sender_image'],
+                    student: student));
+          },
+          child: Text("Open", style: TextStyle(color: white))),
+      duration: Duration(milliseconds: 2200),
+    )..show(context);
+  }
+
   @override
   void initState() {
     _animationController =
@@ -137,22 +178,24 @@ class _DeveloperHomeState extends State<DeveloperHome>
     String currentUser = await sharedPreferencesHelper.getDevelopersId();
 
     firebaseMessaging.requestNotificationPermissions();
-    firebaseMessaging.configure(onBackgroundMessage: (message) {
-      configureNotificationToShow(message);
-      return;
-    }, onMessage: (Map<String, dynamic> message) {
-      print('onMessage: $message');
-      //TODO: Implement Foreground message
-      return;
-    }, onResume: (Map<String, dynamic> message) {
-      print('onResume: $message');
-      //TODO: Implement onClick
-      return;
-    }, onLaunch: (Map<String, dynamic> message) {
-      print('onLaunch: $message');
-      //TODO: Implement onLaunch
-      return;
-    });
+    firebaseMessaging.configure(
+        onBackgroundMessage:
+            Platform.isIOS ? null : configureNotificationToShow,
+        onMessage: (Map<String, dynamic> message) {
+          showSnackbar(message);
+          print('onMessage: $message');
+          return;
+        },
+        onResume: (Map<String, dynamic> message) {
+          print('onResume: $message');
+          //TODO: Implement onClick
+          return;
+        },
+        onLaunch: (Map<String, dynamic> message) {
+          print('onLaunch: $message');
+          //TODO: Implement onLaunch
+          return;
+        });
 
     firebaseMessaging.getToken().then((token) {
       print('token: $token');
@@ -162,6 +205,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
           .collection('Developers')
           .document(currentUser)
           .updateData({'pushToken': token});
+      sharedPreferencesHelper.setSenderToken(token);
     }).catchError((err) {
       Fluttertoast.showToast(msg: err.message.toString());
     });
@@ -187,8 +231,8 @@ class _DeveloperHomeState extends State<DeveloperHome>
           ? kopenPage(
               context,
               ChatScreen(
-                peerId: student.email,
-                peerAvatar: student.photoUrl,
+                recieverId: student.email,
+                recieverImage: student.photoUrl,
                 userType: UserType.DEVELOPERS,
                 student: student,
               ))
@@ -271,6 +315,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                   ]),
               screenSelectedBuilder: (position, cont) {
                 return Scaffold(
+                  key: scaffoldKey,
                   backgroundColor: Colors.white,
                   appBar: TopBar(
                     onTitleTapped: () {
@@ -344,7 +389,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 animationDuration: Duration(milliseconds: 150),
                 curve: Curves.bounceInOut,
-                backgroundColor: Colors.white,
+                backgroundColor: white,
                 items: [
                   bottomNavyBarItem(
                       icon: Icon(Icons.supervisor_account), text: "Enrolled"),
@@ -398,7 +443,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
   Widget buildChat(List<Student> enrolledStudents) {
     if (enrolledStudents != null)
       return ListView.separated(
-          separatorBuilder: (context, i) => Divider(color: Colors.black),
+          separatorBuilder: (context, i) => Divider(color: black),
           itemCount: enrolledstudents.length,
           itemBuilder: (context, index) {
             return chatList(enrolledstudents[index]);
@@ -421,8 +466,8 @@ class _DeveloperHomeState extends State<DeveloperHome>
       onTap: () => kopenPage(
           context,
           Chat(
-              peerId: student.email,
-              peerAvatar: student.photoUrl,
+              recieverId: student.email,
+              recieverImage: student.photoUrl,
               student: student,
               userType: UserType.DEVELOPERS)),
       leading: Hero(
@@ -572,7 +617,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
               IconButton(
                   icon: model.state2 == ViewState.Busy
                       ? SpinKitPulse(
-                          color: Colors.blue,
+                          color: mainColor,
                         )
                       : Icon(Icons.cancel),
                   onPressed: () async {
@@ -587,7 +632,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
               IconButton(
                   icon: model.state == ViewState.Busy
                       ? SpinKitPulse(
-                          color: Colors.blue,
+                          color: mainColor,
                         )
                       : Icon(Icons.done),
                   onPressed: () async {
@@ -662,7 +707,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
         child: Container(
           alignment: Alignment.center,
           child: Hero(
-            tag: '${student.displayName}',
+            tag: '${student.displayName}+1',
             child: Material(
               elevation: 0.7,
               borderRadius: BorderRadius.circular(12),
@@ -679,7 +724,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                       Container(
                         decoration: BoxDecoration(
                             gradient: LinearGradient(
-                                colors: [Colors.blue, Colors.blue[900]])),
+                                colors: [mainColor, Colors.blue[900]])),
                         margin: EdgeInsets.only(top: 90),
                         height: (orientation == Orientation.portrait)
                             ? height / 10
@@ -697,13 +742,13 @@ class _DeveloperHomeState extends State<DeveloperHome>
                                 child: CircleAvatar(
                                   backgroundImage: setImage(student.photoUrl,
                                       ConstassetsString.student),
-                                  backgroundColor: Colors.blue,
+                                  backgroundColor: mainColor,
                                   radius: 68,
                                 ),
                                 placeHolder: CircleAvatar(
                                   backgroundImage:
                                       setImage(null, ConstassetsString.student),
-                                  backgroundColor: Colors.blue,
+                                  backgroundColor: mainColor,
                                   radius: 68,
                                 ))),
                       ),
@@ -728,7 +773,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                         ),
                       ),
                       Container(
-                        color: Colors.blue,
+                        color: mainColor,
                         padding: EdgeInsets.all(5),
                         margin: EdgeInsets.only(top: 67, left: 150),
                         child: Text(

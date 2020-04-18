@@ -20,7 +20,6 @@ export 'package:helphub/Developers/UI/DeveloperProfile.dart';
 export 'package:helphub/Students/Models/StudentProfilePageModel.dart';
 export 'package:helphub/Students/Services/StudentProfileServices.dart';
 export 'package:helphub/Developers/services/DeveloperProfileServices.dart';
-export 'package:helphub/Students/UI/StudentHome.dart';
 export 'core/enums/AuthErrors.dart';
 export 'core/enums/LoginScreenReturnType.dart';
 export 'core/viewmodel/BaseModel.dart';

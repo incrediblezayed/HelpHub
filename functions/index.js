@@ -16,10 +16,9 @@ exports.sendNotification = functions.firestore
     const idTo = doc.idTo
     const userType = doc.userType
     const contentMessage = doc.content
-    const type = doc.type == "1" ? 'photo' : 'text'
+    const type = doc.type == "0" ? 'text' : doc.type == '1' ? 'photo' : 'video'
     const senderToken = doc.token
-
-
+    const tag = doc.timestamp.toString()
     // Get push token user to (receive)
     admin
       .firestore()
@@ -32,10 +31,11 @@ exports.sendNotification = functions.firestore
         console.log(`Found user to: ${userTo.data().displayName}`)
         console.log(userTo.data().pushToken)
         console.log(`user to ${idTo}, user from ${idFrom}`)
-        if (senderToken == userTo.pushToken) {
+        if (senderToken == userTo.data().pushToken) {
           console.log(`This is when the token is same`)
         }
         else {
+          console.log(`Sending Notification`)
           // Get info user from (sent)
           admin
             .firestore()
@@ -46,31 +46,34 @@ exports.sendNotification = functions.firestore
             .get()
             .then(userFrom => {
               console.log(`Found user from: ${userFrom.data().displayName}`)
-              const sendername = userFrom.data().displayName
-              const senderPhoto = userFrom.data().photoUrl
               const payload = {
                 notification: {
-                  tag: 'chat',
-                  title: sendername,
+                  tag: tag,
+                  title: userFrom.data().displayName,
                   body: contentMessage,
                   badge: '1',
                   sound: 'default',
                   click_action: 'FLUTTER_NOTFICATION_CLICK'
                 },
                 "data": {
+                  tag: tag,
+                  title: userFrom.data().displayName,
+                  body: contentMessage,
+                  badge: '1',
+                  sound: 'default',
+                  click_action: 'FLUTTER_NOTFICATION_CLICK',
                   "messageType": type,
-                  "sender": sendername,
+                  "sender": userFrom.data().displayName,
                   "senderId": idFrom,
-                  "sender_image": senderPhoto,
+                  "sender_image": userFrom.data().photoUrl,
                   "to": idTo,
                 }
               }
-              // Let push to the target device
               admin
                 .messaging()
-                .sendToDevice(doc.data().pushToken, payload)
+                .sendToDevice(userTo.data().pushToken, payload)
                 .then(response => {
-                  console.log('Successfully sent message:', response)
+                  console.log('Successfully sent message:', response, response.results['0'].error)
                 })
                 .catch(error => {
                   console.log('Error sending message:', error)

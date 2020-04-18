@@ -1,3 +1,4 @@
+import 'Students/UI/StudentHome.dart';
 import 'imports.dart';
 
 void main() {
@@ -47,7 +48,7 @@ class HelpHub extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          accentColor: Colors.blue,
+          accentColor: mainColor,
           pageTransitionsTheme: PageTransitionsTheme(builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder()
           })),

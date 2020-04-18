@@ -17,7 +17,7 @@ class WelcomeScreen extends StatelessWidget {
             Text(
               ConstString.welcome1_heading,
               style: TextStyle(
-                  color: Colors.black,
+                  color: black,
                   fontSize: 35,
                   fontWeight: FontWeight.w500),
             ),
@@ -26,7 +26,7 @@ class WelcomeScreen extends StatelessWidget {
               child: Text(
                 ConstString.welcome1,
                 style: TextStyle(
-                    color: Colors.black,
+                    color: black,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w400),
               ),
@@ -55,7 +55,7 @@ class WelcomeScreen extends StatelessWidget {
             Text(
               ConstString.welcome2_heading,
               style: TextStyle(
-                  color: Colors.black,
+                  color: black,
                   fontSize: 35,
                   fontWeight: FontWeight.w500),
             ),
@@ -64,7 +64,7 @@ class WelcomeScreen extends StatelessWidget {
               child: Text(
                 ConstString.welcome2,
                 style: TextStyle(
-                    color: Colors.black,
+                    color: black,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w400),
               ),
@@ -92,7 +92,7 @@ class WelcomeScreen extends StatelessWidget {
             Text(
               ConstString.welcome3_heading,
               style: TextStyle(
-                  color: Colors.black,
+                  color: black,
                   fontSize: 35,
                   fontWeight: FontWeight.w500),
             ),
@@ -101,7 +101,7 @@ class WelcomeScreen extends StatelessWidget {
               child: Text(
                 ConstString.welcome3,
                 style: TextStyle(
-                    color: Colors.black,
+                    color: black,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w400),
               ),
@@ -147,7 +147,7 @@ class WelcomeScreen extends StatelessWidget {
             nextText: Text(
               '→',
               style: TextStyle(
-                // color: Colors.blue,
+                // color: mainColor,
                 fontSize: 30,
               ),
             ),
@@ -155,7 +155,7 @@ class WelcomeScreen extends StatelessWidget {
             doneText: Text("Done"),
             pageButtonsColor: Color.fromARGB(100, 254, 198, 27),
             pageButtonTextStyles: new TextStyle(
-              color: Colors.black,
+              color: black,
               fontSize: 16.0,
             ),
           ),
@@ -170,7 +170,7 @@ class WelcomeScreen extends StatelessWidget {
                 transitionOnUserGestures: true,
                 child: MaterialButton(
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(color: Colors.blue),
+                    side: BorderSide(color: mainColor),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   height: 50,
@@ -180,7 +180,7 @@ class WelcomeScreen extends StatelessWidget {
                   child: Text(
                     ConstString.get_started,
                     style: TextStyle(
-                      color: Colors.black,
+                      color: black,
                       fontSize: 20,
                     ),
                   ),

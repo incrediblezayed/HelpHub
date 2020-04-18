@@ -350,10 +350,10 @@ class _MyProjectState extends State<MyProject> {
                                         color: (project.progress.length *
                                                     16.66666) <
                                                 50
-                                            ? Colors.black
+                                            ? black
                                             : Colors.white)),
                                 linearStrokeCap: LinearStrokeCap.roundAll,
-                                progressColor: Colors.blue,
+                                progressColor: mainColor,
                               ),
                             ),
                             project.progress.length > 0
@@ -562,7 +562,7 @@ class _MyProjectState extends State<MyProject> {
       } else if (project.completed) {
         return BottomAppBar(
             child: FlatButton(
-                disabledTextColor: Colors.black,
+                disabledTextColor: black,
                 onPressed: null,
                 child: Text("Completed")));
       } else if (project.requested) {
