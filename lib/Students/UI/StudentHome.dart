@@ -323,7 +323,7 @@ class _StudentPageState extends State<StudentPage>
             }
           }
         }
-        if (model.state == ViewState.Idle) {
+       /*  if (model.state == ViewState.Idle) {
           if (a == 0) {
             //  model.getStudentProfile();
             student = model.student;
@@ -337,7 +337,7 @@ class _StudentPageState extends State<StudentPage>
             project = model.project;
             a++;
           }
-        }
+        } */
         return Scaffold(
             backgroundColor: Colors.white,
             body: futurePageBuilder<Student>(student, model.getStudentProfile(),
