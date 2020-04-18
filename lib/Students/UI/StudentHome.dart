@@ -270,21 +270,58 @@ class _StudentPageState extends State<StudentPage>
     return BaseView<StudentHomeModel>(
       onModelReady: (model) => model.getAll(),
       builder: (context, model, child) {
-        if (student == null ||
-            developer == null ||
-            developers == null ||
-            projects == null) {
-          //model.getStudentProfile();
-          student = model.student;
-          //model.getEnrolledDeveloperProfile();
-          developer = model.enrolleddeveloper;
-          // model.getDevelopers();
-          developers = model.developers;
-          // model.getProjects();
-          projects = model.projects;
-          // model.getStudentProject();
-          project = model.project;
-          a++;
+        if (student == null) {
+          if (model.student != null)
+           { student = model.student;
+            a++;
+        }
+          else {
+            model.getStudentProfile();
+            student = model.student;
+            a++;
+
+          }
+        } else {
+          if (student.enrolled) {
+            if (developer == null || projects == null || project == null) {
+              if (model.project == null ||
+                  model.enrolleddeveloper == null ||
+                  model.projects == null) {
+                model.getEnrolledDeveloperProfile();
+                model.getStudentProject();
+                model.getProjects();
+                if (model.state == ViewState.Idle) {
+                  developer = model.enrolleddeveloper;
+                  project = model.project;
+                  projects = model.projects;
+            a++;
+
+                }
+              } else {
+                developer = model.enrolleddeveloper;
+                project = model.project;
+                projects = model.projects;
+            a++;
+
+              }
+            }
+          } else {
+            if (model.developers == null || model.projects == null) {
+              model.getDevelopers();
+              model.getProjects();
+              if (model.state == ViewState.Idle) {
+                developers = model.developers;
+                projects = model.projects;
+            a++;
+
+              }
+            } else {
+              developers = model.developers;
+              projects = model.projects;
+            a++;
+
+            }
+          }
         }
         if (model.state == ViewState.Idle) {
           if (a == 0) {

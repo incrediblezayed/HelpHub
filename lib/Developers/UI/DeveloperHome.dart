@@ -109,9 +109,9 @@ class _DeveloperHomeState extends State<DeveloperHome>
     Map notification = message['notification'];
     Map data = message['data'];
     Student student;
-    enrolledstudents.forEach((f) {
+    if(enrolledstudents!=null){enrolledstudents.forEach((f) {
       if (f.email == data['senderId']) student = f;
-    }); 
+    }); }
     Flushbar(
       title: notification['title'],
       messageText: data['messageType'] == 'photo'

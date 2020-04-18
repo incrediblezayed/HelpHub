@@ -20,6 +20,7 @@ class StudentHomeModel extends BaseModel {
     getStudentProfile();
     getEnrolledDeveloperProfile();
     getStudentProject();
+    getProjects();
     // await checkEnrolled();
     setState2(ViewState.Idle);
     setState(ViewState.Idle);
