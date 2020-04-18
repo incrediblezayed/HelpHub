@@ -764,7 +764,6 @@ class ChatScreenState extends State<ChatScreen>
                   hintText: 'Type your message...',
                   hintStyle: TextStyle(color: greyColor),
                 ),
-                focusNode: focusNode,
               ),
             ),
           ),
