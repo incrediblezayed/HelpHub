@@ -374,11 +374,6 @@ class _StudentPageState extends State<StudentPage>
                       return Scaffold(
                         key: _scaffoldKey,
                         appBar: TopBar(
-                            rightButton: IconButton(
-                                icon: Icon(Icons.refresh),
-                                onPressed: () {
-                                  refresh(model);
-                                }),
                             title: student.enrolled == true
                                 ? buildenrolledtitle()
                                 : buildtitle(),

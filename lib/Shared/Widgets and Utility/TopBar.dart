@@ -9,19 +9,13 @@ class TopBar extends StatefulWidget implements PreferredSizeWidget {
   final String buttonHeroTag;
   final String titleTag;
   final Widget child1;
-  final Widget rightButton;
-  final Icon icon;
-  final Function rigthPressed;
 
   @override
   final Size preferredSize;
 
   TopBar(
       {@required this.title,
-      this.icon,
-      this.rigthPressed,
       this.child,
-      this.rightButton,
       @required this.onPressed,
       this.child1,
       this.titleTag = 'title',
@@ -69,7 +63,7 @@ class _TopBarState extends State<TopBar> {
                     ),
                   ),
                 ),
-          widget.child1 == null ? Spacer() : Container(),
+          widget.child1==null ? Spacer() : Container(),
           Hero(
             tag: widget.titleTag,
             transitionOnUserGestures: true,
@@ -99,11 +93,7 @@ class _TopBarState extends State<TopBar> {
               ),
             ),
           ),
-          widget.rightButton != null ? Spacer() : Container(),
-
-          widget.rightButton != null ? widget.rightButton : Spacer(flex: 3),
-          widget.rightButton != null ? Spacer() : Container(),
-
+          Spacer(flex: 3),
         ],
       ),
     );

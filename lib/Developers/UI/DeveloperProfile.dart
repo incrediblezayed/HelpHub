@@ -112,6 +112,7 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
           return Scaffold(
             key: _scaffoldKey,
             appBar: TopBar(
+              titleTag: "title",
               title: //Text(
                   buildTitle(developer),
               //),

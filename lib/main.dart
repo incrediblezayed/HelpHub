@@ -1,3 +1,5 @@
+import 'package:helphub/Shared/Pages/About.dart';
+
 import 'Students/UI/StudentHome.dart';
 import 'imports.dart';
 
@@ -59,6 +61,7 @@ class HelpHub extends StatelessWidget {
         StudentProfile.id: (context) => StudentProfile(),
         DeveloperProfile.id: (context) => DeveloperProfile(),
         WelcomeScreen.id: (context) => WelcomeScreen(),
+        AboutPage.id: (context) => AboutPage()
       },
       home: getHome(context),
     );

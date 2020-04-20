@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:helphub/Shared/Pages/About.dart';
 import 'package:helphub/imports.dart';
 import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
 import 'package:http/http.dart';
@@ -247,6 +248,7 @@ LayoutBuilder buildMenu({
   @required String imageUrl,
   @required String profileRoute,
   @required Function animateIcon,
+  
   @required double elevation,
   @required double radius,
   @required List<Widget> infoChildren,
@@ -319,43 +321,45 @@ LayoutBuilder buildMenu({
                     ),
                     Spacer(),
                     Card(
-                      shape: bordershape(15),
-                      elevation: elevation ?? 5,
-                      margin: EdgeInsets.all(0),
-                      child: Container(
-                        width: size.height / 3.86,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            profileFlatButton(size,
-                                radius: BorderRadius.only(
-                                    topRight: Radius.circular(radius ?? 15)),
-                                onPressed: () {
-                              animateIcon();
-                              SimpleHiddenDrawerProvider.of(context).toggle();
-                              Navigator.of(context).pushNamed(WelcomeScreen.id);
-                              model.logoutUser();
-                            }, text: "Logout"),
-                            Divider(color: black, height: 3),
-                            profileFlatButton(size, onPressed: () {
-                              animateIcon();
-                              SimpleHiddenDrawerProvider.of(context).toggle();
-                              // Navigator.of(context).pushNamed(//TODO: Feedback route);
-                            }, text: "Complaints & Feedback"),
-                            Divider(color: black, height: 3),
-                            profileFlatButton(size,
-                                radius: BorderRadius.only(
-                                    bottomRight: Radius.circular(radius ?? 15)),
-                                onPressed: () {
-                              animateIcon();
-
-                              SimpleHiddenDrawerProvider.of(context).toggle();
-                              // Navigator.of(context).pushNamed(//TODO: aboutRoute);
-                            }, text: "About")
-                          ],
+                        shape: bordershape(15),
+                        elevation: elevation ?? 5,
+                        margin: EdgeInsets.all(0),
+                        child: Container(
+                          width: size.height / 3.86,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              profileFlatButton(size,
+                                  radius: BorderRadius.only(
+                                      topRight: Radius.circular(radius ?? 15)),
+                                  onPressed: () {
+                                animateIcon();
+                                SimpleHiddenDrawerProvider.of(context).toggle();
+                                Navigator.of(context)
+                                    .pushNamed(WelcomeScreen.id);
+                                model.logoutUser();
+                              }, text: "Logout"),
+                              Divider(color: black, height: 3),
+                              profileFlatButton(size, onPressed: () {
+                                animateIcon();
+                                SimpleHiddenDrawerProvider.of(context).toggle();
+                                // Navigator.of(context).pushNamed(//TODO: Feedback route);
+                              }, text: "Complaints & Feedback"),
+                              Divider(color: black, height: 3),
+                              profileFlatButton(size,
+                                  radius: BorderRadius.only(
+                                      bottomRight:
+                                          Radius.circular(radius ?? 15)),
+                                  onPressed: () {
+                                animateIcon();
+                                SimpleHiddenDrawerProvider.of(context).toggle();
+                                Navigator.of(context).pushNamed(AboutPage.id);
+                              }, text: "About")
+                            ],
+                          ),
                         ),
-                      ),
+                      
                     ),
                     Spacer(),
                   ]),

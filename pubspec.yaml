@@ -44,6 +44,7 @@ dependencies:
   image_gallery_saver:
   dio:
   image_downloader:
+  package_info:
 
 dev_dependencies:
   flutter_test:
