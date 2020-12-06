@@ -9,51 +9,51 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  easy_listview:
-  intro_views_flutter:
-  sortedmap:
-  intl:
-  division:
-  flutter_spinkit:
-  http:
-  shared_preferences:
-  permission_handler:
-  image_picker:
-  path_provider:
-  get_it:
-  provider:
-  cupertino_icons:
-  font_awesome_flutter:
-  firebase_auth:
-  firebase_core:
-  cloud_firestore:
-  firebase_storage:
-  bottom_navy_bar:
-  pull_to_refresh:
-  firebase_messaging:
-  flutter_local_notifications:
-  fluttertoast:
-  cached_network_image:
-  flutter_login:
-  flutter_swiper:
-  percent_indicator:
-  hidden_drawer_menu:
-  community_material_icon:
-  flushbar:
-  image_cropper:
-  image_gallery_saver:
-  dio:
-  image_downloader:
-  package_info:
+  bottom_navy_bar: null
+  cached_network_image: null
+  cloud_firestore: null
+  community_material_icon: null
+  cupertino_icons: null
+  dio: null
+  division: null
+  easy_listview: null
+  firebase_auth: null
+  firebase_core: null
+  firebase_messaging: null
+  firebase_storage: null
+  flushbar: null
+  flutter_local_notifications: null
+  flutter_login: null
+  flutter_spinkit: null
+  flutter_swiper: null
+  fluttertoast: null
+  font_awesome_flutter: null
+  get: ^3.22.2
+  get_it: null
+  hidden_drawer_menu: null
+  http: null
+  image: ^2.1.19
+  image_cropper: null
+  image_downloader: null
+  image_gallery_saver: null
+  image_picker: ^0.6.7+14
+  intl: null
+  intro_views_flutter: null
+  package_info: null
+  path_provider: null
+  percent_indicator: null
+  permission_handler: null
+  provider: null
+  pull_to_refresh: null
+  shared_preferences: null
+  sortedmap: null
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter.
 flutter:
 

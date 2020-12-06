@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:get/get.dart';
 import 'package:helphub/Shared/Pages/About.dart';
 import 'package:helphub/imports.dart';
 import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'ImageCompress.dart';
 
@@ -248,11 +249,11 @@ LayoutBuilder buildMenu({
   @required String imageUrl,
   @required String profileRoute,
   @required Function animateIcon,
-  
   @required double elevation,
   @required double radius,
   @required List<Widget> infoChildren,
 }) {
+  ThemeMode themeMode = ThemeMode.light;
   LoginPageModel model = locator<LoginPageModel>();
   return LayoutBuilder(builder: (context, snapshot) {
     Size size = MediaQuery.of(context).size;
@@ -321,47 +322,60 @@ LayoutBuilder buildMenu({
                     ),
                     Spacer(),
                     Card(
-                        shape: bordershape(15),
-                        elevation: elevation ?? 5,
-                        margin: EdgeInsets.all(0),
-                        child: Container(
-                          width: size.height / 3.86,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              profileFlatButton(size,
-                                  radius: BorderRadius.only(
-                                      topRight: Radius.circular(radius ?? 15)),
-                                  onPressed: () {
-                                animateIcon();
-                                SimpleHiddenDrawerProvider.of(context).toggle();
-                                Navigator.of(context)
-                                    .pushNamed(WelcomeScreen.id);
-                                model.logoutUser();
-                              }, text: "Logout"),
-                              Divider(color: black, height: 3),
-                              profileFlatButton(size, onPressed: () {
-                                animateIcon();
-                                SimpleHiddenDrawerProvider.of(context).toggle();
-                                // Navigator.of(context).pushNamed(//TODO: Feedback route);
-                              }, text: "Complaints & Feedback"),
-                              Divider(color: black, height: 3),
-                              profileFlatButton(size,
-                                  radius: BorderRadius.only(
-                                      bottomRight:
-                                          Radius.circular(radius ?? 15)),
-                                  onPressed: () {
-                                animateIcon();
-                                SimpleHiddenDrawerProvider.of(context).toggle();
-                                Navigator.of(context).pushNamed(AboutPage.id);
-                              }, text: "About")
-                            ],
-                          ),
+                      shape: bordershape(15),
+                      elevation: elevation ?? 5,
+                      margin: EdgeInsets.all(0),
+                      child: Container(
+                        width: size.height / 3.86,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            profileFlatButton(size,
+                                radius: BorderRadius.only(
+                                    topRight: Radius.circular(radius ?? 15)),
+                                onPressed: () {
+                              animateIcon();
+                              SimpleHiddenDrawerProvider.of(context).toggle();
+                              Navigator.of(context).pushNamed(WelcomeScreen.id);
+                              model.logoutUser();
+                            }, text: "Logout"),
+                            Divider(color: black, height: 3),
+                            profileFlatButton(size, onPressed: () {
+                              animateIcon();
+                              SimpleHiddenDrawerProvider.of(context).toggle();
+                              // Navigator.of(context).pushNamed(//TODO: Feedback route);
+                            }, text: "Complaints & Feedback"),
+                            Divider(color: black, height: 3),
+                            profileFlatButton(size,
+                                radius: BorderRadius.only(
+                                    bottomRight: Radius.circular(radius ?? 15)),
+                                onPressed: () {
+                              animateIcon();
+                              SimpleHiddenDrawerProvider.of(context).toggle();
+                              Navigator.of(context).pushNamed(AboutPage.id);
+                            }, text: "About")
+                          ],
                         ),
-                      
+                      ),
                     ),
                     Spacer(),
+                    Card(
+                      elevation: elevation,
+                      margin: EdgeInsets.all(0),
+                      child: profileFlatButton(size,
+                          radius: BorderRadius.horizontal(
+                              right: Radius.circular(radius ?? 15)),
+                          onPressed: () {
+                        if (themeMode == ThemeMode.light) {
+                          Get.changeThemeMode(ThemeMode.dark);
+                          themeMode = ThemeMode.dark;
+                        } else {
+                          Get.changeThemeMode(ThemeMode.light);
+                          themeMode = ThemeMode.light;
+                        }
+                      }, text: 'Change Theme'),
+                    ),
                   ]),
             )),
       ),
@@ -369,9 +383,10 @@ LayoutBuilder buildMenu({
   });
 }
 
-FutureBuilder<Response> imageBuilder(url, {Widget child, Widget placeHolder}) {
-  return FutureBuilder<Response>(
-      future: get(url),
+FutureBuilder<http.Response> imageBuilder(url,
+    {Widget child, Widget placeHolder}) {
+  return FutureBuilder<http.Response>(
+      future: http.get(url),
       builder: (context, snapshot) {
         if (snapshot != null && snapshot.data != null) {
           if (snapshot.data.statusCode == 200) {

@@ -39,7 +39,6 @@ export 'core/services/Services.dart';
 
 export 'package:helphub/Shared/Pages/BaseView.dart';
 export 'package:helphub/Shared/Pages/WelcomeScreen.dart';
-export 'package:helphub/Shared/Pages/Home.dart';
 export 'package:helphub/Shared/Widgets and Utility/Resources.dart';
 export 'package:helphub/Shared/Widgets and Utility/constants.dart';
 export 'package:helphub/Shared/Widgets and Utility/ImageCompress.dart';

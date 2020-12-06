@@ -78,7 +78,7 @@ class _AboutPageState extends State<AboutPage> {
                   TextSpan(text: "Hassan Ansari & Hassan Momin")
                 ]),
               ),
-              Text(data)
+              Text("data")
             ],
           ),
         ),

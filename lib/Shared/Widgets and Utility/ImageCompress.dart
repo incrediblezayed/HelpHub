@@ -7,17 +7,18 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart' show getTemporaryDirectory;
 
 Future<File> takeCompressedPicture() async {
-  var _imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+  ImagePicker imagePicker = ImagePicker();
+  var _imageFile = await imagePicker.getImage(source: ImageSource.gallery);
   if (_imageFile == null) {
     return null;
   }
 
   // You can have a loading dialog here but don't forget to pop before return file;
-
+  File imageFile = File(_imageFile.path);
   final tempDir = await getTemporaryDirectory();
   final random = Math.Random().nextInt(10000);
   _CompressImage compressObject =
-      _CompressImage(_imageFile, tempDir.path, random);
+      _CompressImage(imageFile, tempDir.path, random);
   String filePath = await _compressImage(compressObject);
   print('new path: ' + filePath);
   File file = File(filePath);

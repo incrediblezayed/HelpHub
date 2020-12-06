@@ -1,3 +1,5 @@
+
+import 'package:get/get.dart';
 import 'package:helphub/Shared/Pages/About.dart';
 
 import 'Students/UI/StudentHome.dart';
@@ -47,7 +49,7 @@ class MyApp extends StatelessWidget {
 class HelpHub extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           accentColor: mainColor,

@@ -574,7 +574,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       child: FlatButton(
         child: Text(
           messages.forgotPasswordButton,
-          style: theme.textTheme.body1,
+          style: theme.textTheme.bodyText2,
           textAlign: TextAlign.left,
         ),
         onPressed: buttonEnabled
@@ -649,7 +649,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
                       "Student",
                       style: Theme.of(context)
                           .textTheme
-                          .display2
+                          .headline3
                           .copyWith(color: mainColor, fontSize: 40),
                     )),
                 SizedBox(height: 20),
@@ -883,7 +883,7 @@ class _RecoverCardState extends State<_RecoverCard>
                       "Developer",
                       style: Theme.of(context)
                           .textTheme
-                          .display2
+                          .headline3
                           .copyWith(color: mainColor, fontSize: 40),
                     )),
                 SizedBox(
@@ -897,7 +897,7 @@ class _RecoverCardState extends State<_RecoverCard>
                   messages.recoverPasswordDescription,
                   key: kRecoverPasswordDescriptionKey,
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.body1,
+                  style: theme.textTheme.bodyText2,
                 ),
                 SizedBox(height: 26),
                 _buildRecoverButton(theme, messages),

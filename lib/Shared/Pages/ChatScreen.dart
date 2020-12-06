@@ -1,6 +1,4 @@
-import 'dart:typed_data';
 import 'dart:ui';
-import 'package:dio/dio.dart';
 import 'package:helphub/Shared/Model/MessageModel.dart';
 import 'package:helphub/Shared/Widgets%20and%20Utility/FullImage.dart';
 import 'package:helphub/Shared/Widgets%20and%20Utility/easylist.dart';
@@ -135,6 +133,8 @@ class ChatScreenState extends State<ChatScreen>
     readLocal();
   }
 
+ImagePicker picker = ImagePicker();
+
   void onFocusChange() {
     if (focusNode.hasFocus) {
       setState(() {
@@ -202,7 +202,7 @@ class ChatScreenState extends State<ChatScreen>
     bool image = message.type == 1;
     showDialog(
         context: context,
-        child: Dialog(
+        builder:(c)=> Dialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: StatefulBuilder(builder: (context, setState) {
@@ -724,7 +724,7 @@ class ChatScreenState extends State<ChatScreen>
               child: Icon(Icons.camera),
             ),
             onTap: () {
-              ImagePicker.pickImage(source: ImageSource.camera)
+              picker.getImage(source: ImageSource.camera)
                   .then((file) async {
                 if (file != null) {
                   setState(() {
@@ -776,7 +776,7 @@ class ChatScreenState extends State<ChatScreen>
               ),
             ),
             onTap: () {
-              ImagePicker.pickImage(source: ImageSource.gallery)
+              picker.getImage(source: ImageSource.gallery)
                   .then((file) async {
                 if (file != null) {
                   setState(() {
