@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:helphub/imports.dart';
 import 'package:http/http.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DeveloperHome extends StatefulWidget {
@@ -284,7 +285,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
             a++;
           }
           return Scaffold(
-            backgroundColor: Colors.white,
+            //backgroundColor: Colors.white,
             body: SimpleHiddenDrawer(
               slidePercent: 65,
               enableCornerAnimin: true,
@@ -316,7 +317,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
               screenSelectedBuilder: (position, cont) {
                 return Scaffold(
                   key: scaffoldKey,
-                  backgroundColor: Colors.white,
+                 // backgroundColor: Colors.white,
                   appBar: TopBar(
                     onTitleTapped: () {
                       login.logoutUser();
@@ -389,7 +390,6 @@ class _DeveloperHomeState extends State<DeveloperHome>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 animationDuration: Duration(milliseconds: 150),
                 curve: Curves.bounceInOut,
-                backgroundColor: white,
                 items: [
                   bottomNavyBarItem(
                       icon: Icon(Icons.supervisor_account), text: "Enrolled"),
@@ -717,7 +717,8 @@ class _DeveloperHomeState extends State<DeveloperHome>
                       : 150,
                   width:
                       (orientation == Orientation.portrait) ? width - 50 : 350,
-                  color: Colors.white,
+                            color : Get.isDarkMode ? Colors.black : Colors.white,
+
                   margin: EdgeInsets.only(top: 10),
                   child: Stack(
                     children: <Widget>[

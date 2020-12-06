@@ -2,6 +2,7 @@ import 'package:helphub/imports.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:sortedmap/sortedmap.dart';
 import 'dart:math' as math;
+import 'package:get/get.dart';
 
 class MyProject extends StatefulWidget {
   final bool val;
@@ -45,7 +46,7 @@ class _MyProjectState extends State<MyProject> {
         minHeight: MediaQuery.of(context).size.height / 9,
         maxHeight: MediaQuery.of(context).size.height / 6,
         child: Container(
-            color: Colors.white,
+            color: Get.isDarkMode ? Colors.black : Colors.white,
             child: Column(
               children: <Widget>[
                 Spacer(),
@@ -108,8 +109,7 @@ class _MyProjectState extends State<MyProject> {
       leading: imageBuilder(student.photoUrl,
           child: Image(
               image: setImage(student.photoUrl, ConstassetsString.student)),
-          placeHolder:
-              Image(image: setImage(null, ConstassetsString.student))),
+          placeHolder: Image(image: setImage(null, ConstassetsString.student))),
       onTap: () {
         Navigator.of(context).pop();
         showStudentDetailSheet(context, student, developer, true);
@@ -120,7 +120,7 @@ class _MyProjectState extends State<MyProject> {
   showStudentDetailSheet(
       BuildContext context, Student student, Developer developer, bool value) {
     return showModalBottomSheet(
-        backgroundColor: Colors.white,
+        backgroundColor: Get.isDarkMode ? Colors.black : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         context: context,
         builder: (context) => StudentDetail(
@@ -208,7 +208,6 @@ class _MyProjectState extends State<MyProject> {
     if (project != null) {
       if (project.name != 'none') {
         return Scaffold(
-            backgroundColor: Colors.white,
             appBar: widget.val
                 ? TopBar(
                     title: "Project", //Text("Project"),
@@ -238,8 +237,8 @@ class _MyProjectState extends State<MyProject> {
                           decoration: BoxDecoration(
                               image: DecorationImage(
                                   fit: BoxFit.cover,
-                                  image: setImage(null,
-                                      ConstassetsString.welcome1))),
+                                  image: setImage(
+                                      null, ConstassetsString.welcome1))),
                         ),
                       )
                     ],
@@ -347,11 +346,14 @@ class _MyProjectState extends State<MyProject> {
                                                 .toString() +
                                             "%",
                                     style: TextStyle(
-                                        color: (project.progress.length *
-                                                    16.66666) <
-                                                50
-                                            ? black
-                                            : Colors.white)),
+                                      color:
+                                          (project.progress.length * 16.66666) <
+                                                  50
+                                              ? black
+                                              : Get.isDarkMode
+                                                  ? Colors.black
+                                                  : Colors.white,
+                                    )),
                                 linearStrokeCap: LinearStrokeCap.roundAll,
                                 progressColor: mainColor,
                               ),

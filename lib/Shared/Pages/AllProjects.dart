@@ -1,4 +1,5 @@
 import 'package:helphub/imports.dart';
+import 'package:get/get.dart';
 
 class AllProjects extends StatelessWidget {
   final Project project;
@@ -29,9 +30,9 @@ class AllProjects extends StatelessWidget {
         height: MediaQuery.of(context).size.height / 6,
         child: Card(
           color: enrolled == null
-              ? project.current == true ? mainColor : Colors.white
+              ? project.current == true ? mainColor : Get.isDarkMode ? Colors.black : Colors.white
               : enrolled == true
-                  ? project.current == true ? mainColor : Colors.white
+                  ? project.current == true ? mainColor : Get.isDarkMode ? Colors.black : Colors.white
                   : Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(

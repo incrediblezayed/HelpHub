@@ -126,7 +126,6 @@ class _StudentProfileState extends State<StudentProfile> {
     if (id == 'N.A') {
       return null;
     }
-
     return jsonDecode(id);
   }
 

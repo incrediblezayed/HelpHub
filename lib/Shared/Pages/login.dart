@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:helphub/imports.dart';
+import 'package:get/get.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -30,12 +31,12 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       UserType userType,
       ButtonType buttonType) async {
     if (email == null || password == null) {
-      _scaffoldKey.currentState
-          .showSnackBar(ksnackBar(context, 'Please enter details properly',false));
+      _scaffoldKey.currentState.showSnackBar(
+          ksnackBar(context, 'Please enter details properly', false));
     } else {
       if (email.trim().isEmpty || password.trim().isEmpty) {
-        _scaffoldKey.currentState
-            .showSnackBar(ksnackBar(context, 'Please enter details properly',false));
+        _scaffoldKey.currentState.showSnackBar(
+            ksnackBar(context, 'Please enter details properly', false));
       } else {
         bool response = await model.checkUserDetails(
           email: email,
@@ -48,22 +49,18 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           if (locator<AuthenticationServices>().userType ==
               UserType.DEVELOPERS) {
             Navigator.pushNamedAndRemoveUntil(
-                context,
-                DeveloperProfile.id,
-                (r) => false);
+                context, DeveloperProfile.id, (r) => false);
           } else if (locator<AuthenticationServices>().userType ==
               UserType.STUDENT) {
             Navigator.pushNamedAndRemoveUntil(
-                context,
-                StudentProfile.id,
-                (r) => false);
-          } 
+                context, StudentProfile.id, (r) => false);
+          }
         } else {
-          _scaffoldKey.currentState
-              .showSnackBar(ksnackBar(context, 'something went wrong...',false));
+          _scaffoldKey.currentState.showSnackBar(
+              ksnackBar(context, 'something went wrong...', false));
         }
-        _scaffoldKey.currentState
-            .showSnackBar(ksnackBar(context, model.currentLoggingStatus,false));
+        _scaffoldKey.currentState.showSnackBar(
+            ksnackBar(context, model.currentLoggingStatus, false));
       }
     }
   }
@@ -115,11 +112,22 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                     recoverPasswordDescription: ""),
                                 theme: LoginTheme(
                                     accentColor: mainColor,
+                                    
+                                    buttonStyle: TextStyle(
+                                        color: Get.isDarkMode
+                                            ? Get.theme.accentColor
+                                            : Colors.white),
+                                    buttonTheme: LoginButtonTheme(
+                                      backgroundColor: Get.isDarkMode
+                                          ? Colors.white
+                                          : Get.theme.accentColor,
+                                    ),
                                     cardTheme: CardTheme(
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(22)),
                                         elevation: 10),
+
                                     titleStyle: TextStyle()),
                                 onSignup: (data) async {
                                   await loginRegisterBtnTap(
@@ -227,7 +235,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                       child: Text(
                                         'Hello!',
                                         style: TextStyle(
-                                            color: black,
                                             fontSize: portrait
                                                 ? (heigth / 15) - 10
                                                 : (heigth / 8) - 13,

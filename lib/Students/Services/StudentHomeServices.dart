@@ -78,18 +78,6 @@ class StudentHomeServices extends Services {
     }
   }
 
-/*   Future<bool> checkEnrolled() async {
-    String email = await sharedPreferencesHelper.getStudentsEmail();
-    DocumentSnapshot documentSnapshot =
-        await ref.collection('Students').document(email).get();
-    if (documentSnapshot.exists &&
-        documentSnapshot.data.containsKey('enrolled')) {
-      enrolled = documentSnapshot.data['enrolled'];
-    } else {
-      enrolled = false;
-    }
-    return enrolled;
-  } */
 
   Future<Developer> getEnrolledDeveloperProfie() async {
     Developer developer;

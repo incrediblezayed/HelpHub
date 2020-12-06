@@ -198,6 +198,8 @@ TextStyle detailvalueStyle(context) {
 Widget drawerProfileInfo(Size size,
     {List<Widget> children, double elevation, double radius}) {
   return Card(
+                      shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
+
     margin: EdgeInsets.only(left: 0),
     shape: bordershape(radius ?? 15),
     elevation: elevation ?? 3,
@@ -215,6 +217,7 @@ Widget drawerProfileInfo(Size size,
 Card drawerNameCard(Size size,
     {String user, String name, double elevation, double radius}) {
   return Card(
+    shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
     margin: EdgeInsets.only(left: 0),
     shape: bordershape(radius ?? 15),
     elevation: elevation ?? 3,
@@ -253,7 +256,6 @@ LayoutBuilder buildMenu({
   @required double radius,
   @required List<Widget> infoChildren,
 }) {
-  ThemeMode themeMode = ThemeMode.light;
   LoginPageModel model = locator<LoginPageModel>();
   return LayoutBuilder(builder: (context, snapshot) {
     Size size = MediaQuery.of(context).size;
@@ -272,7 +274,7 @@ LayoutBuilder buildMenu({
         child: Container(
             height: double.maxFinite,
             width: double.maxFinite,
-            color: Colors.white,
+            color: Get.isDarkMode ? Colors.black : Colors.white,
             child: Align(
               alignment: Alignment.topLeft,
               child: Column(
@@ -309,6 +311,7 @@ LayoutBuilder buildMenu({
                         children: infoChildren, elevation: elevation),
                     Spacer(),
                     Card(
+                      shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
                       elevation: elevation,
                       margin: EdgeInsets.all(0),
                       child: profileFlatButton(size,
@@ -322,6 +325,7 @@ LayoutBuilder buildMenu({
                     ),
                     Spacer(),
                     Card(
+                      shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
                       shape: bordershape(15),
                       elevation: elevation ?? 5,
                       margin: EdgeInsets.all(0),
@@ -361,21 +365,27 @@ LayoutBuilder buildMenu({
                     ),
                     Spacer(),
                     Card(
+                      shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
                       elevation: elevation,
                       margin: EdgeInsets.all(0),
                       child: profileFlatButton(size,
                           radius: BorderRadius.horizontal(
                               right: Radius.circular(radius ?? 15)),
                           onPressed: () {
-                        if (themeMode == ThemeMode.light) {
-                          Get.changeThemeMode(ThemeMode.dark);
-                          themeMode = ThemeMode.dark;
-                        } else {
-                          Get.changeThemeMode(ThemeMode.light);
-                          themeMode = ThemeMode.light;
-                        }
-                      }, text: 'Change Theme'),
+                        Get.changeThemeMode(ThemeMode.light);
+                      }, text: 'Light Mode'),
                     ),
+                    Card(
+                      elevation: elevation,
+                      margin: EdgeInsets.all(0),
+                      child: profileFlatButton(size,
+                          radius: BorderRadius.horizontal(
+                              right: Radius.circular(radius ?? 15)),
+                          onPressed: () {
+                        Get.changeThemeMode(ThemeMode.dark);
+                      }, text: 'Dark Mode'),
+                    ),
+                    Spacer(),
                   ]),
             )),
       ),

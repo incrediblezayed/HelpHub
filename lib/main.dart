@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 import 'package:helphub/Shared/Pages/About.dart';
 
@@ -51,6 +50,13 @@ class HelpHub extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.system,
+      darkTheme: ThemeData(
+          accentColor: mainColor,
+          accentColorBrightness: Brightness.dark,
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: Colors.black,
+          backgroundColor: Colors.black),
       theme: ThemeData(
           accentColor: mainColor,
           pageTransitionsTheme: PageTransitionsTheme(builders: {
@@ -84,18 +90,20 @@ class HelpHub extends StatelessWidget {
 
     if (isUserLoggedIn) {
       if (userType == UserType.STUDENT) {
-        return currentStudent != null ?
-                currentStudent.displayName == null ||
-                currentStudent.displayName == ""
-            ? StudentProfile()
-            : StudentPage() : StudentProfile();
+        return currentStudent != null
+            ? currentStudent.displayName == null ||
+                    currentStudent.displayName == ""
+                ? StudentProfile()
+                : StudentPage()
+            : StudentProfile();
       }
       if (userType == UserType.DEVELOPERS) {
-        return currentDeveloper != null ?
-                currentDeveloper.displayName == null ||
-                currentDeveloper.displayName == ""
-            ? DeveloperProfile()
-            : DeveloperHome() : DeveloperProfile();
+        return currentDeveloper != null
+            ? currentDeveloper.displayName == null ||
+                    currentDeveloper.displayName == ""
+                ? DeveloperProfile()
+                : DeveloperHome()
+            : DeveloperProfile();
       }
     } else {
       return WelcomeScreen();

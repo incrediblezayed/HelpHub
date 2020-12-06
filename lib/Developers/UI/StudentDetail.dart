@@ -35,19 +35,17 @@ class _StudentDetailState extends State<StudentDetail> {
             ? MediaQuery.of(context).size.height / 6
             : MediaQuery.of(context).size.height / 9,
         child: Container(
-            color: Colors.white,
             child: Column(
               children: <Widget>[
                 Spacer(),
                 Hero(
                   tag: student.email,
                   child: Card(
+                    color: Colors.transparent,
                     elevation: 0,
-                    color: Colors.white,
                     child: Text(
                       headerText,
                       style: TextStyle(
-                        backgroundColor: Colors.white,
                         fontSize: 25,
                       ),
                     ),
@@ -115,7 +113,6 @@ class _StudentDetailState extends State<StudentDetail> {
           }
         });
         return Scaffold(
-            backgroundColor: Colors.white,
             appBar: Navigator.canPop(context) == true
                 ? TopBar(
                     title: // Text(
@@ -139,7 +136,6 @@ class _StudentDetailState extends State<StudentDetail> {
                                 placeHolder:Container(
                                   width: width,
                                   decoration: BoxDecoration(
-                                      color: Colors.white,
                                       image: DecorationImage(
                                           fit: BoxFit.cover,
                                           image: setImage(null,
@@ -148,7 +144,6 @@ class _StudentDetailState extends State<StudentDetail> {
                                 child: Container(
                                   width: width,
                                   decoration: BoxDecoration(
-                                      color: Colors.white,
                                       image: DecorationImage(
                                           fit: BoxFit.cover,
                                           image: setImage(student.photoUrl,

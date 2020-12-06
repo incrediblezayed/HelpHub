@@ -4,6 +4,7 @@ import 'package:helphub/Shared/Widgets%20and%20Utility/FullImage.dart';
 import 'package:helphub/Shared/Widgets%20and%20Utility/easylist.dart';
 import 'package:helphub/imports.dart';
 import 'package:image_downloader/image_downloader.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class Chat extends StatelessWidget {
@@ -133,7 +134,7 @@ class ChatScreenState extends State<ChatScreen>
     readLocal();
   }
 
-ImagePicker picker = ImagePicker();
+  ImagePicker picker = ImagePicker();
 
   void onFocusChange() {
     if (focusNode.hasFocus) {
@@ -202,147 +203,158 @@ ImagePicker picker = ImagePicker();
     bool image = message.type == 1;
     showDialog(
         context: context,
-        builder:(c)=> Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: StatefulBuilder(builder: (context, setState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Visibility(
-                  visible: !image,
-                  child: InkWell(
-                      onTap: () {
-                        Clipboard.setData(ClipboardData(
-                          text: message.content,
-                        )).then((onValue) {
-                          Fluttertoast.showToast(msg: "Copied");
-                          Navigator.pop(context);
-                        });
-                      },
-                      child: Container(
-                          margin: EdgeInsets.only(left: 20),
-                          alignment: Alignment.centerLeft,
-                          height: MediaQuery.of(context).size.height / 17 - 7,
-                          width: double.maxFinite,
-                          child: Text("Copy Text"))),
-                ),
-                Visibility(
-                    visible: isRight,
-                    child: InkWell(
-                        onTap: () async {
-                          setState(() {
-                            loading = true;
-                          });
-                          CollectionReference ref = Firestore.instance
-                              .collection('messages')
-                              .document(groupChatId)
-                              .collection(groupChatId);
-                          QuerySnapshot data = await ref
-                              .where('timestamp', isEqualTo: message.timeStamp)
-                              .getDocuments();
-                          Future.delayed(Duration(milliseconds: 500), () async {
-                            await ref
-                                .document(data.documents.first.documentID)
-                                .delete()
-                                .then((value) {
-                              setState(() {
-                                loading = false;
-                              });
+        builder: (c) => Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: StatefulBuilder(builder: (context, setState) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Visibility(
+                      visible: !image,
+                      child: InkWell(
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(
+                              text: message.content,
+                            )).then((onValue) {
+                              Fluttertoast.showToast(msg: "Copied");
                               Navigator.pop(context);
-                              Fluttertoast.showToast(msg: "Message unsent");
-                            }, onError: (error) {
-                              Navigator.pop(context);
-                              Fluttertoast.showToast(msg: "There was an error");
                             });
-                          });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(left: 20, right: 20),
-                          alignment: Alignment.centerLeft,
-                          height: MediaQuery.of(context).size.height / 17 - 7,
-                          width: double.maxFinite,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("Unsend Message"),
-                              !loading
-                                  ? Container(
-                                      width: 20,
-                                    )
-                                  : Container(
-                                      height: 15,
-                                      width: 15,
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.black),
-                                        strokeWidth: 1,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        ))),
-                Visibility(
-                    visible: image,
-                    child: InkWell(
-                        onTap: () async {
-                          setState(() {
-                            loading = true;
-                          });
-                          Future.delayed(Duration(milliseconds: 500), () async {
-                            /* var response = await Dio().get(message.content,
+                          },
+                          child: Container(
+                              margin: EdgeInsets.only(left: 20),
+                              alignment: Alignment.centerLeft,
+                              height:
+                                  MediaQuery.of(context).size.height / 17 - 7,
+                              width: double.maxFinite,
+                              child: Text("Copy Text"))),
+                    ),
+                    Visibility(
+                        visible: isRight,
+                        child: InkWell(
+                            onTap: () async {
+                              setState(() {
+                                loading = true;
+                              });
+                              CollectionReference ref = Firestore.instance
+                                  .collection('messages')
+                                  .document(groupChatId)
+                                  .collection(groupChatId);
+                              QuerySnapshot data = await ref
+                                  .where('timestamp',
+                                      isEqualTo: message.timeStamp)
+                                  .getDocuments();
+                              Future.delayed(Duration(milliseconds: 500),
+                                  () async {
+                                await ref
+                                    .document(data.documents.first.documentID)
+                                    .delete()
+                                    .then((value) {
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(msg: "Message unsent");
+                                }, onError: (error) {
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(
+                                      msg: "There was an error");
+                                });
+                              });
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(left: 20, right: 20),
+                              alignment: Alignment.centerLeft,
+                              height:
+                                  MediaQuery.of(context).size.height / 17 - 7,
+                              width: double.maxFinite,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Unsend Message"),
+                                  !loading
+                                      ? Container(
+                                          width: 20,
+                                        )
+                                      : Container(
+                                          height: 15,
+                                          width: 15,
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.black),
+                                            strokeWidth: 1,
+                                          ),
+                                        ),
+                                ],
+                              ),
+                            ))),
+                    Visibility(
+                        visible: image,
+                        child: InkWell(
+                            onTap: () async {
+                              setState(() {
+                                loading = true;
+                              });
+                              Future.delayed(Duration(milliseconds: 500),
+                                  () async {
+                                /* var response = await Dio().get(message.content,
                                 options:
                                     Options(responseType: ResponseType.bytes));
  */
-                            await ImageDownloader.downloadImage(message.content,
-                                    destination: AndroidDestinationType
-                                        .directoryPictures)
-                                .then((value) {
-                              setState(() {
-                                loading = false;
+                                await ImageDownloader.downloadImage(
+                                        message.content,
+                                        destination: AndroidDestinationType
+                                            .directoryPictures)
+                                    .then((value) {
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(
+                                      msg: "Image saved in gallery");
+                                }, onError: (error) {
+                                  Navigator.pop(context);
+                                  print(error);
+                                  Fluttertoast.showToast(
+                                      msg: "There was an error");
+                                });
                               });
-                              Navigator.pop(context);
-                              Fluttertoast.showToast(
-                                  msg: "Image saved in gallery");
-                            }, onError: (error) {
-                              Navigator.pop(context);
-                              print(error);
-                              Fluttertoast.showToast(msg: "There was an error");
-                            });
-                          });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(left: 20, right: 20),
-                          alignment: Alignment.centerLeft,
-                          height: MediaQuery.of(context).size.height / 17 - 7,
-                          width: double.maxFinite,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("Save"),
-                              !loading
-                                  ? Container(
-                                      width: 20,
-                                    )
-                                  : Container(
-                                      height: 15,
-                                      width: 15,
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.black),
-                                        strokeWidth: 1,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        ))),
-              ],
-            );
-          }),
-        ));
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(left: 20, right: 20),
+                              alignment: Alignment.centerLeft,
+                              height:
+                                  MediaQuery.of(context).size.height / 17 - 7,
+                              width: double.maxFinite,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Save"),
+                                  !loading
+                                      ? Container(
+                                          width: 20,
+                                        )
+                                      : Container(
+                                          height: 15,
+                                          width: 15,
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.black),
+                                            strokeWidth: 1,
+                                          ),
+                                        ),
+                                ],
+                              ),
+                            ))),
+                  ],
+                );
+              }),
+            ));
   }
 
   Widget buildItem(int index, MessageModel message) {
@@ -724,8 +736,7 @@ ImagePicker picker = ImagePicker();
               child: Icon(Icons.camera),
             ),
             onTap: () {
-              picker.getImage(source: ImageSource.camera)
-                  .then((file) async {
+              picker.getImage(source: ImageSource.camera).then((file) async {
                 if (file != null) {
                   setState(() {
                     isLoading = true;
@@ -757,10 +768,13 @@ ImagePicker picker = ImagePicker();
           // Edit text
           Flexible(
             child: Container(
+              color: Get.isDarkMode ? Colors.black : Colors.white,
               child: TextField(
                 style: TextStyle(color: primaryColor, fontSize: 20.0),
                 controller: textEditingController,
                 decoration: InputDecoration.collapsed(
+                  filled: true,
+                  fillColor: Get.isDarkMode ? Colors.black : Colors.white,
                   hintText: 'Type your message...',
                   hintStyle: TextStyle(color: greyColor),
                 ),
@@ -776,8 +790,7 @@ ImagePicker picker = ImagePicker();
               ),
             ),
             onTap: () {
-              picker.getImage(source: ImageSource.gallery)
-                  .then((file) async {
+              picker.getImage(source: ImageSource.gallery).then((file) async {
                 if (file != null) {
                   setState(() {
                     isLoading = true;
@@ -812,19 +825,20 @@ ImagePicker picker = ImagePicker();
               child: new IconButton(
                 icon: new Icon(Icons.send),
                 onPressed: () => onSendMessage(textEditingController.text, 0),
-                color: primaryColor,
+                color: Get.theme.accentColor,
               ),
             ),
-            color: Colors.white,
+                  color: Get.isDarkMode ? Colors.black : Colors.white,
+
           ),
         ],
       ),
       width: double.infinity,
       height: 50.0,
       decoration: new BoxDecoration(
-          border:
-              new Border(top: new BorderSide(color: greyColor2, width: 0.5)),
-          color: Colors.white),
+        border: new Border(top: new BorderSide(color: greyColor2, width: 0.5)),
+        color: Get.isDarkMode ? Colors.black : Colors.white,
+      ),
     );
   }
 

@@ -14,6 +14,7 @@ import 'fade_in.dart';
 import 'animated_text_form_field.dart';
 import '../providers/auth.dart';
 import '../providers/login_messages.dart';
+import 'package:get/get.dart';
 import '../models/login_data.dart';
 import '../dart_helper.dart';
 import '../matrix.dart';
@@ -574,7 +575,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       child: FlatButton(
         child: Text(
           messages.forgotPasswordButton,
-          style: theme.textTheme.bodyText2,
+          style: TextStyle(color: Get.theme.accentColor),
           textAlign: TextAlign.left,
         ),
         onPressed: buttonEnabled
@@ -614,7 +615,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
         onPressed: buttonEnabled ? _switchAuthMode : null,
         padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textColor: theme.primaryColor,
+        textColor: Get.theme.accentColor,
       ),
     );
   }
@@ -744,7 +745,6 @@ class _RecoverCardState extends State<_RecoverCard>
     );
   }
 
-
   @override
   void dispose() {
     super.dispose();
@@ -774,13 +774,12 @@ class _RecoverCardState extends State<_RecoverCard>
 
     // workaround to run after _cardSizeAnimation in parent finished
     // need a cleaner way but currently it works so..
-  
 
     _submitController.reverse();
 
     if (!DartHelper.isNullOrEmpty(error)) {
       showErrorToast(context, error);
-      
+
       setState(() => _isSubmitting = false);
       return false;
     }
@@ -800,16 +799,15 @@ class _RecoverCardState extends State<_RecoverCard>
 
   Widget _buildBackButton(ThemeData theme, LoginMessages messages) {
     return FlatButton(
-      child: Text(messages.goBackButton),
-      onPressed: !_isSubmitting
-          ? () {
-              widget.onSwitchLogin();
-            }
-          : null,
-      padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      textColor: theme.primaryColor,
-    );
+        child: Text(messages.goBackButton),
+        onPressed: !_isSubmitting
+            ? () {
+                widget.onSwitchLogin();
+              }
+            : null,
+        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        textColor: Get.theme.accentColor);
   }
 
   Widget _buildPasswordField(double width, LoginMessages messages, Auth auth) {

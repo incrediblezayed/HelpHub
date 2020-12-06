@@ -14,26 +14,17 @@ class StudentHomeModel extends BaseModel {
     //checkEnrolled();
   }
 
-  getAll() async {
+  Future getAll() async {
     setState(ViewState.Busy);
     setState2(ViewState.Busy);
-    getStudentProfile();
-    getEnrolledDeveloperProfile();
-    getStudentProject();
-    getProjects();
-    // await checkEnrolled();
+    await getStudentProfile();
+    await getEnrolledDeveloperProfile();
+    await getStudentProject();
+    await getProjects();
     setState2(ViewState.Idle);
     setState(ViewState.Idle);
   }
 
-  /*  Future<bool> checkEnrolled() async {
-    setState(ViewState.Busy);
-    setState2(ViewState.Busy);
-    await studentHomeServices.checkEnrolled();
-    setState2(ViewState.Idle);
-    setState(ViewState.Idle);
-    return await studentHomeServices.checkEnrolled();
-  } */
 
   Future<bool> sendReq(Student student, Developer developer) async {
     setState3(ViewState.Busy);

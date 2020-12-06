@@ -5,7 +5,7 @@ import 'package:helphub/Students/UI/DeveloperDetail.dart';
 import 'package:helphub/imports.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
-
+import 'package:get/get.dart';
 import 'DevelopersCard.dart';
 
 class StudentPage extends StatefulWidget {
@@ -323,21 +323,7 @@ class _StudentPageState extends State<StudentPage>
             }
           }
         }
-       /*  if (model.state == ViewState.Idle) {
-          if (a == 0) {
-            //  model.getStudentProfile();
-            student = model.student;
-            //  model.getEnrolledDeveloperProfile();
-            developer = model.enrolleddeveloper;
-            //   model.getProjects();
-            projects = model.projects;
-            //  model.getDevelopers();
-            developers = model.developers;
-            //   model.getStudentProject();
-            project = model.project;
-            a++;
-          }
-        } */
+
         return Scaffold(
             backgroundColor: Colors.white,
             body: futurePageBuilder<Student>(student, model.getStudentProfile(),
@@ -348,6 +334,7 @@ class _StudentPageState extends State<StudentPage>
                     enableCornerAnimin: true,
                     isDraggable: true,
                     verticalScalePercent: 99,
+                    
                     menu: buildMenu(
                         elevation: 5,
                         radius: 15,
@@ -372,6 +359,8 @@ class _StudentPageState extends State<StudentPage>
                         ]),
                     screenSelectedBuilder: (position, bloc) {
                       return Scaffold(
+      backgroundColor: Get.isDarkMode ? Colors.black : Colors.white,
+
                         key: _scaffoldKey,
                         appBar: TopBar(
                             title: student.enrolled == true
