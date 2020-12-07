@@ -103,7 +103,7 @@ class HelpHub extends StatelessWidget {
       animationType: AnimationType.CIRCULAR_ANIMATED_THEME,
       theme: lightTheme,
       darkTheme: darkTheme,
-      animationDuration: Duration(milliseconds: 750),
+      animationDuration: Duration(milliseconds: 450),
       debugShowCheckedModeBanner: false,
       title: 'Help Hub',
       routes: {
