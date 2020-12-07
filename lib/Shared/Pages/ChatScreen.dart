@@ -117,7 +117,6 @@ class ChatScreenState extends State<ChatScreen>
   bool isLoading;
   bool isShowSticker;
   String imageUrl;
-  FlutterToast flutterToast;
   ImagePicker imagePicker = ImagePicker();
 
   final TextEditingController textEditingController =
@@ -195,10 +194,9 @@ class ChatScreenState extends State<ChatScreen>
       listScrollController.animateTo(0.0,
           duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     } else {
-      flutterToast.showToast(
-          child: toast("Nothing sent"),
-          gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 1));
+      Fluttertoast.showToast(
+          msg: "Nothing sent",
+          gravity: ToastGravity.BOTTOM,);
     }
   }
 
@@ -222,10 +220,8 @@ class ChatScreenState extends State<ChatScreen>
                         Clipboard.setData(ClipboardData(
                           text: message.content,
                         )).then((onValue) {
-                          flutterToast.showToast(
-                              child: toast("Copied"),
-                              gravity: ToastGravity.BOTTOM,
-                              toastDuration: Duration(seconds: 1));
+                          Fluttertoast.showToast(
+                              msg: "Copied", gravity: ToastGravity.BOTTOM);
                           Navigator.pop(context);
                         });
                       },
@@ -259,16 +255,16 @@ class ChatScreenState extends State<ChatScreen>
                                 loading = false;
                               });
                               Navigator.pop(context);
-                              flutterToast.showToast(
-                                  child: toast("Message unsent"),
-                                  gravity: ToastGravity.BOTTOM,
-                                  toastDuration: Duration(seconds: 1));
+                              Fluttertoast.showToast(
+                                msg: "Message unsent",
+                                gravity: ToastGravity.BOTTOM,
+                              );
                             }, onError: (error) {
                               Navigator.pop(context);
-                              flutterToast.showToast(
-                                  child: toast("There was an error"),
-                                  gravity: ToastGravity.BOTTOM,
-                                  toastDuration: Duration(seconds: 1));
+                              Fluttertoast.showToast(
+                                msg: "There was an error",
+                                gravity: ToastGravity.BOTTOM,
+                              );
                             });
                           });
                         },
@@ -318,17 +314,17 @@ class ChatScreenState extends State<ChatScreen>
                                 loading = false;
                               });
                               Navigator.pop(context);
-                              flutterToast.showToast(
-                                  child: toast("Image Saved in Gallery"),
-                                  gravity: ToastGravity.BOTTOM,
-                                  toastDuration: Duration(seconds: 1));
+                              Fluttertoast.showToast(
+                                msg: "Image Saved in Gallery",
+                                gravity: ToastGravity.BOTTOM,
+                              );
                             }, onError: (error) {
                               Navigator.pop(context);
                               print(error);
-                              flutterToast.showToast(
-                                  child: toast("There was an error"),
-                                  gravity: ToastGravity.BOTTOM,
-                                  toastDuration: Duration(seconds: 1));
+                              Fluttertoast.showToast(
+                                msg: "There was an error",
+                                gravity: ToastGravity.BOTTOM,
+                              );
                             });
                           });
                         },
@@ -768,10 +764,10 @@ class ChatScreenState extends State<ChatScreen>
                       setState(() {
                         isLoading = false;
                       });
-                      flutterToast.showToast(
-                          child: toast(err.message.toString()),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 1));
+                      Fluttertoast.showToast(
+                        msg: err.message.toString(),
+                        gravity: ToastGravity.BOTTOM,
+                      );
                     });
                   }
                 });
@@ -825,10 +821,10 @@ class ChatScreenState extends State<ChatScreen>
                       setState(() {
                         isLoading = false;
                       });
-                      flutterToast.showToast(
-                          child: toast(err.message.toString()),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 1));
+                      Fluttertoast.showToast(
+                        msg: err.message.toString(),
+                        gravity: ToastGravity.BOTTOM,
+                      );
                     });
                   }
                 });
@@ -854,7 +850,8 @@ class ChatScreenState extends State<ChatScreen>
             border:
                 new Border(top: new BorderSide(color: greyColor2, width: 0.5)),
             color: Theme.of(context).brightness == Brightness.dark
- ? Colors.black : Colors.white));
+                ? Colors.black
+                : Colors.white));
   }
 
   int limit = 20;

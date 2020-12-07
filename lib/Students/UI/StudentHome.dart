@@ -130,7 +130,6 @@ class _StudentPageState extends State<StudentPage>
   }
 
   void registerNotification() async {
-    FlutterToast flutterToast;
     String currentUser = await sharedPreferencesHelper.getStudentsEmail();
     firebaseMessaging.requestNotificationPermissions();
     firebaseMessaging.configure(
@@ -166,10 +165,10 @@ class _StudentPageState extends State<StudentPage>
           .updateData({'pushToken': token});
       await sharedPreferencesHelper.setSenderToken(token);
     }).catchError((err) {
-      flutterToast.showToast(
-          child: toast(err.message.toString()),
+      Fluttertoast.showToast(
+          msg: err.message.toString(),
           gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 1));
+          );
     });
   }
 

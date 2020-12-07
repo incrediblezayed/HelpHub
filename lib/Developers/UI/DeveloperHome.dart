@@ -178,8 +178,6 @@ class _DeveloperHomeState extends State<DeveloperHome>
   }
 
   void registerNotification() async {
-    FlutterToast flutterToast;
-
     String currentUser = await sharedPreferencesHelper.getDevelopersId();
 
     firebaseMessaging.requestNotificationPermissions();
@@ -212,10 +210,9 @@ class _DeveloperHomeState extends State<DeveloperHome>
           .updateData({'pushToken': token});
       sharedPreferencesHelper.setSenderToken(token);
     }).catchError((err) {
-      flutterToast.showToast(
-          child: toast(err.message.toString()),
-          gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 1));
+      Fluttertoast.showToast(
+          msg: err.message.toString(),
+          gravity: ToastGravity.BOTTOM,);
     });
   }
 

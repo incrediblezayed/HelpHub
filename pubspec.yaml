@@ -30,7 +30,7 @@ dependencies:
   flutter_login: null
   flutter_spinkit: null
   flutter_swiper: null
-  fluttertoast: null
+  fluttertoast: ^7.1.5
   font_awesome_flutter: null
   get_it: null
   hidden_drawer_menu: null
