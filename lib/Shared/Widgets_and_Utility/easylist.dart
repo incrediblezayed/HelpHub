@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+// ignore: must_be_immutable
 class EasyListView extends StatefulWidget{
   EasyListView({
     @required this.itemCount,

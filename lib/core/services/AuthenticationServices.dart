@@ -178,15 +178,64 @@ class AuthenticationServices extends Services {
     print("User Loged out");
   }
 
-  Future<AuthErrors> passwordReset(String email) async {
+  Future<AuthErrors> passwordReset(String email, UserType userType) async {
+    if (userType == UserType.STUDENT) {
+      try {
+        AuthErrors authErrors = AuthErrors.UNKNOWN;
+        await auth.sendPasswordResetEmail(email: email);
+        authErrors = AuthErrors.SUCCESS;
+        print("Password Reset Link Send");
+        return authErrors;
+      } on PlatformException catch (e) {
+        return catchException(e);
+      }
+    } else {
+      try {
+        AuthErrors authErrors = AuthErrors.UNKNOWN;
+        DocumentSnapshot snap =
+            await getProfileReference(email, UserType.DEVELOPERS).get();
+        await auth.sendPasswordResetEmail(email: snap.data['email']);
+        authErrors = AuthErrors.SUCCESS;
+        return authErrors;
+      } on PlatformException catch (e) {
+        return catchException(e);
+      }
+    }
+  }
+
+  Future<String> forgotId(String email, String displayName, String uid) async {
     try {
-      AuthErrors authErrors = AuthErrors.UNKNOWN;
-      await auth.sendPasswordResetEmail(email: email);
-      authErrors = AuthErrors.SUCCESS;
-      print("Password Reset Link Send");
-      return authErrors;
+      QuerySnapshot snapshot = await firestore
+          .collection('users')
+          .document('Profile')
+          .collection('Developers')
+          .where('email', isEqualTo: email)
+          .getDocuments();
+      if (snapshot.documents.length != 0) {
+        DocumentSnapshot snap = snapshot.documents.first;
+        if (snap.data['displayName'] == displayName) {
+          if (snap.data['firebaseUid'] == uid) {
+            /* final Email emailBody = Email(
+                isHTML: false,
+                subject: "Developer ID",
+                body:
+                    "Hello $displayName, your developer Id is ${snap.documentID}",
+                recipients: [email],
+                cc: ["cth001100@gmail.com"]);
+            await FlutterEmailSender.send(emailBody); */
+            return 'success ${snap.documentID}';
+          } else {
+            return 'Incorrect UID';
+          }
+        } else {
+          return 'Display Name incorrect';
+        }
+      } else {
+        return 'Please check your email';
+      }
     } on PlatformException catch (e) {
-      return catchException(e);
+      catchException(e);
+      return e.message;
     }
   }
 

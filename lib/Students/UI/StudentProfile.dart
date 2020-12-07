@@ -71,7 +71,7 @@ class _StudentProfileState extends State<StudentProfile> {
     bool res = false;
     if (_name.isEmpty || _qualification.isEmpty || _yearofcompletion.isEmpty) {
       _scaffoldKey.currentState.showSnackBar(ksnackBar(context,
-          'You Need to fill all the details and a profile Photo', false));
+          'You Need to fill all the details and a profile Photo',));
     } else {
       if (model.state == ViewState.Idle) {
         if (model.studentProfile == null) {
@@ -126,6 +126,7 @@ class _StudentProfileState extends State<StudentProfile> {
     if (id == 'N.A') {
       return null;
     }
+
     return jsonDecode(id);
   }
 

@@ -2,7 +2,6 @@ import 'package:helphub/imports.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:sortedmap/sortedmap.dart';
 import 'dart:math' as math;
-import 'package:get/get.dart';
 
 class MyProject extends StatefulWidget {
   final bool val;
@@ -46,7 +45,8 @@ class _MyProjectState extends State<MyProject> {
         minHeight: MediaQuery.of(context).size.height / 9,
         maxHeight: MediaQuery.of(context).size.height / 6,
         child: Container(
-            color: Get.isDarkMode ? Colors.black : Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+ ? Colors.black : Colors.white,
             child: Column(
               children: <Widget>[
                 Spacer(),
@@ -120,7 +120,8 @@ class _MyProjectState extends State<MyProject> {
   showStudentDetailSheet(
       BuildContext context, Student student, Developer developer, bool value) {
     return showModalBottomSheet(
-        backgroundColor: Get.isDarkMode ? Colors.black : Colors.white,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+ ? Colors.black : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         context: context,
         builder: (context) => StudentDetail(
@@ -210,7 +211,7 @@ class _MyProjectState extends State<MyProject> {
         return Scaffold(
             appBar: widget.val
                 ? TopBar(
-                    title: "Project", //Text("Project"),
+                    title: "Project",
                     child: kBackBtn,
                     onPressed: () => Navigator.pop(context))
                 : null,
@@ -297,8 +298,14 @@ class _MyProjectState extends State<MyProject> {
                             decoration: BoxDecoration(
                                 border: Border.all(
                                     style: BorderStyle.solid,
-                                    color: Colors.green[900]),
-                                color: Colors.green.withOpacity(0.3),
+                                    color: Theme.of(context).brightness == Brightness.dark
+
+                                        ? Colors.green[400]
+                                        : Colors.green[900]),
+                                color: Theme.of(context).brightness == Brightness.dark
+
+                                    ? Colors.green.withOpacity(0.2)
+                                    : Colors.green.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(10)),
                             height: 20,
                             child: Row(
@@ -307,7 +314,11 @@ class _MyProjectState extends State<MyProject> {
                                 Icon(Icons.done, color: Colors.green),
                                 Text(
                                   "Project Completed",
-                                  style: TextStyle(color: Colors.green[900]),
+                                  style: TextStyle(
+                                      color: Theme.of(context).brightness == Brightness.dark
+
+                                          ? Colors.green
+                                          : Colors.green[900]),
                                 ),
                               ],
                             ),
@@ -350,7 +361,8 @@ class _MyProjectState extends State<MyProject> {
                                           (project.progress.length * 16.66666) <
                                                   50
                                               ? black
-                                              : Get.isDarkMode
+                                              : Theme.of(context).brightness == Brightness.dark
+
                                                   ? Colors.black
                                                   : Colors.white,
                                     )),

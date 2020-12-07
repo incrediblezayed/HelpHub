@@ -17,18 +17,14 @@ class WelcomeScreen extends StatelessWidget {
             Text(
               ConstString.welcome1_heading,
               style: TextStyle(
-                  color: black,
-                  fontSize: 35,
-                  fontWeight: FontWeight.w500),
+                  color: black, fontSize: 35, fontWeight: FontWeight.w500),
             ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
               child: Text(
                 ConstString.welcome1,
                 style: TextStyle(
-                    color: black,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w400),
+                    color: black, fontSize: 18.0, fontWeight: FontWeight.w400),
               ),
             ),
           ],
@@ -55,18 +51,14 @@ class WelcomeScreen extends StatelessWidget {
             Text(
               ConstString.welcome2_heading,
               style: TextStyle(
-                  color: black,
-                  fontSize: 35,
-                  fontWeight: FontWeight.w500),
+                  color: black, fontSize: 35, fontWeight: FontWeight.w500),
             ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
               child: Text(
                 ConstString.welcome2,
                 style: TextStyle(
-                    color: black,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w400),
+                    color: black, fontSize: 18.0, fontWeight: FontWeight.w400),
               ),
             ),
           ],
@@ -92,18 +84,14 @@ class WelcomeScreen extends StatelessWidget {
             Text(
               ConstString.welcome3_heading,
               style: TextStyle(
-                  color: black,
-                  fontSize: 35,
-                  fontWeight: FontWeight.w500),
+                  color: black, fontSize: 35, fontWeight: FontWeight.w500),
             ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
               child: Text(
                 ConstString.welcome3,
                 style: TextStyle(
-                    color: black,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w400),
+                    color: black, fontSize: 18.0, fontWeight: FontWeight.w400),
               ),
             ),
           ],
@@ -160,6 +148,20 @@ class WelcomeScreen extends StatelessWidget {
             ),
           ),
           Positioned(
+              top: MediaQuery.of(context).size.width / 12,
+              left: MediaQuery.of(context).size.width / 20 - 10,
+              child: Hero(
+                tag: "hello",
+                child: Card(
+                  shape: CircleBorder(),
+                  elevation: 5,
+                  child: Image(
+                      height: 80,
+                      width: 80,
+                      image: AssetImage(ConstassetsString.icon2)),
+                ),
+              )),
+          Positioned(
             bottom: 60.0,
             left: 50,
             width: MediaQuery.of(context).size.width / 1.2,
@@ -169,18 +171,17 @@ class WelcomeScreen extends StatelessWidget {
                 tag: 'title',
                 transitionOnUserGestures: true,
                 child: MaterialButton(
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: mainColor),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+                  shape: StadiumBorder(),
                   height: 50,
                   minWidth: MediaQuery.of(context).size.width - 100,
                   onPressed: () => kopenPage(context, Login()),
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+ ? Color(0xff424242) : Colors.white,
+                  splashColor: Theme.of(context).accentColor,
                   child: Text(
                     ConstString.get_started,
                     style: TextStyle(
-                      color: black,
+                      //color: black,
                       fontSize: 20,
                     ),
                   ),

@@ -39,9 +39,10 @@ export 'core/services/Services.dart';
 
 export 'package:helphub/Shared/Pages/BaseView.dart';
 export 'package:helphub/Shared/Pages/WelcomeScreen.dart';
-export 'package:helphub/Shared/Widgets and Utility/Resources.dart';
-export 'package:helphub/Shared/Widgets and Utility/constants.dart';
-export 'package:helphub/Shared/Widgets and Utility/ImageCompress.dart';
+export 'package:helphub/Shared/Pages/Home.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/Resources.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/constants.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/ImageCompress.dart';
 
 
 
@@ -56,16 +57,16 @@ export 'package:helphub/Shared/Pages/login.dart';
 export 'package:flutter/material.dart';
 export 'package:intro_views_flutter/Models/page_view_model.dart';
 export 'package:intro_views_flutter/intro_views_flutter.dart';
-export 'package:helphub/Shared/Widgets%20and%20Utility/TopBar.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/TopBar.dart';
 
-export 'package:helphub/Shared/Widgets%20and%20Utility/Flutter%20Login/flutter_login.dart';
-export 'package:helphub/Shared/Widgets%20and%20Utility/Flutter%20Login/src/widgets/gradient_box.dart';
-export 'package:helphub/Shared/Widgets%20and%20Utility/Flutter%20Login/src/widgets/fade_in.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/Flutter_Login/flutter_login.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/Flutter_Login/src/widgets/gradient_box.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/Flutter_Login/src/widgets/fade_in.dart';
 export 'dart:convert';
 export 'package:firebase_auth/firebase_auth.dart';
 export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';
-export 'package:helphub/Shared/Widgets%20and%20Utility/ProfileFields.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/ProfileFields.dart';
 export 'package:helphub/core/enums/UserType.dart';
 export 'package:helphub/core/enums/ViewState.dart';
 export 'package:helphub/core/helpers/shared_preferences_helper.dart';
@@ -84,9 +85,8 @@ export 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
 export 'package:helphub/Shared/Pages/AllProjects.dart';
 export 'package:helphub/Shared/Pages/MyProject.dart';
 
-
-export 'package:helphub/Shared/Widgets%20and%20Utility/chatback.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/constants.dart';
 export 'package:image_picker/image_picker.dart';
-export 'package:helphub/Shared/Widgets%20and%20Utility/colors.dart';
+export 'package:helphub/Shared/Widgets_and_Utility/colors.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:firebase_storage/firebase_storage.dart';

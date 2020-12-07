@@ -1,6 +1,7 @@
 import 'dart:ui';
+import 'package:helphub/Shared/Pages/ForgotPassword.dart';
 import 'package:helphub/imports.dart';
-import 'package:get/get.dart';
+import 'package:helphub/Shared/Widgets_and_Utility/MyTheme.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -14,7 +15,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   bool isRegistered = false;
   ButtonType buttonType = ButtonType.LOGIN;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  ThemeClass themeClass = locator<ThemeClass>();
   @override
   void initState() {
     super.initState();
@@ -31,12 +32,12 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
       UserType userType,
       ButtonType buttonType) async {
     if (email == null || password == null) {
-      _scaffoldKey.currentState.showSnackBar(
-          ksnackBar(context, 'Please enter details properly', false));
+      _scaffoldKey.currentState
+          .showSnackBar(ksnackBar(context, 'Please enter details properly'));
     } else {
       if (email.trim().isEmpty || password.trim().isEmpty) {
-        _scaffoldKey.currentState.showSnackBar(
-            ksnackBar(context, 'Please enter details properly', false));
+        _scaffoldKey.currentState
+            .showSnackBar(ksnackBar(context, 'Please enter details properly'));
       } else {
         bool response = await model.checkUserDetails(
           email: email,
@@ -56,11 +57,13 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                 context, StudentProfile.id, (r) => false);
           }
         } else {
-          _scaffoldKey.currentState.showSnackBar(
-              ksnackBar(context, 'something went wrong...', false));
+          _scaffoldKey.currentState
+              .showSnackBar(ksnackBar(context, 'something went wrong...'));
         }
-        _scaffoldKey.currentState.showSnackBar(
-            ksnackBar(context, model.currentLoggingStatus, false));
+        _scaffoldKey.currentState.showSnackBar(ksnackBar(
+          context,
+          model.currentLoggingStatus,
+        ));
       }
     }
   }
@@ -68,6 +71,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   ScrollController controller;
   @override
   Widget build(BuildContext context) {
+    MyTheme myTheme = Provider.of<MyTheme>(context);
+    IconData themeIcon =
+        myTheme == MyTheme.Light ? Icons.nightlight_round : Icons.wb_sunny;
     var media = MediaQuery.of(context);
     Size size = media.size;
     double bottom = media.viewInsets.bottom;
@@ -86,7 +92,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
               LayoutBuilder(builder: (BuildContext context, BoxConstraints c) {
             return SingleChildScrollView(
               controller: controller,
-              physics: BouncingScrollPhysics(),
               child: Padding(
                 padding: EdgeInsets.only(
                     bottom: bottom == 0 ? bottom : bottom - heigth / 4.8),
@@ -111,24 +116,24 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 messages: LoginMessages(
                                     recoverPasswordDescription: ""),
                                 theme: LoginTheme(
-                                    accentColor: mainColor,
-                                    
-                                    buttonStyle: TextStyle(
-                                        color: Get.isDarkMode
-                                            ? Get.theme.accentColor
-                                            : Colors.white),
-                                    buttonTheme: LoginButtonTheme(
-                                      backgroundColor: Get.isDarkMode
-                                          ? Colors.white
-                                          : Get.theme.accentColor,
-                                    ),
-                                    cardTheme: CardTheme(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(22)),
-                                        elevation: 10),
-
-                                    titleStyle: TextStyle()),
+                                  accentColor: mainColor,
+                                  buttonStyle: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Theme.of(context).accentColor
+                                          : Colors.white),
+                                  buttonTheme: LoginButtonTheme(
+                                      backgroundColor:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Theme.of(context).accentColor),
+                                  cardTheme: CardTheme(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(22)),
+                                      elevation: 10),
+                                ),
                                 onSignup: (data) async {
                                   await loginRegisterBtnTap(
                                       model,
@@ -171,13 +176,25 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 messages: LoginMessages(
                                     recoverPasswordDescription: ""),
                                 theme: LoginTheme(
-                                    accentColor: mainColor,
-                                    cardTheme: CardTheme(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(22)),
-                                        elevation: 10),
-                                    titleStyle: TextStyle()),
+                                  accentColor: mainColor,
+                                  buttonStyle: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Theme.of(context).accentColor
+                                          : Colors.white),
+                                  buttonTheme: LoginButtonTheme(
+                                    backgroundColor:
+                                        Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Theme.of(context).accentColor,
+                                  ),
+                                  cardTheme: CardTheme(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(22)),
+                                      elevation: 10),
+                                ),
                                 onSignup: (data) async {
                                   await loginRegisterBtnTap(
                                       model,
@@ -214,13 +231,32 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                               ),
                             ),
                       Positioned(
+                        top: 45,
+                        left: 5,
+                        child: AnimatedSwitcher(
+                          key: ValueKey(themeIcon),
+                          duration: Duration(milliseconds: 500),
+                          child: Hero(
+                            tag: 'ThemeButton',
+                            child: IconButton(
+                              icon: Icon(themeIcon),
+                              onPressed: () {
+                                myTheme == MyTheme.Dark
+                                    ? themeClass.changeTheme(MyTheme.Light)
+                                    : themeClass.changeTheme(MyTheme.Dark);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
                           top: 80,
                           left: MediaQuery.of(context).size.width / 10,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Hero(
-                                  tag: 'title',
+                                  tag: 'hello',
                                   child: Card(
                                     elevation: 15,
                                     shape: RoundedRectangleBorder(
@@ -235,6 +271,11 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                       child: Text(
                                         'Hello!',
                                         style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? Colors.white
+                                                    : Colors.black,
                                             fontSize: portrait
                                                 ? (heigth / 15) - 10
                                                 : (heigth / 8) - 13,
@@ -298,6 +339,14 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
               ),
             );
           }),
+          floatingActionButton: model.state == ViewState.Idle
+              ? FloatingActionButton.extended(
+                  heroTag: "title",
+                  onPressed: () {
+                    kopenPage(context, ForgotPasswordPage());
+                  },
+                  label: Text("Need Help?"))
+              : null,
         );
       },
     );

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:get/get.dart';
 import 'package:helphub/Shared/Pages/About.dart';
+import 'package:helphub/Shared/Widgets_and_Utility/MyTheme.dart';
 import 'package:helphub/imports.dart';
 import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
 import 'package:http/http.dart' as http;
@@ -89,7 +89,6 @@ Future<String> cropImage(String path) async {
           lockAspectRatio: false,
           toolbarTitle: "Crop Image",
           toolbarColor: mainColor,
-          activeWidgetColor: mainColor,
           activeControlsWidgetColor: mainColor,
           initAspectRatio: CropAspectRatioPreset.original,
           toolbarWidgetColor: white));
@@ -103,21 +102,13 @@ ShapeBorder bordershape(double radius) {
   );
 }
 
-SnackBar ksnackBar(BuildContext context, String message, bool actionenabled,
-    {Function onPressed}) {
+SnackBar ksnackBar(BuildContext context, String message, {Function onPressed}) {
   return SnackBar(
     duration: Duration(seconds: 2),
     content: Text(
       message,
       textAlign: TextAlign.center,
     ),
-    action: actionenabled
-        ? SnackBarAction(
-            label: "Open",
-            onPressed: () {
-              onPressed();
-            })
-        : null,
     backgroundColor: Theme.of(context).primaryColor,
   );
 }
@@ -166,9 +157,12 @@ Widget profileFlatButton(Size size,
   );
 }
 
-Card drawerProfileImageCard(Size size,
+Card drawerProfileImageCard(Size size, BuildContext context,
     {ImageProvider image, double elevation, double radius}) {
   return Card(
+    shadowColor: Theme.of(context).brightness == Brightness.dark
+        ? Colors.white54
+        : Colors.black,
     elevation: elevation ?? 3,
     shape: bordershape(radius ?? 22),
     margin: EdgeInsets.all(0),
@@ -195,11 +189,15 @@ TextStyle detailvalueStyle(context) {
       fontWeight: FontWeight.w300);
 }
 
-Widget drawerProfileInfo(Size size,
+Widget drawerProfileInfo(Size size, BuildContext context,
     {List<Widget> children, double elevation, double radius}) {
   return Card(
-                      shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
-
+    color: Theme.of(context).brightness == Brightness.dark
+        ? Colors.black
+        : Colors.white,
+    shadowColor: Theme.of(context).brightness == Brightness.dark
+        ? Colors.white38
+        : Colors.black,
     margin: EdgeInsets.only(left: 0),
     shape: bordershape(radius ?? 15),
     elevation: elevation ?? 3,
@@ -214,10 +212,15 @@ Widget drawerProfileInfo(Size size,
   );
 }
 
-Card drawerNameCard(Size size,
+Card drawerNameCard(Size size, BuildContext context,
     {String user, String name, double elevation, double radius}) {
   return Card(
-    shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
+    color: Theme.of(context).brightness == Brightness.dark
+        ? Colors.black
+        : Colors.white,
+    shadowColor: Theme.of(context).brightness == Brightness.dark
+        ? Colors.white38
+        : Colors.black,
     margin: EdgeInsets.only(left: 0),
     shape: bordershape(radius ?? 15),
     elevation: elevation ?? 3,
@@ -254,11 +257,15 @@ LayoutBuilder buildMenu({
   @required Function animateIcon,
   @required double elevation,
   @required double radius,
+  @required Function(MyTheme) changeTheme,
   @required List<Widget> infoChildren,
 }) {
   LoginPageModel model = locator<LoginPageModel>();
   return LayoutBuilder(builder: (context, snapshot) {
+    //MyTheme myTheme = Provider.of(context);
     Size size = MediaQuery.of(context).size;
+    bool darkMode = Theme.of(context).brightness == Brightness.dark;
+    IconData myIcon = darkMode ? Icons.wb_sunny : Icons.nightlight_round;
     return SafeArea(
       child: GestureDetector(
         onHorizontalDragEnd: (details) {
@@ -274,7 +281,9 @@ LayoutBuilder buildMenu({
         child: Container(
             height: double.maxFinite,
             width: double.maxFinite,
-            color: Get.isDarkMode ? Colors.black : Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : Colors.white,
             child: Align(
               alignment: Alignment.topLeft,
               child: Column(
@@ -282,8 +291,22 @@ LayoutBuilder buildMenu({
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Spacer(),
+                    AnimatedSwitcher(
+                      key: ValueKey(myIcon),
+                      duration: Duration(milliseconds: 500),
+                      child: IconButton(
+                        icon: Icon(myIcon),
+                        onPressed: () {
+                          darkMode
+                              ? changeTheme(MyTheme.Light)
+                              : changeTheme(MyTheme.Dark);
+                        },
+                      ),
+                    ),
+                    Spacer(),
                     drawerNameCard(
                       size,
+                      context,
                       elevation: elevation,
                       user: user,
                       name: name,
@@ -291,14 +314,14 @@ LayoutBuilder buildMenu({
                     Spacer(),
                     imageBuilder(
                       imageUrl,
-                      child: drawerProfileImageCard(size,
+                      child: drawerProfileImageCard(size, context,
                           image: setImage(
                               imageUrl,
                               user == 'Student'
                                   ? ConstassetsString.student
                                   : ConstassetsString.developer),
                           elevation: elevation),
-                      placeHolder: drawerProfileImageCard(size,
+                      placeHolder: drawerProfileImageCard(size, context,
                           image: setImage(
                               null,
                               user == 'Student'
@@ -307,11 +330,17 @@ LayoutBuilder buildMenu({
                           elevation: elevation),
                     ),
                     Spacer(),
-                    drawerProfileInfo(size,
+                    drawerProfileInfo(size, context,
                         children: infoChildren, elevation: elevation),
                     Spacer(),
                     Card(
-                      shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black
+                          : Colors.white,
+                      shadowColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white38
+                              : Colors.black,
                       elevation: elevation,
                       margin: EdgeInsets.all(0),
                       child: profileFlatButton(size,
@@ -325,7 +354,13 @@ LayoutBuilder buildMenu({
                     ),
                     Spacer(),
                     Card(
-                      shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black
+                          : Colors.white,
+                      shadowColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white38
+                              : Colors.black,
                       shape: bordershape(15),
                       elevation: elevation ?? 5,
                       margin: EdgeInsets.all(0),
@@ -341,7 +376,8 @@ LayoutBuilder buildMenu({
                                 onPressed: () {
                               animateIcon();
                               SimpleHiddenDrawerProvider.of(context).toggle();
-                              Navigator.of(context).pushNamed(WelcomeScreen.id);
+                              Navigator.of(context)
+                                  .pushReplacementNamed(WelcomeScreen.id);
                               model.logoutUser();
                             }, text: "Logout"),
                             Divider(color: black, height: 3),
@@ -363,28 +399,41 @@ LayoutBuilder buildMenu({
                         ),
                       ),
                     ),
-                    Spacer(),
+                    /* Spacer(),
                     Card(
-                      shadowColor: Get.isDarkMode ? Colors.white : Colors.black,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black
+                          : Colors.white,
+                      shadowColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white38
+                              : Colors.black,
                       elevation: elevation,
                       margin: EdgeInsets.all(0),
                       child: profileFlatButton(size,
                           radius: BorderRadius.horizontal(
                               right: Radius.circular(radius ?? 15)),
                           onPressed: () {
-                        Get.changeThemeMode(ThemeMode.light);
+                        changeTheme(MyTheme.Light);
                       }, text: 'Light Mode'),
                     ),
                     Card(
                       elevation: elevation,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black
+                          : Colors.white,
+                      shadowColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white38
+                              : Colors.black,
                       margin: EdgeInsets.all(0),
                       child: profileFlatButton(size,
                           radius: BorderRadius.horizontal(
                               right: Radius.circular(radius ?? 15)),
                           onPressed: () {
-                        Get.changeThemeMode(ThemeMode.dark);
+                        changeTheme(MyTheme.Dark);
                       }, text: 'Dark Mode'),
-                    ),
+                    ), */
                     Spacer(),
                   ]),
             )),
@@ -415,7 +464,7 @@ FutureBuilder<Object> futurePageBuilder<Object>(
     {@required Widget Function(Object snapshotData) child}) {
   return FutureBuilder(
       future:
-          object == null ? future : Future.delayed(Duration(milliseconds: 300)),
+          object == null ? future : Future.delayed(Duration(milliseconds: 10)),
       builder: (context, snapshot) {
         if ((snapshot != null && snapshot.data != null) || object != null) {
           return child(snapshot.data ?? object);
@@ -425,21 +474,36 @@ FutureBuilder<Object> futurePageBuilder<Object>(
       });
 }
 
-BottomNavyBarItem bottomNavyBarItem({Icon icon, String text}) {
+BottomNavyBarItem bottomNavyBarItem(
+  BuildContext context, {
+  Icon icon,
+  String text,
+}) {
   return BottomNavyBarItem(
       activeColor: mainColor,
       textAlign: TextAlign.center,
-      inactiveColor: black,
+      inactiveColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.white
+          : Colors.black,
       icon: icon,
       title: Text(text));
 }
 
 ImageProvider<dynamic> setImage(String url, String defaultImage) {
-  return url != "default" && url != null && url != ''
-      ? NetworkImage(
-          url,
-        )
-      : AssetImage(defaultImage);
+  if (url != "default" && url != null && url != "") {
+    return NetworkImage(
+      url,
+    );
+  } else {
+    return AssetImage(defaultImage);
+  }
+}
+
+Widget toast(String message) {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+    child: Text(message),
+  );
 }
 
 /* ImageProvider<dynamic> setImage(String url, String defaultImage) {

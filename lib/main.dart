@@ -1,8 +1,10 @@
-import 'package:get/get.dart';
-import 'package:helphub/Shared/Pages/About.dart';
 
+import 'package:helphub/Shared/Pages/About.dart';
 import 'Students/UI/StudentHome.dart';
 import 'imports.dart';
+import 'package:helphub/Shared/Widgets_and_Utility/MyTheme.dart';
+import 'package:flutter_animated_theme/animated_theme_app.dart';
+import 'package:flutter_animated_theme/animation_type.dart';
 
 void main() {
   timeDilation = 2;
@@ -13,11 +15,59 @@ void main() {
   );
 }
 
+final darkTheme = ThemeData(
+    accentColor: mainColor,
+    accentColorBrightness: Brightness.dark,
+    brightness: Brightness.dark,
+    scaffoldBackgroundColor: Colors.black,
+    backgroundColor: Colors.black);
+final lightTheme = ThemeData(
+  accentColor: mainColor,
+  pageTransitionsTheme: PageTransitionsTheme(
+    builders: {TargetPlatform.android: CupertinoPageTransitionsBuilder()},
+  ),
+);
+
+ThemeData getTheme(MyTheme theme) {
+  switch (theme) {
+    case MyTheme.Light:
+      return lightTheme;
+      break;
+    case MyTheme.Dark:
+      return darkTheme;
+      break;
+    case MyTheme.System:
+      return lightTheme;
+      break;
+    default:
+      return darkTheme;
+  }
+}
+
+ThemeMode getThemeMode(MyTheme theme) {
+  switch (theme) {
+    case MyTheme.Light:
+      return ThemeMode.light;
+      break;
+    case MyTheme.Dark:
+      return ThemeMode.dark;
+      break;
+    case MyTheme.System:
+      return ThemeMode.system;
+      break;
+    default:
+      return ThemeMode.system;
+  }
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        StreamProvider<MyTheme>.value(
+            initialData: MyTheme.System,
+            value: locator<ThemeClass>().themeController.stream),
         StreamProvider<Developer>.value(
             initialData: Developer(),
             value: locator<DeveloperProfileServices>()
@@ -48,20 +98,13 @@ class MyApp extends StatelessWidget {
 class HelpHub extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    MyTheme myTheme = Provider.of<MyTheme>(context);
+    return AnimatedThemeApp(
+      animationType: AnimationType.CIRCULAR_ANIMATED_THEME,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      animationDuration: Duration(milliseconds: 750),
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.system,
-      darkTheme: ThemeData(
-          accentColor: mainColor,
-          accentColorBrightness: Brightness.dark,
-          brightness: Brightness.dark,
-          scaffoldBackgroundColor: Colors.black,
-          backgroundColor: Colors.black),
-      theme: ThemeData(
-          accentColor: mainColor,
-          pageTransitionsTheme: PageTransitionsTheme(builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder()
-          })),
       title: 'Help Hub',
       routes: {
         StudentPage.id: (context) => StudentPage(),
@@ -71,6 +114,7 @@ class HelpHub extends StatelessWidget {
         WelcomeScreen.id: (context) => WelcomeScreen(),
         AboutPage.id: (context) => AboutPage()
       },
+      themeMode: getThemeMode(myTheme),
       home: getHome(context),
     );
   }

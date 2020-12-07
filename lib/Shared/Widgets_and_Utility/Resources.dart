@@ -27,7 +27,7 @@ class ConstString {
   static const password_hint = 'min length is 7';
 
 //Forgot Password
-  static const forgot_password = 'Reset';
+  static const help = 'Help';
   static const enter_registered_email =
       'Enter Registered mail-id to recover your account';
   static const send_recovery_mail = 'Send recovery mail';
@@ -185,5 +185,5 @@ class ConstassetsString {
   static const welcome3 = 'assets/welcome3.jpg';
   static const developer = 'assets/defaultdeveloper.jpg';
   static const student = 'assets/defaultstudent.jpg';
-
+  static const icon2 = 'assets/icon.png';
 }

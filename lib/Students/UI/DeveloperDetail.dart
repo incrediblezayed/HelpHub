@@ -1,6 +1,6 @@
 import 'package:helphub/imports.dart';
 import 'dart:math' as math;
-import 'package:get/get.dart';
+
 import 'package:http/http.dart' as http;
 
 class DeveloperDetail extends StatefulWidget {
@@ -43,8 +43,9 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
       delegate: _SliverAppBarDelegate(
         minHeight: MediaQuery.of(context).size.height / 9,
         maxHeight: MediaQuery.of(context).size.height / 6,
-        child: Container(
-            color: Get.isDarkMode ? Colors.black : Colors.white,
+        child: Container( color: Theme.of(context).brightness == Brightness.dark
+?Colors.black:Colors.white,
+
             child: Column(
               children: <Widget>[
                 Spacer(),
@@ -95,7 +96,6 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
   Widget buildPage({StudentHomeModel model}) {
     Student student = Provider.of<Student>(context);
     return Scaffold(
-      
       appBar: Navigator.canPop(context) == true
           ? TopBar(
               buttonHeroTag: developer.qualification,
@@ -116,7 +116,7 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
                       future: http.get(developer.photoUrl),
                       builder: (context, snapshot) {
                         if (snapshot != null && snapshot.data != null) {
-                          if (snapshot.data.statusCode == 200) {
+                          if (snapshot.data.statusCode==200) {
                             return Container(
                               width: MediaQuery.of(context).size.width,
                               decoration: BoxDecoration(
@@ -147,6 +147,25 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
                         }
                       }),
 
+                  /* imageBuilder(
+                        developer.photoUrl,
+                        placeHolder: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: setImage(null,
+                                      ConstassetsString.developer))),
+                        ),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: setImage(developer.photoUrl,
+                                      ConstassetsString.developer))),
+                        ),
+                      ), */
                 )
               ],
             ),
@@ -155,86 +174,86 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
           SliverFixedExtentList(
               itemExtent: MediaQuery.of(context).size.height / 2,
               delegate: SliverChildListDelegate([
-                Container(
-      color: Get.isDarkMode ? Colors.black : Colors.white,
-
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        left: MediaQuery.of(context).size.width / 16,
-                        right: MediaQuery.of(context).size.width / 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          "Developer Information",
-                          style: TextStyle(
-                              fontSize:
-                                  MediaQuery.of(context).size.width / 22,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 30),
-                          child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      "Current Project:",
-                                      style: detailtitleStyle(context),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text("Language:",
-                                        style: detailtitleStyle(context)),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text("Experience:",
-                                        style: detailtitleStyle(context)),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text("Qualification:",
-                                        style: detailtitleStyle(context)),
-                                    SizedBox(height: 5),
-                                    Text("Location:",
-                                        style: detailtitleStyle(context))
-                                  ],
-                                ),
-                                Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      developer.currentProject ?? "",
-                                      style: detailvalueStyle(context),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(developer.language ?? "",
-                                        style: detailvalueStyle(context)),
-                                    SizedBox(height: 5),
-                                    Text(developer.experience,
-                                        style: detailvalueStyle(context)),
-                                    SizedBox(height: 5),
-                                    Text(developer.qualification,
-                                        style: detailvalueStyle(context)),
-                                    SizedBox(height: 5),
-                                    Text(
-                                        '${developer.city}, ${developer.country}',
-                                        style: detailvalueStyle(context)),
-                                  ],
-                                ),
-                              ]),
-                        ),
-                      ],
-                    ),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width / 16,
+                      right: MediaQuery.of(context).size.width / 10),
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "Developer Information",
+                            style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.width / 22,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 30),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        "Current Project:",
+                                        style: detailtitleStyle(context),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text("Language:",
+                                          style: detailtitleStyle(context)),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text("Experience:",
+                                          style: detailtitleStyle(context)),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text("Qualification:",
+                                          style: detailtitleStyle(context)),
+                                      SizedBox(height: 5),
+                                      Text("Location:",
+                                          style: detailtitleStyle(context))
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        developer.currentProject ?? "",
+                                        style: detailvalueStyle(context),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(developer.language ?? "",
+                                          style: detailvalueStyle(context)),
+                                      SizedBox(height: 5),
+                                      Text(developer.experience,
+                                          style: detailvalueStyle(context)),
+                                      SizedBox(height: 5),
+                                      Text(developer.qualification,
+                                          style: detailvalueStyle(context)),
+                                      SizedBox(height: 5),
+                                      Text(
+                                          '${developer.city}, ${developer.country}',
+                                          style: detailvalueStyle(context)),
+                                    ],
+                                  ),
+                                ]),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ]))

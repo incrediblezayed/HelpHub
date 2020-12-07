@@ -1,9 +1,9 @@
 import 'package:community_material_icon/community_material_icon.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:helphub/Shared/Widgets_and_Utility/MyTheme.dart';
 import 'package:helphub/imports.dart';
 import 'package:http/http.dart';
-import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DeveloperHome extends StatefulWidget {
@@ -102,7 +102,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
   int selectedIndex = 0;
   DocumentReference currentProjectReference;
   DocumentSnapshot snapShot;
-
+  ThemeClass themeClass = locator<ThemeClass>();
   AnimationController _animationController;
   bool open = false;
 
@@ -110,15 +110,17 @@ class _DeveloperHomeState extends State<DeveloperHome>
     Map notification = message['notification'];
     Map data = message['data'];
     Student student;
-    if(enrolledstudents!=null){enrolledstudents.forEach((f) {
-      if (f.email == data['senderId']) student = f;
-    }); }
+    if (enrolledstudents != null) {
+      enrolledstudents.forEach((f) {
+        if (f.email == data['senderId']) student = f;
+      });
+    }
     Flushbar(
       title: notification['title'],
       messageText: data['messageType'] == 'photo'
-            ? Text("New Message: Photo", style: TextStyle(color: white))
-            : Text("New message: ${notification['body']}",
-                style: TextStyle(color: white)),
+          ? Text("New Message: Photo", style: TextStyle(color: white))
+          : Text("New message: ${notification['body']}",
+              style: TextStyle(color: white)),
       backgroundColor: mainColor.withOpacity(0.6),
       barBlur: 50,
       flushbarPosition: FlushbarPosition.TOP,
@@ -176,6 +178,8 @@ class _DeveloperHomeState extends State<DeveloperHome>
   }
 
   void registerNotification() async {
+    FlutterToast flutterToast;
+
     String currentUser = await sharedPreferencesHelper.getDevelopersId();
 
     firebaseMessaging.requestNotificationPermissions();
@@ -208,7 +212,10 @@ class _DeveloperHomeState extends State<DeveloperHome>
           .updateData({'pushToken': token});
       sharedPreferencesHelper.setSenderToken(token);
     }).catchError((err) {
-      Fluttertoast.showToast(msg: err.message.toString());
+      flutterToast.showToast(
+          child: toast(err.message.toString()),
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: 1));
     });
   }
 
@@ -258,6 +265,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
   @override
   Widget build(BuildContext context) {
     Developer developer = Provider.of<Developer>(context);
+    MyTheme myTheme = Provider.of<MyTheme>(context);
     var login = locator<LoginPageModel>();
     return BaseView<DeveloperHomeModel>(
         onModelReady: (model) => model.getAll(),
@@ -285,13 +293,15 @@ class _DeveloperHomeState extends State<DeveloperHome>
             a++;
           }
           return Scaffold(
-            //backgroundColor: Colors.white,
             body: SimpleHiddenDrawer(
               slidePercent: 65,
-              enableCornerAnimin: true,
               isDraggable: true,
               verticalScalePercent: 99,
               menu: buildMenu(
+                changeTheme: (v){
+                    themeClass.changeTheme(v);
+                  
+                },
                   user: 'Developer',
                   name: developer.displayName,
                   imageUrl: developer.photoUrl,
@@ -317,7 +327,6 @@ class _DeveloperHomeState extends State<DeveloperHome>
               screenSelectedBuilder: (position, cont) {
                 return Scaffold(
                   key: scaffoldKey,
-                 // backgroundColor: Colors.white,
                   appBar: TopBar(
                     onTitleTapped: () {
                       login.logoutUser();
@@ -384,24 +393,25 @@ class _DeveloperHomeState extends State<DeveloperHome>
                 iconSize: 30,
                 selectedIndex: selectedIndex,
                 onItemSelected: (index) => onItemTapped(index),
-                // },
                 itemCornerRadius: 15,
                 showElevation: false,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 animationDuration: Duration(milliseconds: 150),
                 curve: Curves.bounceInOut,
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+ ? Colors.black : Colors.white,
                 items: [
-                  bottomNavyBarItem(
+                  bottomNavyBarItem(context,
                       icon: Icon(Icons.supervisor_account), text: "Enrolled"),
-                  bottomNavyBarItem(
+                  bottomNavyBarItem(context,
                       icon: Icon(Icons.recent_actors), text: "Requests"),
-                  bottomNavyBarItem(
+                  bottomNavyBarItem(context,
                       icon: Icon(Icons.personal_video),
                       text: "Current Project"),
-                  bottomNavyBarItem(
+                  bottomNavyBarItem(context,
                       icon: Icon(CommunityMaterialIcons.chat_processing),
                       text: "Chats"),
-                  bottomNavyBarItem(
+                  bottomNavyBarItem(context,
                       icon: Icon(Icons.pie_chart_outlined),
                       text: "All Projects"),
                 ]),
@@ -501,6 +511,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
   }
 
   Widget buildAllProject(List<Project> projects) {
+    
     return AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
         transitionBuilder: (Widget child, Animation<double> animation) {
@@ -609,6 +620,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                 
                   Text(student.displayName),
                   Text(student.email),
                 ],
@@ -717,8 +729,6 @@ class _DeveloperHomeState extends State<DeveloperHome>
                       : 150,
                   width:
                       (orientation == Orientation.portrait) ? width - 50 : 350,
-                            color : Get.isDarkMode ? Colors.black : Colors.white,
-
                   margin: EdgeInsets.only(top: 10),
                   child: Stack(
                     children: <Widget>[
@@ -739,7 +749,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
                         child: CircleAvatar(
                             backgroundColor: Colors.blue[900],
                             radius: 70,
-                            child: imageBuilder(student.photoUrl,
+                            child: student.photoUrl == null ? imageBuilder(student.photoUrl,
                                 child: CircleAvatar(
                                   backgroundImage: setImage(student.photoUrl,
                                       ConstassetsString.student),
@@ -748,10 +758,16 @@ class _DeveloperHomeState extends State<DeveloperHome>
                                 ),
                                 placeHolder: CircleAvatar(
                                   backgroundImage:
-                                      setImage(null, ConstassetsString.student),
+                                      setImage(student.photoUrl, ConstassetsString.student),
                                   backgroundColor: mainColor,
                                   radius: 68,
-                                ))),
+                                )): CircleAvatar(
+                                  backgroundImage: setImage(student.photoUrl,
+                                      ConstassetsString.student),
+                                  backgroundColor: mainColor,
+                                  radius: 68,
+                                ),
+                                ),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 15, left: 150),

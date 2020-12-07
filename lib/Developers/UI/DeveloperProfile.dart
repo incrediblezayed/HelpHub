@@ -42,8 +42,11 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
         _experience.isEmpty ||
         _city.isEmpty ||
         _country.isEmpty) {
-      _scaffoldKey.currentState.showSnackBar(ksnackBar(
-          context, 'You Need to fill all the details and a profile Photo',false), );
+      _scaffoldKey.currentState.showSnackBar
+      (ksnackBar(
+          context,
+          'You Need to fill all the details and a profile Photo'),
+          );
     } else {
       if (model.state == ViewState.Idle) {
         developer = Developer(

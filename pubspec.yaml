@@ -17,26 +17,28 @@ dependencies:
   dio: null
   division: null
   easy_listview: null
+  expandable: null
   firebase_auth: null
   firebase_core: null
   firebase_messaging: null
   firebase_storage: null
   flushbar: null
+  flutter_animated_theme: ^0.9.0
+  flutter_email_sender: null
+  flutter_launcher_icons: ^0.7.4
   flutter_local_notifications: null
   flutter_login: null
   flutter_spinkit: null
   flutter_swiper: null
   fluttertoast: null
   font_awesome_flutter: null
-  get: ^3.22.2
   get_it: null
   hidden_drawer_menu: null
   http: null
-  image: ^2.1.19
   image_cropper: null
   image_downloader: null
   image_gallery_saver: null
-  image_picker: ^0.6.7+14
+  image_picker: null
   intl: null
   intro_views_flutter: null
   package_info: null
@@ -47,14 +49,15 @@ dependencies:
   pull_to_refresh: null
   shared_preferences: null
   sortedmap: null
+  url_launcher: null
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-# The following section is specific to Flutter.
+flutter_icons:
+  android: true
+  image_path: "assets/icon.png"
 flutter:
 
   # The following line ensures that the Material Icons font is
@@ -69,11 +72,9 @@ flutter:
     - family: Customicons
       fonts:
         - asset: assets/fonts/Customicons.ttf
-
     - family: MyFlutterApp
       fonts:
         - asset: assets/fonts/MyFlutterApp.ttf
-
     - family: Nunito
       fonts:
         - asset: assets/fonts/Nunito-Light.ttf

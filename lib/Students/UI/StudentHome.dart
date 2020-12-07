@@ -1,11 +1,12 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:helphub/Shared/Widgets_and_Utility/MyTheme.dart';
 import 'package:helphub/Students/UI/DeveloperDetail.dart';
 import 'package:helphub/imports.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:get/get.dart';
+
 import 'DevelopersCard.dart';
 
 class StudentPage extends StatefulWidget {
@@ -129,6 +130,7 @@ class _StudentPageState extends State<StudentPage>
   }
 
   void registerNotification() async {
+    FlutterToast flutterToast;
     String currentUser = await sharedPreferencesHelper.getStudentsEmail();
     firebaseMessaging.requestNotificationPermissions();
     firebaseMessaging.configure(
@@ -164,7 +166,10 @@ class _StudentPageState extends State<StudentPage>
           .updateData({'pushToken': token});
       await sharedPreferencesHelper.setSenderToken(token);
     }).catchError((err) {
-      Fluttertoast.showToast(msg: err.message.toString());
+      flutterToast.showToast(
+          child: toast(err.message.toString()),
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: 1));
     });
   }
 
@@ -177,6 +182,7 @@ class _StudentPageState extends State<StudentPage>
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
+  ThemeClass themeClass = locator<ThemeClass>();
   void showSnackbar(Map message) {
     Map notification = message['notification'];
     Map data = message['data'];
@@ -267,19 +273,18 @@ class _StudentPageState extends State<StudentPage>
 
   @override
   Widget build(BuildContext context) {
+    MyTheme myTheme = Provider.of<MyTheme>(context);
     return BaseView<StudentHomeModel>(
       onModelReady: (model) => model.getAll(),
       builder: (context, model, child) {
         if (student == null) {
-          if (model.student != null)
-           { student = model.student;
+          if (model.student != null) {
+            student = model.student;
             a++;
-        }
-          else {
+          } else {
             model.getStudentProfile();
             student = model.student;
             a++;
-
           }
         } else {
           if (student.enrolled) {
@@ -294,15 +299,13 @@ class _StudentPageState extends State<StudentPage>
                   developer = model.enrolleddeveloper;
                   project = model.project;
                   projects = model.projects;
-            a++;
-
+                  a++;
                 }
               } else {
                 developer = model.enrolleddeveloper;
                 project = model.project;
                 projects = model.projects;
-            a++;
-
+                a++;
               }
             }
           } else {
@@ -312,37 +315,54 @@ class _StudentPageState extends State<StudentPage>
               if (model.state == ViewState.Idle) {
                 developers = model.developers;
                 projects = model.projects;
-            a++;
-
+                a++;
               }
             } else {
               developers = model.developers;
               projects = model.projects;
-            a++;
-
+              a++;
             }
           }
         }
-
+        /*  if (model.state == ViewState.Idle) {
+          if (a == 0) {
+            //  model.getStudentProfile();
+            student = model.student;
+            //  model.getEnrolledDeveloperProfile();
+            developer = model.enrolleddeveloper;
+            //   model.getProjects();
+            projects = model.projects;
+            //  model.getDevelopers();
+            developers = model.developers;
+            //   model.getStudentProject();
+            project = model.project;
+            a++;
+          }
+        } */
         return Scaffold(
             backgroundColor: Colors.white,
-            body: futurePageBuilder<Student>(student, model.getStudentProfile(),
+            body: futurePageBuilder<Student>(
+                student, student == null ? model.getStudentProfile() : null,
                 child: (studentSnap) {
               if (studentSnap != null)
                 return SimpleHiddenDrawer(
                     slidePercent: 65,
-                    enableCornerAnimin: true,
                     isDraggable: true,
                     verticalScalePercent: 99,
                     
                     menu: buildMenu(
+                        changeTheme: (v) {
+                          myTheme = v;
+                         themeClass.changeTheme(myTheme);
+                        },
                         elevation: 5,
                         radius: 15,
                         user: 'Student',
                         name: student.displayName ?? studentSnap.displayName,
-                        imageUrl: student.photoUrl,
+                        imageUrl: studentSnap.photoUrl ?? student.photoUrl,
                         profileRoute: StudentProfile.id,
                         animateIcon: handleOnPressed,
+                      
                         infoChildren: [
                           SizedBox(height: 7),
                           Text(student.email ?? '', style: infoStyle()),
@@ -359,8 +379,6 @@ class _StudentPageState extends State<StudentPage>
                         ]),
                     screenSelectedBuilder: (position, bloc) {
                       return Scaffold(
-      backgroundColor: Get.isDarkMode ? Colors.black : Colors.white,
-
                         key: _scaffoldKey,
                         appBar: TopBar(
                             title: student.enrolled == true
@@ -415,11 +433,17 @@ class _StudentPageState extends State<StudentPage>
                 ? BottomNavyBar(
                     itemCornerRadius: 15,
                     showElevation: false,
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.black
+                            : Colors.white,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     animationDuration: Duration(milliseconds: 150),
                     curve: Curves.bounceInOut,
                     selectedIndex: _selectedIndex,
-                    items: student.enrolled == false ? notEnrolled : enrolled,
+                    items: student.enrolled == false
+                        ? notEnrolled(context)
+                        : enrolled(context),
                     onItemSelected: (index) => _onItemTapped(index))
                 : null);
       },
@@ -477,6 +501,7 @@ class _StudentPageState extends State<StudentPage>
 
   List<Widget> notEnrolledbody(Student student, StudentHomeModel model,
       List<Developer> developers, List<Project> projects) {
+    Size size = MediaQuery.of(context).size;
     return [
       Container(
         child: Column(
@@ -485,25 +510,24 @@ class _StudentPageState extends State<StudentPage>
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             SizedBox(
-              height: 80,
+              height: size.height / 13,
             ),
             Padding(
-              padding:
-                  EdgeInsets.only(left: MediaQuery.of(context).size.width / 10),
+              padding: EdgeInsets.only(left: size.width / 10),
               child: Text(
                 "Hello, ${student.displayName}",
                 style: TextStyle(fontSize: 28),
               ),
             ),
             SizedBox(
-              height: 10,
+              height: size.height / 70,
             ),
             Padding(
               padding: EdgeInsets.only(
-                left: MediaQuery.of(context).size.width / 10,
+                left: size.width / 10,
               ),
               child: Text(
-                  '''Looks like you're not enrolled yet, choose any developer 
+                  '''Looks like you're not enrolled yet, choose any developer
 from below and get to work''',
                   style: TextStyle(fontSize: 17)),
             ),
@@ -520,8 +544,7 @@ from below and get to work''',
                       itemBuilder: (context, index) {
                         return Container(
                           padding: EdgeInsets.only(
-                              left: MediaQuery.of(context).size.width /
-                                  10 /* , right: 30 */),
+                              left: size.width / 10 /* , right: 30 */),
                           child: DevelopersCard(
                             student: student,
                             developer: developers[index],
@@ -550,17 +573,20 @@ from below and get to work''',
     ];
   }
 
-  List<BottomNavyBarItem> notEnrolled = [
-    bottomNavyBarItem(
-        icon: Icon(Icons.person_outline), text: 'Explore Developers'),
-    bottomNavyBarItem(icon: Icon(Icons.personal_video), text: 'Projects'),
-  ];
+  List<BottomNavyBarItem> notEnrolled(BuildContext context) => [
+        bottomNavyBarItem(context,
+            icon: Icon(Icons.person_outline), text: 'Explore Developers'),
+        bottomNavyBarItem(context,
+            icon: Icon(Icons.personal_video), text: 'Projects'),
+      ];
 
-  List<BottomNavyBarItem> enrolled = [
-    bottomNavyBarItem(icon: Icon(Icons.person_outline), text: 'Developer'),
-    bottomNavyBarItem(icon: Icon(Icons.personal_video), text: 'My Project'),
-    bottomNavyBarItem(icon: Icon(Icons.chat), text: 'Chat'),
-    bottomNavyBarItem(
-        icon: Icon(Icons.pie_chart_outlined), text: 'All Projects')
-  ];
+  List<BottomNavyBarItem> enrolled(BuildContext context) => [
+        bottomNavyBarItem(context,
+            icon: Icon(Icons.person_outline), text: 'Developer'),
+        bottomNavyBarItem(context,
+            icon: Icon(Icons.personal_video), text: 'My Project'),
+        bottomNavyBarItem(context, icon: Icon(Icons.chat), text: 'Chat'),
+        bottomNavyBarItem(context,
+            icon: Icon(Icons.pie_chart_outlined), text: 'All Projects')
+      ];
 }

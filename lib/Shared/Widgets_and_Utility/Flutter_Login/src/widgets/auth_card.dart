@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:helphub/Shared/Widgets%20and%20Utility/Flutter%20Login/src/providers/login_theme.dart';
-import 'package:helphub/Shared/Widgets%20and%20Utility/colors.dart';
+import 'package:helphub/Shared/Widgets_and_Utility/Flutter_Login/src/providers/login_theme.dart';
+import 'package:helphub/Shared/Widgets_and_Utility/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:transformer_page_view/transformer_page_view.dart';
@@ -14,7 +14,6 @@ import 'fade_in.dart';
 import 'animated_text_form_field.dart';
 import '../providers/auth.dart';
 import '../providers/login_messages.dart';
-import 'package:get/get.dart';
 import '../models/login_data.dart';
 import '../dart_helper.dart';
 import '../matrix.dart';
@@ -575,7 +574,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       child: FlatButton(
         child: Text(
           messages.forgotPasswordButton,
-          style: TextStyle(color: Get.theme.accentColor),
+          style: TextStyle(color: Theme.of(context).accentColor),
           textAlign: TextAlign.left,
         ),
         onPressed: buttonEnabled
@@ -615,7 +614,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
         onPressed: buttonEnabled ? _switchAuthMode : null,
         padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textColor: Get.theme.accentColor,
+        textColor: Theme.of(context).accentColor,
       ),
     );
   }
@@ -807,7 +806,7 @@ class _RecoverCardState extends State<_RecoverCard>
             : null,
         padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textColor: Get.theme.accentColor);
+        textColor: Theme.of(context).accentColor);
   }
 
   Widget _buildPasswordField(double width, LoginMessages messages, Auth auth) {

@@ -1,5 +1,7 @@
+
 import 'package:helphub/imports.dart';
 import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatefulWidget {
   static String id = "AboutPage";
@@ -49,7 +51,16 @@ class _AboutPageState extends State<AboutPage> {
                     fontSize: 35,
                     fontWeight: FontWeight.w800),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
+              Card(
+                shape: CircleBorder(),
+                elevation: 5,
+                child: Image(
+                  height: MediaQuery.of(context).size.width / 1.2,
+                  width: MediaQuery.of(context).size.width / 1.2,
+
+                  image: AssetImage(ConstassetsString.icon2))),
+              SizedBox(height: 15),
               Text(
                 "Version $appVersion",
                 style: TextStyle(
@@ -78,7 +89,12 @@ class _AboutPageState extends State<AboutPage> {
                   TextSpan(text: "Hassan Ansari & Hassan Momin")
                 ]),
               ),
-              Text("data")
+              SizedBox(height: 10),
+              GestureDetector(
+                  onTap: () {
+                    launch("mailto:cth001100@gmail.com");
+                  },
+                  child: Text("Contact Us"))
             ],
           ),
         ),

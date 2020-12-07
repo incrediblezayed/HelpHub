@@ -21,7 +21,7 @@ class DevelopersCard extends StatelessWidget {
     double width = size.width;
     return Stack(children: [
       Container(
-        height: height / 1.7,
+        height: height / 1.6,
         width: width / 1.2,
         child: Card(
           shape:

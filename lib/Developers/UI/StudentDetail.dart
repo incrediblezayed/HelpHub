@@ -41,8 +41,8 @@ class _StudentDetailState extends State<StudentDetail> {
                 Hero(
                   tag: student.email,
                   child: Card(
-                    color: Colors.transparent,
                     elevation: 0,
+                    color: Colors.transparent,
                     child: Text(
                       headerText,
                       style: TextStyle(
@@ -138,7 +138,7 @@ class _StudentDetailState extends State<StudentDetail> {
                                   decoration: BoxDecoration(
                                       image: DecorationImage(
                                           fit: BoxFit.cover,
-                                          image: setImage(null,
+                                          image: setImage(student.photoUrl??null,
                                               ConstassetsString.student))),
                                 ) ,
                                 child: Container(
