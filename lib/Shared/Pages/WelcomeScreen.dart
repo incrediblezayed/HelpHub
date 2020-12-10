@@ -1,4 +1,5 @@
 import 'package:helphub/imports.dart';
+import 'dart:math' as math;
 
 class WelcomeScreen extends StatelessWidget {
   static const id = 'WelcomeScreen';
@@ -151,6 +152,25 @@ class WelcomeScreen extends StatelessWidget {
               top: MediaQuery.of(context).size.width / 12,
               left: MediaQuery.of(context).size.width / 20 - 10,
               child: Hero(
+                placeholderBuilder: (context, heroSize, child) {
+                  return Icon(Icons.send);
+                },
+                flightShuttleBuilder: (flightContext, animation,
+                    flightDirection, fromHeroContext, toHeroContext) {
+                  final Hero toHero = toHeroContext.widget;
+
+                  return ScaleTransition(
+                    scale: animation.drive(
+                      Tween<double>(begin: 0.0, end: 6.0).chain(
+                        CurveTween(
+                          curve: 
+                              Interval(0.0, 1.0, curve: PeakQuadraticCurve()),
+                        ),
+                      ),
+                    ),
+                    child: toHero.child,
+                  );
+                },
                 tag: "hello",
                 child: Card(
                   shape: CircleBorder(),
@@ -176,7 +196,8 @@ class WelcomeScreen extends StatelessWidget {
                   minWidth: MediaQuery.of(context).size.width - 100,
                   onPressed: () => kopenPage(context, Login()),
                   color: Theme.of(context).brightness == Brightness.dark
- ? Color(0xff424242) : Colors.white,
+                      ? Color(0xff424242)
+                      : Colors.white,
                   splashColor: Theme.of(context).accentColor,
                   child: Text(
                     ConstString.get_started,
@@ -192,5 +213,13 @@ class WelcomeScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class PeakQuadraticCurve extends Curve {
+  @override
+  double transform(double t) {
+    assert(t >= 0.0 && t <= 1.0);
+    return -15 * math.pow(t, 2) + 15 * t + 1;
   }
 }
