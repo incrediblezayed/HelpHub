@@ -87,7 +87,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         return Scaffold(
           key: _scaffoldKey,
           resizeToAvoidBottomInset: false,
-          resizeToAvoidBottomPadding: false,
           body:
               LayoutBuilder(builder: (BuildContext context, BoxConstraints c) {
             return SingleChildScrollView(
