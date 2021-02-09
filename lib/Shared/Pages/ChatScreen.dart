@@ -205,7 +205,7 @@ class ChatScreenState extends State<ChatScreen>
     bool image = message.type == 1;
     showDialog(
         context: context,
-        child: Dialog(
+        builder: (context) => Dialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: StatefulBuilder(builder: (context, setState) {
