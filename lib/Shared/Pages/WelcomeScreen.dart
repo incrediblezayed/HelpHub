@@ -163,7 +163,7 @@ class WelcomeScreen extends StatelessWidget {
                     scale: animation.drive(
                       Tween<double>(begin: 0.0, end: 6.0).chain(
                         CurveTween(
-                          curve: 
+                          curve:
                               Interval(0.0, 1.0, curve: PeakQuadraticCurve()),
                         ),
                       ),

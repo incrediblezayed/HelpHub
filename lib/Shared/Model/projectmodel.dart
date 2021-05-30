@@ -8,8 +8,7 @@ class Project {
   DocumentReference studentProfile;
   DocumentReference projectReference;
   Map<dynamic, dynamic> projectInfo = Map<dynamic, dynamic>();
-  Map<String, dynamic> progress = Map<String
-  , dynamic>();
+  Map<String, dynamic> progress = Map<String, dynamic>();
   Timestamp completion;
   bool completed;
   bool current;
@@ -32,7 +31,7 @@ class Project {
       this.requested = false});
 
   Project.fromSnapshot(DocumentSnapshot snapshot) {
-    fromJson(snapshot.data);
+    fromJson(snapshot.data());
   }
 
   fromJson(Map<dynamic, dynamic> json) {
@@ -61,7 +60,7 @@ class Project {
     return data;
   }
 
-  Project.fromMap(Map<dynamic, dynamic> data)
+  Project.fromMap(Map<String, dynamic> data)
       : this(
             name: data['name'],
             price: data['Project Price'],
@@ -89,7 +88,7 @@ class Project {
     data['StudentProfile'] = project.studentProfile;
     data['current'] = project.current;
     data['rejected'] = project.rejected;
-    data['requested'] = project.requested??false;
+    data['requested'] = project.requested ?? false;
     data['project'] = project.projectReference;
     return data;
   }

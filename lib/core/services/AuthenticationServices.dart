@@ -5,8 +5,7 @@ class AuthenticationServices extends Services {
   bool isUserAvailable = false;
   UserType userType;
 
-  StreamController<FirebaseUser> fireBaseUserStream =
-      StreamController<FirebaseUser>();
+  StreamController<User> fireBaseUserStream = StreamController<User>();
   StreamController<bool> isUserLoggedInStream = StreamController<bool>();
   StreamController<UserType> userTypeStream = StreamController<UserType>();
 
@@ -19,20 +18,17 @@ class AuthenticationServices extends Services {
   Student student;
 
   AuthenticationServices() {
-    firestore.settings(
-      persistenceEnabled: false,
-    );
     _userType().then((onValue) => userType = onValue);
     isLoggedIn().then((onValue) => isUserLoggedIn = onValue);
   }
 
-  CollectionReference getCollection = Firestore.instance
+  CollectionReference getCollection = FirebaseFirestore.instance
       .collection("users")
-      .document('Login')
+      .doc('Login')
       .collection('Developers');
 
   Future<bool> isLoggedIn() async {
-    await getFirebaseUser();
+    await getUser();
     fireBaseUserStream.add(firebaseUser);
     String name = firebaseUser != null ? firebaseUser.email.toString() : 'Null';
     print('User Email :' + name);
@@ -66,7 +62,7 @@ class AuthenticationServices extends Services {
     await sharedPreferencesHelper.clearAllData();
     // String loginType = userType == UserType.STUDENT?"Student":"Developer";
     if (userType == UserType.DEVELOPERS) {
-      DocumentSnapshot document = await getCollection.document(email).get();
+      DocumentSnapshot document = await getCollection.doc(email).get();
       if (document.exists) {
         sharedPreferencesHelper.setDevelopersId(email);
         isUserAvailable = true;
@@ -119,13 +115,13 @@ class AuthenticationServices extends Services {
       AuthErrors authErrors = AuthErrors.UNKNOWN;
 
       if (userType == UserType.DEVELOPERS) {
-        DocumentSnapshot document = await getCollection.document(email).get();
+        DocumentSnapshot document = await getCollection.doc(email).get();
         if (document.exists) {
           firebaseUser = (await auth.signInWithEmailAndPassword(
-                  email: document.data['email'], password: password))
+                  email: document.data()['email'], password: password))
               .user;
           await sharedPreferencesHelper
-              .setDeveloperEmail(document.data['email']);
+              .setDeveloperEmail(document.data()['email']);
           bool res = await sharedPreferencesHelper.setDevelopersId(email);
 
           if (res) {
@@ -194,7 +190,7 @@ class AuthenticationServices extends Services {
         AuthErrors authErrors = AuthErrors.UNKNOWN;
         DocumentSnapshot snap =
             await getProfileReference(email, UserType.DEVELOPERS).get();
-        await auth.sendPasswordResetEmail(email: snap.data['email']);
+        await auth.sendPasswordResetEmail(email: snap.data()['email']);
         authErrors = AuthErrors.SUCCESS;
         return authErrors;
       } on PlatformException catch (e) {
@@ -207,14 +203,14 @@ class AuthenticationServices extends Services {
     try {
       QuerySnapshot snapshot = await firestore
           .collection('users')
-          .document('Profile')
+          .doc('Profile')
           .collection('Developers')
           .where('email', isEqualTo: email)
-          .getDocuments();
-      if (snapshot.documents.length != 0) {
-        DocumentSnapshot snap = snapshot.documents.first;
-        if (snap.data['displayName'] == displayName) {
-          if (snap.data['firebaseUid'] == uid) {
+          .get();
+      if (snapshot.docs.length != 0) {
+        DocumentSnapshot snap = snapshot.docs.first;
+        if (snap.data()['displayName'] == displayName) {
+          if (snap.data()['firebaseUid'] == uid) {
             /* final Email emailBody = Email(
                 isHTML: false,
                 subject: "Developer ID",
@@ -223,7 +219,7 @@ class AuthenticationServices extends Services {
                 recipients: [email],
                 cc: ["cth001100@gmail.com"]);
             await FlutterEmailSender.send(emailBody); */
-            return 'success ${snap.documentID}';
+            return 'success ${snap.id}';
           } else {
             return 'Incorrect UID';
           }

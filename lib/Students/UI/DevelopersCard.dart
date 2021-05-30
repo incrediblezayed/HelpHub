@@ -37,12 +37,13 @@ class DevelopersCard extends StatelessWidget {
                 image: setImage(null, ConstassetsString.developer),
               ),
             )),
-                      child: Container(
+            child: Container(
                 decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: setImage(developer.photoUrl, ConstassetsString.developer),
+                image:
+                    setImage(developer.photoUrl, ConstassetsString.developer),
               ),
             )),
           ),
@@ -55,15 +56,11 @@ class DevelopersCard extends StatelessWidget {
           width: width / 1.225,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-            gradient: LinearGradient(colors: [
-              Colors.transparent,
-              black.withOpacity(0.5),
-              black
-            ], stops: [
-              0.3,
-              0.6,
-              1
-            ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            gradient: LinearGradient(
+                colors: [Colors.transparent, black.withOpacity(0.5), black],
+                stops: [0.3, 0.6, 1],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter),
           ),
         ),
       ),
@@ -110,8 +107,7 @@ class DevelopersCard extends StatelessWidget {
       Positioned(
         bottom: height / 13.5 - 33,
         right: width / 12 - 8,
-        child: FlatButton(
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        child: TextButton(
           onPressed: () => kopenPage(
               context, DeveloperDetail(card: true, developer: developer)),
           child: Row(

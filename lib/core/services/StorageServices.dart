@@ -7,11 +7,11 @@ import 'Services.dart';
 
 class StorageServices extends Services {
   StorageServices() {
-    getFirebaseUser();
+    getUser();
   }
-  StorageUploadTask uploadTask;
+  UploadTask uploadTask;
   Future<String> setProfilePhoto(String filePath) async {
-    if (firebaseUser == null) await getFirebaseUser();
+    if (firebaseUser == null) await getUser();
     // String schoolCode = await sharedPreferencesHelper.getSchoolCode();
 
     String _extension = p.extension(filePath);
@@ -23,7 +23,7 @@ class StorageServices extends Services {
           .child("Profile" + '/' + "Students" + '/' + fileName)
           .putFile(
             File(filePath),
-            StorageMetadata(
+            SettableMetadata(
               contentType: "image",
               customMetadata: {
                 "uploadedBy": firebaseUser.uid,
@@ -37,7 +37,7 @@ class StorageServices extends Services {
           .child("Profile" + '/' + "Developers" + '/' + fileName)
           .putFile(
             File(filePath),
-            StorageMetadata(
+            SettableMetadata(
               contentType: "image",
               customMetadata: {
                 "uploadedBy": firebaseUser.uid,
@@ -47,7 +47,7 @@ class StorageServices extends Services {
           );
     }
 
-    final StorageTaskSnapshot downloadUrl = await uploadTask.onComplete;
+    final TaskSnapshot downloadUrl = await uploadTask;
     final String profileUrl = await downloadUrl.ref.getDownloadURL();
 
     await sharedPreferencesHelper.setLoggedInUserPhotoUrl(profileUrl);
@@ -63,11 +63,11 @@ class StorageServices extends Services {
         .child("Messages" + "/" + sender + " - " + reciever + "/" + filename)
         .putFile(
             File(path),
-            StorageMetadata(contentType: "image", customMetadata: {
+            SettableMetadata(contentType: "image", customMetadata: {
               "sender": sender,
               "reciever": reciever,
             }));
-    final StorageTaskSnapshot url = await uploadTask.onComplete;
+    final TaskSnapshot url = await uploadTask;
     final String imageUrl = await url.ref.getDownloadURL();
 
     return imageUrl;

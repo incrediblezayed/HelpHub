@@ -51,7 +51,7 @@ class Student {
     }
   }
 
-  Student.dataFromSnapshot(Map<dynamic, dynamic> data)
+  Student.dataFromSnapshot(Map<String, dynamic> data)
       : this(
             photoUrl: data['photoUrl'] ?? 'default',
             email: data['email'] ?? '',
@@ -68,7 +68,7 @@ class Student {
             enrolledWithDeveloper: data['enrolledWith']);
 
   Student.fromSnapshot(DocumentSnapshot documentSnapshot) {
-    fromJson(documentSnapshot.data);
+    fromJson(documentSnapshot.data());
   }
 
   Student.fromJson(Map<String, dynamic> json) {

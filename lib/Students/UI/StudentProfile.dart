@@ -17,13 +17,13 @@ class _StudentProfileState extends State<StudentProfile> {
   int a = 0;
   String path = 'default';
   Student student;
-  FirebaseUser firebaseUser;
+  User firebaseUser;
   _StudentProfileState() {
     getStudentData();
   }
 
   getStudentData() async {
-    firebaseUser = Provider.of<FirebaseUser>(context, listen: false);
+    firebaseUser = Provider.of<User>(context, listen: false);
     student = Provider.of<Student>(context);
     String value = await _sharedPreferencesHelper.getStudent();
     if (value == 'N.A') {
@@ -67,11 +67,13 @@ class _StudentProfileState extends State<StudentProfile> {
   String country = '';
 
   floatingButoonPressed(StudentProfilePageModel model, UserType userType,
-      Student student, FirebaseUser firebaseUser) async {
+      Student student, User firebaseUser) async {
     bool res = false;
     if (_name.isEmpty || _qualification.isEmpty || _yearofcompletion.isEmpty) {
-      _scaffoldKey.currentState.showSnackBar(ksnackBar(context,
-          'You Need to fill all the details and a profile Photo',));
+      _scaffoldKey.currentState.showSnackBar(ksnackBar(
+        context,
+        'You Need to fill all the details and a profile Photo',
+      ));
     } else {
       if (model.state == ViewState.Idle) {
         if (model.studentProfile == null) {
@@ -87,12 +89,12 @@ class _StudentProfileState extends State<StudentProfile> {
           res = await model.setStudentProfileData(
             student: student,
           );
-          await Firestore.instance
+          await FirebaseFirestore.instance
               .collection('users')
-              .document('Profile')
+              .doc('Profile')
               .collection('Students')
-              .document(student.email)
-              .setData(student.toJson(student));
+              .doc(student.email)
+              .set(student.toJson(student));
         } else {
           student = Student(
               displayName: _name,
@@ -106,12 +108,12 @@ class _StudentProfileState extends State<StudentProfile> {
           res = await model.setStudentProfileData(
             student: student,
           );
-          await Firestore.instance
+          await FirebaseFirestore.instance
               .collection('users')
-              .document('Profile')
+              .doc('Profile')
               .collection('Students')
-              .document(student.email)
-              .updateData(student.toJson(student));
+              .doc(student.email)
+              .update(student.toJson(student));
         }
       }
     }
@@ -132,7 +134,7 @@ class _StudentProfileState extends State<StudentProfile> {
 
   @override
   Widget build(BuildContext context) {
-    var firebaseUser = Provider.of<FirebaseUser>(context, listen: false);
+    var firebaseUser = Provider.of<User>(context, listen: false);
     Student student = Provider.of<Student>(context);
     return BaseView<StudentProfilePageModel>(
         onModelReady: (model) => model.getStudentProfileData(),

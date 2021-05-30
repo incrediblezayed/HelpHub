@@ -7,12 +7,12 @@ class StudentProfileServices extends Services {
   StreamController<Student> loggedInStudentStream =
       StreamController.broadcast(sync: true);
   StudentProfileServices() {
-    getFirebaseUser();
+    getUser();
   }
 
   setProfileData({Student student}) async {
     if (student.photoUrl.contains('https')) {
-     /*  student.photoUrl =
+      /*  student.photoUrl =
           await storageServices.setProfilePhoto(student.photoUrl); */
     } else if (student.photoUrl == 'default') {
       student.photoUrl = student.photoUrl;
@@ -36,8 +36,8 @@ class StudentProfileServices extends Services {
     String body = await sharedPreferencesHelper.getStudent();
     if (body != 'N.A') {
       final data = json.decode(body);
-      if (data['displayName'] != null && data['displayName'] != "") {
-        student = Student.fromJson(data);
+      if (data()['displayName'] != null && data()['displayName'] != "") {
+        student = Student.fromJson(data());
         loggedInStudentStream.add(student);
       } else {
         student = Student();

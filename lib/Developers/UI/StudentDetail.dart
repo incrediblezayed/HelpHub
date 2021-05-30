@@ -36,30 +36,29 @@ class _StudentDetailState extends State<StudentDetail> {
             : MediaQuery.of(context).size.height / 9,
         child: Container(
             child: Column(
-              children: <Widget>[
-                Spacer(),
-                Hero(
-                  tag: student.email,
-                  child: Card(
-                    elevation: 0,
-                    color: Colors.transparent,
-                    child: Text(
-                      headerText,
-                      style: TextStyle(
-                        fontSize: 25,
-                      ),
-                    ),
+          children: <Widget>[
+            Spacer(),
+            Hero(
+              tag: student.email,
+              child: Card(
+                elevation: 0,
+                color: Colors.transparent,
+                child: Text(
+                  headerText,
+                  style: TextStyle(
+                    fontSize: 25,
                   ),
                 ),
-                Spacer(
-                  flex: 3,
-                ),
-                Text(email,
-                    style:
-                        TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                Spacer(),
-              ],
-            )),
+              ),
+            ),
+            Spacer(
+              flex: 3,
+            ),
+            Text(email,
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Spacer(),
+          ],
+        )),
       ),
     );
   }
@@ -85,7 +84,7 @@ class _StudentDetailState extends State<StudentDetail> {
             title: Text("Failed"),
             content: Text("Something went wrong, failed to $state the request"),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -133,14 +132,15 @@ class _StudentDetailState extends State<StudentDetail> {
                               tag: '${student.displayName}+1',
                               child: imageBuilder(
                                 student.photoUrl,
-                                placeHolder:Container(
+                                placeHolder: Container(
                                   width: width,
                                   decoration: BoxDecoration(
                                       image: DecorationImage(
                                           fit: BoxFit.cover,
-                                          image: setImage(student.photoUrl??null,
+                                          image: setImage(
+                                              student.photoUrl ?? null,
                                               ConstassetsString.student))),
-                                ) ,
+                                ),
                                 child: Container(
                                   width: width,
                                   decoration: BoxDecoration(
@@ -265,9 +265,12 @@ class _StudentDetailState extends State<StudentDetail> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     Expanded(
-                                      child: FlatButton(
-                                          color: Colors.red,
-                                          colorBrightness: Brightness.dark,
+                                      child: TextButton(
+                                          style: ButtonStyle(
+                                            foregroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.red),
+                                          ),
                                           onPressed: () {
                                             model
                                                 .rejectRequest(student)
@@ -335,7 +338,7 @@ class _StudentDetailState extends State<StudentDetail> {
                     : null
                 : widget.isASelection
                     ? BottomAppBar(
-                        child: FlatButton(
+                        child: TextButton(
                             onPressed: () {
                               model
                                   .selectStudent(student, widget.project)

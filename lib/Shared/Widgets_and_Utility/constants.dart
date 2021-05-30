@@ -3,7 +3,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helphub/Shared/Pages/About.dart';
 import 'package:helphub/Shared/Widgets_and_Utility/MyTheme.dart';
 import 'package:helphub/imports.dart';
-import 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
+import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
 import 'ImageCompress.dart';
@@ -271,12 +271,14 @@ LayoutBuilder buildMenu({
         onHorizontalDragEnd: (details) {
           if (details.velocity.pixelsPerSecond.dx < 0) {
             animateIcon();
-            SimpleHiddenDrawerProvider.of(context).toggle();
+            SimpleHiddenDrawerController.of(context).toggle();
+            
           }
         },
         onTap: () {
           animateIcon();
-          SimpleHiddenDrawerProvider.of(context).toggle();
+          SimpleHiddenDrawerController.of(context).toggle();
+          
         },
         child: Container(
             height: double.maxFinite,
@@ -348,7 +350,7 @@ LayoutBuilder buildMenu({
                               right: Radius.circular(radius ?? 15)),
                           onPressed: () {
                         animateIcon();
-                        SimpleHiddenDrawerProvider.of(context).toggle();
+                        SimpleHiddenDrawerController.of(context).toggle();
                         Navigator.of(context).pushNamed(profileRoute);
                       }, text: 'Edit Profile'),
                     ),
@@ -375,7 +377,7 @@ LayoutBuilder buildMenu({
                                     topRight: Radius.circular(radius ?? 15)),
                                 onPressed: () {
                               animateIcon();
-                              SimpleHiddenDrawerProvider.of(context).toggle();
+                              SimpleHiddenDrawerController.of(context).toggle();
                               Navigator.of(context)
                                   .pushReplacementNamed(WelcomeScreen.id);
                               model.logoutUser();
@@ -383,7 +385,7 @@ LayoutBuilder buildMenu({
                             Divider(color: black, height: 3),
                             profileFlatButton(size, onPressed: () {
                               animateIcon();
-                              SimpleHiddenDrawerProvider.of(context).toggle();
+                              SimpleHiddenDrawerController.of(context).toggle();
                               // Navigator.of(context).pushNamed(//TODO: Feedback route);
                             }, text: "Complaints & Feedback"),
                             Divider(color: black, height: 3),
@@ -392,7 +394,7 @@ LayoutBuilder buildMenu({
                                     bottomRight: Radius.circular(radius ?? 15)),
                                 onPressed: () {
                               animateIcon();
-                              SimpleHiddenDrawerProvider.of(context).toggle();
+                              SimpleHiddenDrawerController.of(context).toggle();
                               Navigator.of(context).pushNamed(AboutPage.id);
                             }, text: "About")
                           ],
@@ -442,10 +444,10 @@ LayoutBuilder buildMenu({
   });
 }
 
-FutureBuilder<http.Response> imageBuilder(url,
+FutureBuilder<http.Response> imageBuilder(String url,
     {Widget child, Widget placeHolder}) {
   return FutureBuilder<http.Response>(
-      future: http.get(url),
+      future: http.get(Uri.parse(url)),
       builder: (context, snapshot) {
         if (snapshot != null && snapshot.data != null) {
           if (snapshot.data.statusCode == 200) {

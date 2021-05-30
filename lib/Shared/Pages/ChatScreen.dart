@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:helphub/Shared/Model/MessageModel.dart';
 import 'package:helphub/Shared/Widgets_and_Utility/FullImage.dart';
 import 'package:helphub/Shared/Widgets_and_Utility/chatback.dart';
@@ -154,18 +155,18 @@ class ChatScreenState extends State<ChatScreen>
       groupChatId = '$recieverId-$fromId';
     }
     userType == UserType.DEVELOPERS
-        ? Firestore.instance
+        ? FirebaseFirestore.instance
             .collection('users')
-            .document('Profile')
+            .doc('Profile')
             .collection('Developers')
-            .document(fromId)
-            .updateData({'chattingWith': recieverId})
-        : Firestore.instance
+            .doc(fromId)
+            .update({'chattingWith': recieverId})
+        : FirebaseFirestore.instance
             .collection('users')
-            .document('Profile')
+            .doc('Profile')
             .collection('Students')
-            .document(fromId)
-            .updateData({'chattingWith': recieverId});
+            .doc(fromId)
+            .update({'chattingWith': recieverId});
 
     setState(() {});
   }
@@ -177,11 +178,11 @@ class ChatScreenState extends State<ChatScreen>
     // type: 0 = text, 1 = image, 2 = sticker
     if (content.trim() != '') {
       textEditingController.clear();
-      var documentReference = Firestore.instance
+      var documentReference = FirebaseFirestore.instance
           .collection('messages')
-          .document(groupChatId)
+          .doc(groupChatId)
           .collection(groupChatId)
-          .document(DateTime.now().millisecondsSinceEpoch.toString());
+          .doc(DateTime.now().millisecondsSinceEpoch.toString());
       MessageModel message = MessageModel(
           to: recieverId,
           from: fromId,
@@ -190,13 +191,14 @@ class ChatScreenState extends State<ChatScreen>
           userType: userType,
           content: content,
           timeStamp: DateTime.now().millisecondsSinceEpoch);
-      await documentReference.setData(message.toMap(message));
+      await documentReference.set(message.toMap(message));
       listScrollController.animateTo(0.0,
           duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     } else {
       Fluttertoast.showToast(
-          msg: "Nothing sent",
-          gravity: ToastGravity.BOTTOM,);
+        msg: "Nothing sent",
+        gravity: ToastGravity.BOTTOM,
+      );
     }
   }
 
@@ -206,158 +208,166 @@ class ChatScreenState extends State<ChatScreen>
     showDialog(
         context: context,
         builder: (context) => Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: StatefulBuilder(builder: (context, setState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Visibility(
-                  visible: !image,
-                  child: InkWell(
-                      onTap: () {
-                        Clipboard.setData(ClipboardData(
-                          text: message.content,
-                        )).then((onValue) {
-                          Fluttertoast.showToast(
-                              msg: "Copied", gravity: ToastGravity.BOTTOM);
-                          Navigator.pop(context);
-                        });
-                      },
-                      child: Container(
-                          margin: EdgeInsets.only(left: 20),
-                          alignment: Alignment.centerLeft,
-                          height: MediaQuery.of(context).size.height / 17 - 7,
-                          width: double.maxFinite,
-                          child: Text("Copy Text"))),
-                ),
-                Visibility(
-                    visible: isRight,
-                    child: InkWell(
-                        onTap: () async {
-                          setState(() {
-                            loading = true;
-                          });
-                          CollectionReference ref = Firestore.instance
-                              .collection('messages')
-                              .document(groupChatId)
-                              .collection(groupChatId);
-                          QuerySnapshot data = await ref
-                              .where('timestamp', isEqualTo: message.timeStamp)
-                              .getDocuments();
-                          Future.delayed(Duration(milliseconds: 500), () async {
-                            await ref
-                                .document(data.documents.first.documentID)
-                                .delete()
-                                .then((value) {
-                              setState(() {
-                                loading = false;
-                              });
-                              Navigator.pop(context);
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: StatefulBuilder(builder: (context, setState) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Visibility(
+                      visible: !image,
+                      child: InkWell(
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(
+                              text: message.content,
+                            )).then((onValue) {
                               Fluttertoast.showToast(
-                                msg: "Message unsent",
-                                gravity: ToastGravity.BOTTOM,
-                              );
-                            }, onError: (error) {
+                                  msg: "Copied", gravity: ToastGravity.BOTTOM);
                               Navigator.pop(context);
-                              Fluttertoast.showToast(
-                                msg: "There was an error",
-                                gravity: ToastGravity.BOTTOM,
-                              );
                             });
-                          });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(left: 20, right: 20),
-                          alignment: Alignment.centerLeft,
-                          height: MediaQuery.of(context).size.height / 17 - 7,
-                          width: double.maxFinite,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("Unsend Message"),
-                              !loading
-                                  ? Container(
-                                      width: 20,
-                                    )
-                                  : Container(
-                                      height: 15,
-                                      width: 15,
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.black),
-                                        strokeWidth: 1,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        ))),
-                Visibility(
-                    visible: image,
-                    child: InkWell(
-                        onTap: () async {
-                          setState(() {
-                            loading = true;
-                          });
-                          Future.delayed(Duration(milliseconds: 500), () async {
-                            /* var response = await Dio().get(message.content,
+                          },
+                          child: Container(
+                              margin: EdgeInsets.only(left: 20),
+                              alignment: Alignment.centerLeft,
+                              height:
+                                  MediaQuery.of(context).size.height / 17 - 7,
+                              width: double.maxFinite,
+                              child: Text("Copy Text"))),
+                    ),
+                    Visibility(
+                        visible: isRight,
+                        child: InkWell(
+                            onTap: () async {
+                              setState(() {
+                                loading = true;
+                              });
+                              CollectionReference ref = FirebaseFirestore
+                                  .instance
+                                  .collection('messages')
+                                  .doc(groupChatId)
+                                  .collection(groupChatId);
+                              QuerySnapshot data = await ref
+                                  .where('timestamp',
+                                      isEqualTo: message.timeStamp)
+                                  .get();
+                              Future.delayed(Duration(milliseconds: 500),
+                                  () async {
+                                await ref.doc(data.docs.first.id).delete().then(
+                                    (value) {
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(
+                                    msg: "Message unsent",
+                                    gravity: ToastGravity.BOTTOM,
+                                  );
+                                }, onError: (error) {
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(
+                                    msg: "There was an error",
+                                    gravity: ToastGravity.BOTTOM,
+                                  );
+                                });
+                              });
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(left: 20, right: 20),
+                              alignment: Alignment.centerLeft,
+                              height:
+                                  MediaQuery.of(context).size.height / 17 - 7,
+                              width: double.maxFinite,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Unsend Message"),
+                                  !loading
+                                      ? Container(
+                                          width: 20,
+                                        )
+                                      : Container(
+                                          height: 15,
+                                          width: 15,
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.black),
+                                            strokeWidth: 1,
+                                          ),
+                                        ),
+                                ],
+                              ),
+                            ))),
+                    Visibility(
+                        visible: image,
+                        child: InkWell(
+                            onTap: () async {
+                              setState(() {
+                                loading = true;
+                              });
+                              Future.delayed(Duration(milliseconds: 500),
+                                  () async {
+                                /* var response = await Dio().get(message.content,
                                 options:
                                     Options(responseType: ResponseType.bytes));
  */
-                            await ImageDownloader.downloadImage(message.content,
-                                    destination: AndroidDestinationType
-                                        .directoryPictures)
-                                .then((value) {
-                              setState(() {
-                                loading = false;
+                                await ImageDownloader.downloadImage(
+                                        message.content,
+                                        destination: AndroidDestinationType
+                                            .directoryPictures)
+                                    .then((value) {
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(
+                                    msg: "Image Saved in Gallery",
+                                    gravity: ToastGravity.BOTTOM,
+                                  );
+                                }, onError: (error) {
+                                  Navigator.pop(context);
+                                  print(error);
+                                  Fluttertoast.showToast(
+                                    msg: "There was an error",
+                                    gravity: ToastGravity.BOTTOM,
+                                  );
+                                });
                               });
-                              Navigator.pop(context);
-                              Fluttertoast.showToast(
-                                msg: "Image Saved in Gallery",
-                                gravity: ToastGravity.BOTTOM,
-                              );
-                            }, onError: (error) {
-                              Navigator.pop(context);
-                              print(error);
-                              Fluttertoast.showToast(
-                                msg: "There was an error",
-                                gravity: ToastGravity.BOTTOM,
-                              );
-                            });
-                          });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(left: 20, right: 20),
-                          alignment: Alignment.centerLeft,
-                          height: MediaQuery.of(context).size.height / 17 - 7,
-                          width: double.maxFinite,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text("Save"),
-                              !loading
-                                  ? Container(
-                                      width: 20,
-                                    )
-                                  : Container(
-                                      height: 15,
-                                      width: 15,
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.black),
-                                        strokeWidth: 1,
-                                      ),
-                                    ),
-                            ],
-                          ),
-                        ))),
-              ],
-            );
-          }),
-        ));
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(left: 20, right: 20),
+                              alignment: Alignment.centerLeft,
+                              height:
+                                  MediaQuery.of(context).size.height / 17 - 7,
+                              width: double.maxFinite,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Save"),
+                                  !loading
+                                      ? Container(
+                                          width: 20,
+                                        )
+                                      : Container(
+                                          height: 15,
+                                          width: 15,
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.black),
+                                            strokeWidth: 1,
+                                          ),
+                                        ),
+                                ],
+                              ),
+                            ))),
+                  ],
+                );
+              }),
+            ));
   }
 
   Widget buildItem(int index, MessageModel message) {
@@ -411,7 +421,7 @@ class ChatScreenState extends State<ChatScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           onLongPress: () => showDialogText(message, true),
                           child: Hero(
                             tag: message.content,
@@ -464,7 +474,6 @@ class ChatScreenState extends State<ChatScreen>
                                 image: NetworkImage(message.content),
                                 heroTag: message.content,
                               )),
-                          padding: EdgeInsets.all(2),
                         ),
                         Container(
                           margin: EdgeInsets.only(top: 5, bottom: 5, right: 5),
@@ -555,7 +564,7 @@ class ChatScreenState extends State<ChatScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                           child: Hero(
                             tag: message.content,
                             child: Material(
@@ -610,7 +619,6 @@ class ChatScreenState extends State<ChatScreen>
                                 image: NetworkImage(message.content),
                                 heroTag: message.content,
                               )),
-                          padding: EdgeInsets.all(2),
                         ),
                         Container(
                           margin: EdgeInsets.only(top: 5, bottom: 5, left: 5),
@@ -862,9 +870,9 @@ class ChatScreenState extends State<ChatScreen>
               child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(themeColor)))
           : StreamBuilder(
-              stream: Firestore.instance
+              stream: FirebaseFirestore.instance
                   .collection('messages')
-                  .document(groupChatId)
+                  .doc(groupChatId)
                   .collection(groupChatId)
                   .orderBy('timestamp', descending: true)
                   .limit(limit)
@@ -873,9 +881,9 @@ class ChatScreenState extends State<ChatScreen>
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
                 } else {
-                  listMessage = snapshot.data.documents;
+                  listMessage = snapshot.data.docs;
                   bool load =
-                      limit <= 1000 && limit <= snapshot.data.documents.length;
+                      limit <= 1000 && limit <= snapshot.data.docs.length;
                   return EasyListView(
                       reverse: true,
                       scrollbarEnable: true,
@@ -886,13 +894,13 @@ class ChatScreenState extends State<ChatScreen>
                           });
                       },
                       loadMore: load,
-                      itemCount: snapshot.data.documents.length,
+                      itemCount: snapshot.data.docs.length,
                       controller: listScrollController,
                       padding: EdgeInsets.all(10),
                       itemBuilder: (context, index) => buildItem(
                           index,
                           MessageModel.fromMap(
-                              snapshot.data.documents[index].data)));
+                              snapshot.data.docs[index].data())));
                   /* return SingleChildScrollView(
                     reverse: true,
                     child: EasyListView(
@@ -902,19 +910,19 @@ class ChatScreenState extends State<ChatScreen>
                             limit = limit + 10;
                           });
                         },
-                        itemCount: snapshot.data.documents.length,
+                        itemCount: snapshot.data.docs.length,
                         controller: listScrollController,
                         padding: EdgeInsets.all(10),
                         itemBuilder: (context, index) => buildItem(
                             index,
                             MessageModel.fromMap(
-                                snapshot.data.documents[index].data))),
+                                snapshot.data.docs[index].data()))),
                   ); */
                   /* ListView.builder(
                       padding: EdgeInsets.all(10.0),
                       itemBuilder: (context, index) =>
-                          buildItem(index, MessageModel.fromMap(snapshot.data.documents[index].data)),
-                      itemCount: snapshot.data.documents.length,
+                          buildItem(index, MessageModel.fromMap(snapshot.data.docs[index].data())),
+                      itemCount: snapshot.data.docs.length,
                       reverse: true,
                       controller: listScrollController,
                       physics: BouncingScrollPhysics()); */

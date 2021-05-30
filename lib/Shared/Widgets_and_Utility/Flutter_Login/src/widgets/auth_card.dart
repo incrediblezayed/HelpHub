@@ -571,7 +571,7 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       fadeDirection: FadeDirection.bottomToTop,
       offset: .5,
       curve: _textButtonLoadingAnimationInterval,
-      child: FlatButton(
+      child: TextButton(
         child: Text(
           messages.forgotPasswordButton,
           style: TextStyle(color: Theme.of(context).accentColor),
@@ -605,16 +605,21 @@ class _LoginCardState extends State<_LoginCard> with TickerProviderStateMixin {
       offset: .5,
       curve: _textButtonLoadingAnimationInterval,
       fadeDirection: FadeDirection.topToBottom,
-      child: FlatButton(
+      child: TextButton(
         child: AnimatedText(
           text: auth.isSignup ? messages.loginButton : messages.signupButton,
           textRotation: AnimatedTextRotation.down,
         ),
-        disabledTextColor: theme.primaryColor,
+        style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.resolveWith((states) {
+              if (states.contains(MaterialState.disabled)) {
+                return theme.primaryColor;
+              }
+              return Theme.of(context).accentColor;
+            }),
+            padding: MaterialStateProperty.all(
+                EdgeInsets.symmetric(horizontal: 30, vertical: 4))),
         onPressed: buttonEnabled ? _switchAuthMode : null,
-        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textColor: Theme.of(context).accentColor,
       ),
     );
   }
@@ -797,16 +802,19 @@ class _RecoverCardState extends State<_RecoverCard>
   }
 
   Widget _buildBackButton(ThemeData theme, LoginMessages messages) {
-    return FlatButton(
-        child: Text(messages.goBackButton),
-        onPressed: !_isSubmitting
-            ? () {
-                widget.onSwitchLogin();
-              }
-            : null,
-        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textColor: Theme.of(context).accentColor);
+    return TextButton(
+      child: Text(messages.goBackButton),
+      onPressed: !_isSubmitting
+          ? () {
+              widget.onSwitchLogin();
+            }
+          : null,
+      style: ButtonStyle(
+          foregroundColor:
+              MaterialStateProperty.all(Theme.of(context).accentColor),
+          padding: MaterialStateProperty.all(
+              EdgeInsets.symmetric(horizontal: 30, vertical: 4))),
+    );
   }
 
   Widget _buildPasswordField(double width, LoginMessages messages, Auth auth) {

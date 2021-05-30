@@ -4,17 +4,17 @@ class StudentHomeServices extends Services {
   StreamController<Student> studentStream =
       StreamController.broadcast(sync: true);
   StudentHomeServices() {
-    getFirebaseUser();
+    getUser();
   }
   DocumentReference ref =
-      Firestore.instance.collection('users').document('Profile');
+      FirebaseFirestore.instance.collection('users').doc('Profile');
 
   Future<Student> getStudentProfile() async {
     Student student;
     String email = await sharedPreferencesHelper.getStudentsEmail();
     DocumentSnapshot documentSnapshot =
-        await ref.collection('Students').document(email).get();
-    student = Student.dataFromSnapshot(documentSnapshot.data);
+        await ref.collection('Students').doc(email).get();
+    student = Student.dataFromSnapshot(documentSnapshot.data());
     studentStream.add(student);
     await sharedPreferencesHelper
         .setEnrolledDeveloperId(student.enrolledWithDeveloper);
@@ -40,9 +40,9 @@ class StudentHomeServices extends Services {
     DocumentReference reference =
         getProfileReference(developer.id, UserType.DEVELOPERS)
             .collection('EnrollmentRequest')
-            .document(student.displayName);
+            .doc(student.displayName);
 
-    reference.setData(student.sendRequest(studentreq, developer.id));
+    reference.set(student.sendRequest(studentreq, developer.id));
     DocumentSnapshot snapshot = await reference.get();
     if (snapshot.exists)
       return true;
@@ -54,7 +54,7 @@ class StudentHomeServices extends Services {
     DocumentReference reference =
         getProfileReference(developer.id, UserType.DEVELOPERS)
             .collection('EnrollmentRequest')
-            .document(student.displayName);
+            .doc(student.displayName);
     await reference.delete();
     DocumentSnapshot snapshot = await reference.get();
     if (snapshot.exists) {
@@ -69,7 +69,7 @@ class StudentHomeServices extends Services {
     DocumentSnapshot snapshot =
         await getProfileReference(id, UserType.DEVELOPERS)
             .collection('EnrollmentRequest')
-            .document(displayName)
+            .doc(displayName)
             .get();
     if (snapshot.exists) {
       return true;
@@ -81,10 +81,10 @@ class StudentHomeServices extends Services {
 /*   Future<bool> checkEnrolled() async {
     String email = await sharedPreferencesHelper.getStudentsEmail();
     DocumentSnapshot documentSnapshot =
-        await ref.collection('Students').document(email).get();
+        await ref.collection('Students').doc(email).get();
     if (documentSnapshot.exists &&
         documentSnapshot.data.containsKey('enrolled')) {
-      enrolled = documentSnapshot.data['enrolled'];
+      enrolled = documentSnapshot.data()['enrolled'];
     } else {
       enrolled = false;
     }
@@ -95,18 +95,18 @@ class StudentHomeServices extends Services {
     Developer developer;
     String devId = await sharedPreferencesHelper.getEnrolledDeveloperId();
     DocumentReference documentReference;
-    if (devId == 'N.A'|| devId == 'none' || devId ==null) {
+    if (devId == 'N.A' || devId == 'none' || devId == null) {
       developer = Developer(displayName: 'N.A');
       return developer;
     } else {
       documentReference = firestore
           .collection('users')
-          .document('Profile')
+          .doc('Profile')
           .collection('Developers')
-          .document(devId);
+          .doc(devId);
 
       DocumentSnapshot documentSnapshot = await documentReference.get();
-      developer = Developer.fromMap(documentSnapshot.data);
+      developer = Developer.fromMap(documentSnapshot.data());
       await sharedPreferencesHelper.setCurrentProject(developer.currentProject);
       return developer;
     }
@@ -117,14 +117,14 @@ class StudentHomeServices extends Services {
     String email = await sharedPreferencesHelper.getStudentsEmail();
     DocumentSnapshot snap =
         await getProfileReference(email, UserType.STUDENT).get();
-    String projectName = snap.data['currentProject'];
+    String projectName = snap.data()['currentProject'];
     if (projectName != 'none' && projectName != null) {
       DocumentSnapshot snapshot =
           await getProfileReference(email, UserType.STUDENT)
               .collection('Projects')
-              .document(projectName)
+              .doc(projectName)
               .get();
-      project = Project.fromMap(snapshot.data);
+      project = Project.fromMap(snapshot.data());
       return project;
     } else {
       project = Project(name: 'none');
@@ -133,14 +133,12 @@ class StudentHomeServices extends Services {
   }
 
   Future<List<Developer>> getDevelopers() async {
-    CollectionReference reference = firestore
-        .collection('users')
-        .document('Profile')
-        .collection('Developers');
-    QuerySnapshot snap = await reference.orderBy('displayName').getDocuments();
+    CollectionReference reference =
+        firestore.collection('users').doc('Profile').collection('Developers');
+    QuerySnapshot snap = await reference.orderBy('displayName').get();
     List<Developer> developers = [];
-    for (var i = 0; i < snap.documents.length; i++) {
-      Developer developer = Developer.fromSnapshot(snap.documents[i]);
+    for (var i = 0; i < snap.docs.length; i++) {
+      Developer developer = Developer.fromSnapshot(snap.docs[i]);
       developers.add(developer);
       print(developers[i].displayName);
     }
@@ -151,11 +149,11 @@ class StudentHomeServices extends Services {
     String email = await sharedPreferencesHelper.getStudentsEmail();
     CollectionReference reference =
         getProfileReference(email, UserType.STUDENT).collection('Projects');
-    QuerySnapshot snap = await reference.getDocuments();
+    QuerySnapshot snap = await reference.get();
     List<Project> projects = [];
-    if (snap.documents.length > 0) {
-      for (int i = 0; i < snap.documents.length; i++) {
-        projects.add(Project.fromMap(snap.documents[i].data));
+    if (snap.docs.length > 0) {
+      for (int i = 0; i < snap.docs.length; i++) {
+        projects.add(Project.fromMap(snap.docs[i].data()));
         print(projects[i].name);
       }
       return projects;

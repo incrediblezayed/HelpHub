@@ -35,18 +35,17 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
   String language = '';
 
   floatingButoonPressed(
-      var model, Developer developer, FirebaseUser firebaseUser) async {
+      var model, Developer developer, User firebaseUser) async {
     bool res = false;
     if (_name.isEmpty ||
         _qualification.isEmpty ||
         _experience.isEmpty ||
         _city.isEmpty ||
         _country.isEmpty) {
-      _scaffoldKey.currentState.showSnackBar
-      (ksnackBar(
-          context,
-          'You Need to fill all the details and a profile Photo'),
-          );
+      _scaffoldKey.currentState.showSnackBar(
+        ksnackBar(
+            context, 'You Need to fill all the details and a profile Photo'),
+      );
     } else {
       if (model.state == ViewState.Idle) {
         developer = Developer(
@@ -63,12 +62,12 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
         res = await model.setDeveloperProfileData(
           developer,
         );
-        await Firestore.instance
+        await FirebaseFirestore.instance
             .collection('users')
-            .document('Profile')
+            .doc('Profile')
             .collection('Developers')
-            .document(developer.id)
-            .updateData(developer.updateProfile(developer));
+            .doc(developer.id)
+            .update(developer.updateProfile(developer));
       }
     }
 
@@ -93,7 +92,7 @@ class _DeveloperProfileState extends State<DeveloperProfile> {
 
   @override
   Widget build(BuildContext context) {
-    var firebaseUser = Provider.of<FirebaseUser>(context);
+    var firebaseUser = Provider.of<User>(context);
     var developer = Provider.of<Developer>(context);
     double width = MediaQuery.of(context).size.width;
 

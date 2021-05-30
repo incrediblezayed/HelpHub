@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:helphub/Shared/Widgets_and_Utility/MyTheme.dart';
 import 'package:helphub/imports.dart';
+import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -13,7 +14,7 @@ class DeveloperHome extends StatefulWidget {
   _DeveloperHomeState createState() => _DeveloperHomeState();
 }
 
-List<Message> messages = List(5);
+List<Message> messages = [];
 BigPictureStyleInformation photo;
 Person person;
 MessagingStyleInformation messageStyle;
@@ -61,7 +62,7 @@ Future<dynamic> configureNotificationToShow(Map message) async {
 Future<String> downloadAndSaveFile(String url, String name) async {
   var directory = await getApplicationDocumentsDirectory();
   var path = '${directory.path}/$name';
-  var res = await get(url);
+  var res = await get(Uri.parse(url));
   var file = File(path);
   await file.writeAsBytes(res.bodyBytes);
   return path;
@@ -75,16 +76,17 @@ void showNotification(Map notification, String title, String body,
     'your channel description',
     playSound: true,
     enableVibration: true,
-    importance: Importance.Max,
+    importance: Importance.max,
     groupKey: title,
     autoCancel: true,
     channelShowBadge: true,
     styleInformation: styleInformation,
-    priority: Priority.High,
+    priority: Priority.high,
   );
   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
   var platformChannelSpecifics = new NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics);
   await flutterLocalNotificationsPlugin.show(
       0, title, body, platformChannelSpecifics,
       payload: json.encode(notification));
@@ -95,7 +97,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
   SharedPreferencesHelper sharedPreferencesHelper =
       locator<SharedPreferencesHelper>();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  final FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       new FlutterLocalNotificationsPlugin();
   PageController pageController;
@@ -130,7 +132,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
       //  padding: EdgeInsets.all(10),
       margin: EdgeInsets.fromLTRB(10, 7, 10, 7),
       animationDuration: Duration(milliseconds: 700),
-      mainButton: FlatButton(
+      mainButton: TextButton(
           onPressed: () {
             kopenPage(
                 context,
@@ -180,39 +182,35 @@ class _DeveloperHomeState extends State<DeveloperHome>
   void registerNotification() async {
     String currentUser = await sharedPreferencesHelper.getDevelopersId();
 
-    firebaseMessaging.requestNotificationPermissions();
-    firebaseMessaging.configure(
-        onBackgroundMessage:
-            Platform.isIOS ? null : configureNotificationToShow,
-        onMessage: (Map<String, dynamic> message) {
-          showSnackbar(message);
-          print('onMessage: $message');
-          return;
-        },
-        onResume: (Map<String, dynamic> message) {
-          print('onResume: $message');
-          //TODO: Implement onClick
-          return;
-        },
-        onLaunch: (Map<String, dynamic> message) {
-          print('onLaunch: $message');
-          //TODO: Implement onLaunch
-          return;
-        });
+    FirebaseMessaging.onMessage.listen((event) {
+      Map message = event.data;
+      print('onMessage: $message');
+      showSnackbar(message);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      Map message = event.data;
+      showSnackbar(message);
+    });
+
+    FirebaseMessaging.onBackgroundMessage(
+        (message) => configureNotificationToShow(message.data));
+
+    firebaseMessaging.requestPermission();
 
     firebaseMessaging.getToken().then((token) {
       print('token: $token');
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('users')
-          .document('Profile')
+          .doc('Profile')
           .collection('Developers')
-          .document(currentUser)
-          .updateData({'pushToken': token});
+          .doc(currentUser)
+          .update({'pushToken': token});
       sharedPreferencesHelper.setSenderToken(token);
     }).catchError((err) {
       Fluttertoast.showToast(
-          msg: err.message.toString(),
-          gravity: ToastGravity.BOTTOM,);
+        msg: err.message.toString(),
+        gravity: ToastGravity.BOTTOM,
+      );
     });
   }
 
@@ -221,7 +219,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
         new AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = new IOSInitializationSettings();
     var initializationSettings = new InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelect);
   }
@@ -293,12 +291,13 @@ class _DeveloperHomeState extends State<DeveloperHome>
             body: SimpleHiddenDrawer(
               slidePercent: 65,
               isDraggable: true,
+              enableCornerAnimation: true,
               verticalScalePercent: 99,
+              enableScaleAnimation: true,
               menu: buildMenu(
-                changeTheme: (v){
+                  changeTheme: (v) {
                     themeClass.changeTheme(v);
-                  
-                },
+                  },
                   user: 'Developer',
                   name: developer.displayName,
                   imageUrl: developer.photoUrl,
@@ -396,7 +395,8 @@ class _DeveloperHomeState extends State<DeveloperHome>
                 animationDuration: Duration(milliseconds: 150),
                 curve: Curves.bounceInOut,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
- ? Colors.black : Colors.white,
+                    ? Colors.black
+                    : Colors.white,
                 items: [
                   bottomNavyBarItem(context,
                       icon: Icon(Icons.supervisor_account), text: "Enrolled"),
@@ -508,7 +508,6 @@ class _DeveloperHomeState extends State<DeveloperHome>
   }
 
   Widget buildAllProject(List<Project> projects) {
-    
     return AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
         transitionBuilder: (Widget child, Animation<double> animation) {
@@ -569,7 +568,7 @@ class _DeveloperHomeState extends State<DeveloperHome>
             title: Text("Failed"),
             content: Text("Something went wrong, failed to $state the request"),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -617,7 +616,6 @@ class _DeveloperHomeState extends State<DeveloperHome>
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                 
                   Text(student.displayName),
                   Text(student.email),
                 ],
@@ -744,27 +742,29 @@ class _DeveloperHomeState extends State<DeveloperHome>
                       Container(
                         margin: EdgeInsets.all(5),
                         child: CircleAvatar(
-                            backgroundColor: Colors.blue[900],
-                            radius: 70,
-                            child: student.photoUrl == null ? imageBuilder(student.photoUrl,
-                                child: CircleAvatar(
+                          backgroundColor: Colors.blue[900],
+                          radius: 70,
+                          child: student.photoUrl == null
+                              ? imageBuilder(student.photoUrl,
+                                  child: CircleAvatar(
+                                    backgroundImage: setImage(student.photoUrl,
+                                        ConstassetsString.student),
+                                    backgroundColor: mainColor,
+                                    radius: 68,
+                                  ),
+                                  placeHolder: CircleAvatar(
+                                    backgroundImage: setImage(student.photoUrl,
+                                        ConstassetsString.student),
+                                    backgroundColor: mainColor,
+                                    radius: 68,
+                                  ))
+                              : CircleAvatar(
                                   backgroundImage: setImage(student.photoUrl,
                                       ConstassetsString.student),
                                   backgroundColor: mainColor,
                                   radius: 68,
                                 ),
-                                placeHolder: CircleAvatar(
-                                  backgroundImage:
-                                      setImage(student.photoUrl, ConstassetsString.student),
-                                  backgroundColor: mainColor,
-                                  radius: 68,
-                                )): CircleAvatar(
-                                  backgroundImage: setImage(student.photoUrl,
-                                      ConstassetsString.student),
-                                  backgroundColor: mainColor,
-                                  radius: 68,
-                                ),
-                                ),
+                        ),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 15, left: 150),

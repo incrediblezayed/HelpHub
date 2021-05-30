@@ -81,7 +81,6 @@ export 'package:fluttertoast/fluttertoast.dart';
 export 'package:helphub/Developers/Models/DeveloperHomeModel.dart';
 export 'package:helphub/Developers/UI/StudentDetail.dart';
 export 'package:helphub/Shared/Pages/ChatScreen.dart';
-export 'package:hidden_drawer_menu/hidden_drawer/hidden_drawer_menu.dart';
 
 export 'package:helphub/Shared/Pages/AllProjects.dart';
 export 'package:helphub/Shared/Pages/MyProject.dart';
@@ -89,5 +88,4 @@ export 'package:helphub/Shared/Pages/MyProject.dart';
 export 'package:helphub/Shared/Widgets_and_Utility/constants.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:helphub/Shared/Widgets_and_Utility/colors.dart';
-export 'package:cached_network_image/cached_network_image.dart';
 export 'package:firebase_storage/firebase_storage.dart';

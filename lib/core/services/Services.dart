@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -14,41 +13,39 @@ class Services {
       'India'; //Get this from firstScreen(UI Not developed yet)
   static FirebaseAuth _auth = FirebaseAuth.instance;
 
-  static Firestore _firestore = Firestore.instance;
+  static FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  FirebaseUser firebaseUser;
-
+  User firebaseUser;
 
   String schoolCode;
 
-  final StorageReference _storageReference =
-      FirebaseStorage.instance.ref();
+  final Reference _storageReference = FirebaseStorage.instance.ref();
 
-  Firestore get firestore => _firestore;
+  FirebaseFirestore get firestore => _firestore;
   FirebaseAuth get auth => _auth;
 
   DocumentReference getProfileReference(docId, UserType userType) {
     DocumentReference profileReference;
-    DocumentReference ref = firestore.collection('users').document('Profile');
+    DocumentReference ref = firestore.collection('users').doc('Profile');
     switch (userType) {
       case UserType.DEVELOPERS:
-        return profileReference = ref.collection('Developers').document(docId);
+        return profileReference = ref.collection('Developers').doc(docId);
         break;
-        case UserType.STUDENT:
-        return profileReference =ref.collection('Students').document(docId);
+      case UserType.STUDENT:
+        return profileReference = ref.collection('Students').doc(docId);
         break;
-      default:profileReference = ref.collection('Students').document(docId);
+      default:
+        profileReference = ref.collection('Students').doc(docId);
     }
     return profileReference;
   }
 
-  StorageReference get storageReference => _storageReference;
+  Reference get storageReference => _storageReference;
 
   SharedPreferencesHelper get sharedPreferencesHelper =>
       _sharedPreferencesHelper;
 
-  getFirebaseUser() async {
-    firebaseUser = await _auth.currentUser();
+  getUser() {
+    firebaseUser =  _auth.currentUser;
   }
-
 }

@@ -26,7 +26,7 @@ class _MyProjectState extends State<MyProject> {
   Student student;
 
   acceptProject() async {
-    await projectreference.updateData({'current': true, 'rejected': false});
+    await projectreference.update({'current': true, 'rejected': false});
   }
 
   rejectProject() async {
@@ -46,7 +46,8 @@ class _MyProjectState extends State<MyProject> {
         maxHeight: MediaQuery.of(context).size.height / 6,
         child: Container(
             color: Theme.of(context).brightness == Brightness.dark
- ? Colors.black : Colors.white,
+                ? Colors.black
+                : Colors.white,
             child: Column(
               children: <Widget>[
                 Spacer(),
@@ -121,7 +122,8 @@ class _MyProjectState extends State<MyProject> {
       BuildContext context, Student student, Developer developer, bool value) {
     return showModalBottomSheet(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
- ? Colors.black : Colors.white,
+            ? Colors.black
+            : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         context: context,
         builder: (context) => StudentDetail(
@@ -298,12 +300,12 @@ class _MyProjectState extends State<MyProject> {
                             decoration: BoxDecoration(
                                 border: Border.all(
                                     style: BorderStyle.solid,
-                                    color: Theme.of(context).brightness == Brightness.dark
-
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
                                         ? Colors.green[400]
                                         : Colors.green[900]),
-                                color: Theme.of(context).brightness == Brightness.dark
-
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
                                     ? Colors.green.withOpacity(0.2)
                                     : Colors.green.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(10)),
@@ -315,8 +317,8 @@ class _MyProjectState extends State<MyProject> {
                                 Text(
                                   "Project Completed",
                                   style: TextStyle(
-                                      color: Theme.of(context).brightness == Brightness.dark
-
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
                                           ? Colors.green
                                           : Colors.green[900]),
                                 ),
@@ -361,8 +363,8 @@ class _MyProjectState extends State<MyProject> {
                                           (project.progress.length * 16.66666) <
                                                   50
                                               ? black
-                                              : Theme.of(context).brightness == Brightness.dark
-
+                                              : Theme.of(context).brightness ==
+                                                      Brightness.dark
                                                   ? Colors.black
                                                   : Colors.white,
                                     )),
@@ -561,13 +563,13 @@ class _MyProjectState extends State<MyProject> {
           Future.delayed((Duration(milliseconds: 600)));
           return Center(child: CircularProgressIndicator());
         } else if (student.displayName == "") {
-          return FlatButton(
+          return TextButton(
               onPressed: () {
                 showAddStudentSheet(context, developer);
               },
               child: Text("Select a Student"));
         } else {
-          return FlatButton(
+          return TextButton(
               onPressed: () {
                 showStudentDetailSheet(context, student, developer, false);
               },

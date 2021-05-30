@@ -9,12 +9,12 @@ class DeveloperProfileServices extends Services {
 
   List<Developer> developers = [];
   DeveloperProfileServices() {
-    getFirebaseUser();
+    getUser();
   }
 
   setProfileData(Developer developer) async {
     if (developer.photoUrl.contains('https')) {
-     /*  developer.photoUrl =
+      /*  developer.photoUrl =
           await storageServices.setProfilePhoto(developer.photoUrl); */
     } else if (developer.photoUrl == 'default') {
       developer.photoUrl = developer.photoUrl;
@@ -42,11 +42,11 @@ class DeveloperProfileServices extends Services {
     Developer developer;
     String id = await sharedPreferencesHelper.getDevelopersId();
     //  if (dev == "N.A") {
-    DocumentSnapshot documentSnapshot = await Firestore.instance
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .document('Profile')
+        .doc('Profile')
         .collection('Developers')
-        .document(id)
+        .doc(id)
         .get();
     developer = Developer.fromSnapshot(documentSnapshot);
     await sharedPreferencesHelper.setCurrentProject(developer.currentProject);
@@ -63,8 +63,8 @@ class DeveloperProfileServices extends Services {
     String body = await sharedPreferencesHelper.getDeveloper();
     if (body != 'N.A') {
       final data = json.decode(body);
-      if (data['displayName'] != null && data['displayName'] != "") {
-        developer = Developer.fromJson(data);
+      if (data()['displayName'] != null && data()['displayName'] != "") {
+        developer = Developer.fromJson(data());
         loggedInDeveloperStream.add(developer);
       } else {
         developer = await getDeveloper();
@@ -127,11 +127,11 @@ class DeveloperProfileServices extends Services {
   }
 
   Future<DocumentReference> _getDeveloperProfileRef(String uid) async {
-    return Firestore.instance
+    return FirebaseFirestore.instance
         .collection('users')
-        .document('Profile')
+        .doc('Profile')
         .collection('Developer')
-        .document(uid);
+        .doc(uid);
   }
  */
 }

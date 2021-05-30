@@ -4,6 +4,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:helphub/Shared/Widgets_and_Utility/MyTheme.dart';
 import 'package:helphub/Students/UI/DeveloperDetail.dart';
 import 'package:helphub/imports.dart';
+import 'package:hidden_drawer_menu/simple_hidden_drawer/simple_hidden_drawer.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -20,13 +21,13 @@ class StudentPage extends StatefulWidget {
 Future<String> downloadAndSaveFile(String url, String name) async {
   var directory = await getApplicationDocumentsDirectory();
   var path = '${directory.path}/$name';
-  var res = await get(url);
+  var res = await get(Uri.parse(url));
   var file = File(path);
   await file.writeAsBytes(res.bodyBytes);
   return path;
 }
 
-List<Message> messages = List(5);
+List<Message> messages = [];
 BigPictureStyleInformation photo;
 Person person;
 MessagingStyleInformation messageStyle;
@@ -76,15 +77,16 @@ void showNotification(Map notification, String title, String body,
     'your channel description',
     playSound: true,
     enableVibration: true,
-    importance: Importance.Max,
+    importance: Importance.max,
     groupKey: title,
     autoCancel: true,
     styleInformation: styleInformation,
-    priority: Priority.High,
+    priority: Priority.high,
   );
   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
   var platformChannelSpecifics = new NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics);
   await flutterLocalNotificationsPlugin.show(
       0, title, body, platformChannelSpecifics,
       payload: json.encode(notification));
@@ -95,7 +97,7 @@ class _StudentPageState extends State<StudentPage>
   SwiperController _swiperController;
   PageController pageController;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       new FlutterLocalNotificationsPlugin();
   SharedPreferencesHelper sharedPreferencesHelper =
@@ -131,44 +133,35 @@ class _StudentPageState extends State<StudentPage>
 
   void registerNotification() async {
     String currentUser = await sharedPreferencesHelper.getStudentsEmail();
-    firebaseMessaging.requestNotificationPermissions();
-    firebaseMessaging.configure(
-        onBackgroundMessage:
-            Platform.isIOS ? null : configureNotificationToShow,
-        onMessage: (Map<String, dynamic> message) {
-          print('onMessage: $message');
-          showSnackbar(message);
-          // configureNotificationToShow(message);
-          return;
-        },
-        onResume: (Map<String, dynamic> message) {
-          print('onResume: $message');
-          //TODO: Implement onClick
-          // configureNotificationToShow(message);
-          return;
-        },
-        onLaunch: (Map<String, dynamic> message) {
-          print('onLaunch: $message');
-          //TODO: Implement onLaunch
+    FirebaseMessaging.onMessage.listen((event) {
+      Map message = event.data;
+      print('onMessage: $message');
+      showSnackbar(message);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      Map message = event.data;
+      showSnackbar(message);
+    });
 
-          // configureNotificationToShow(message);
-          return;
-        });
+    FirebaseMessaging.onBackgroundMessage(
+        (message) => configureNotificationToShow(message.data));
+
+    firebaseMessaging.requestPermission();
 
     firebaseMessaging.getToken().then((token) async {
       print('token: $token');
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('users')
-          .document('Profile')
+          .doc('Profile')
           .collection('Students')
-          .document(currentUser)
-          .updateData({'pushToken': token});
+          .doc(currentUser)
+          .update({'pushToken': token});
       await sharedPreferencesHelper.setSenderToken(token);
     }).catchError((err) {
       Fluttertoast.showToast(
-          msg: err.message.toString(),
-          gravity: ToastGravity.BOTTOM,
-          );
+        msg: err.message.toString(),
+        gravity: ToastGravity.BOTTOM,
+      );
     });
   }
 
@@ -177,7 +170,7 @@ class _StudentPageState extends State<StudentPage>
         new AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = new IOSInitializationSettings();
     var initializationSettings = new InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
@@ -201,7 +194,7 @@ class _StudentPageState extends State<StudentPage>
         //  padding: EdgeInsets.all(10),
         margin: EdgeInsets.fromLTRB(10, 7, 10, 7),
         animationDuration: Duration(milliseconds: 700),
-        mainButton: FlatButton(
+        mainButton: TextButton(
             onPressed: () {
               _onItemTapped(2);
             },
@@ -352,16 +345,15 @@ class _StudentPageState extends State<StudentPage>
                     menu: buildMenu(
                         changeTheme: (v) {
                           myTheme = v;
-                         themeClass.changeTheme(myTheme);
+                          themeClass.changeTheme(myTheme);
                         },
                         elevation: 5,
                         radius: 15,
-                        user: 'Student',
+                        user: 'Student', 
                         name: student.displayName ?? studentSnap.displayName,
                         imageUrl: studentSnap.photoUrl ?? student.photoUrl,
                         profileRoute: StudentProfile.id,
                         animateIcon: handleOnPressed,
-                      
                         infoChildren: [
                           SizedBox(height: 7),
                           Text(student.email ?? '', style: infoStyle()),

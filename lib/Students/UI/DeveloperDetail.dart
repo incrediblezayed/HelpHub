@@ -29,12 +29,12 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
   }
 
   updateStudent() async {
-    return await Firestore.instance
+    return await FirebaseFirestore.instance
         .collection('users')
-        .document('Enrolled')
+        .doc('Enrolled')
         .collection(developer.id)
-        .document(widget.student.displayName)
-        .updateData(widget.student.acceptRequest(widget.student));
+        .doc(widget.student.displayName)
+        .update(widget.student.acceptRequest(widget.student));
   }
 
   SliverPersistentHeader makePinnedheader(String headerText, String email) {
@@ -43,9 +43,10 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
       delegate: _SliverAppBarDelegate(
         minHeight: MediaQuery.of(context).size.height / 9,
         maxHeight: MediaQuery.of(context).size.height / 6,
-        child: Container( color: Theme.of(context).brightness == Brightness.dark
-?Colors.black:Colors.white,
-
+        child: Container(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : Colors.white,
             child: Column(
               children: <Widget>[
                 Spacer(),
@@ -113,10 +114,10 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
                 Hero(
                   tag: widget.developer.photoUrl,
                   child: FutureBuilder<http.Response>(
-                      future: http.get(developer.photoUrl),
+                      future: http.get(Uri.parse(developer.photoUrl)),
                       builder: (context, snapshot) {
                         if (snapshot != null && snapshot.data != null) {
-                          if (snapshot.data.statusCode==200) {
+                          if (snapshot.data.statusCode == 200) {
                             return Container(
                               width: MediaQuery.of(context).size.width,
                               decoration: BoxDecoration(
@@ -260,7 +261,7 @@ class _DeveloperDetailState extends State<DeveloperDetail> {
         ]),
       ),
       bottomNavigationBar: widget.card
-          ? FlatButton(
+          ? TextButton(
               onPressed: () {
                 model.requested
                     ? model.cancelReq(student, developer)

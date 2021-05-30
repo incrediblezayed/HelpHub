@@ -1,12 +1,13 @@
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:helphub/Shared/Pages/About.dart';
+import 'Shared/Widgets_and_Utility/MyTheme.dart';
 import 'Students/UI/StudentHome.dart';
 import 'imports.dart';
 import 'package:helphub/Shared/Widgets_and_Utility/MyTheme.dart';
-import 'package:flutter_animated_theme/animated_theme_app.dart';
-import 'package:flutter_animated_theme/animation_type.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   timeDilation = 2;
   Provider.debugCheckInvalidValueType = null;
   setupLocator();
@@ -77,7 +78,7 @@ class MyApp extends StatelessWidget {
             initialData: Student(),
             value:
                 locator<StudentProfileServices>().loggedInStudentStream.stream),
-        StreamProvider<FirebaseUser>.value(
+        StreamProvider<User>.value(
           initialData: null,
           value: locator<AuthenticationServices>().fireBaseUserStream.stream,
         ),
@@ -99,11 +100,9 @@ class HelpHub extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     MyTheme myTheme = Provider.of<MyTheme>(context);
-    return AnimatedThemeApp(
-      animationType: AnimationType.CIRCULAR_ANIMATED_THEME,
+    return MaterialApp(
       theme: lightTheme,
       darkTheme: darkTheme,
-      animationDuration: Duration(milliseconds: 450),
       debugShowCheckedModeBanner: false,
       title: 'Help Hub',
       routes: {
@@ -124,7 +123,7 @@ class HelpHub extends StatelessWidget {
     Student currentStudent = Provider.of<Student>(context, listen: false);
     UserType userType = Provider.of<UserType>(context, listen: false);
     bool isUserLoggedIn = Provider.of<bool>(context);
-    if (Provider.of<FirebaseUser>(context) == null) {
+    if (Provider.of<User>(context) == null) {
       return WelcomeScreen();
     }
 

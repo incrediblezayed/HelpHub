@@ -40,7 +40,7 @@ class Developer {
   }
 
   Developer.fromSnapshot(DocumentSnapshot documentSnapshot) {
-    fromJson(documentSnapshot.data);
+    fromJson(documentSnapshot.data());
   }
 
   fromJson(Map<String, dynamic> json) {

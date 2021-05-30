@@ -132,7 +132,7 @@ class _DeveloperCardState extends State<DeveloperCard> {
                   decoration: kTextFieldDecoration.copyWith(
                       labelText: "Your 6 digit Id"),
                 ),
-                FlatButton(
+                TextButton(
                     onPressed: () async {
                       setState(() {
                         loading = true;
@@ -197,7 +197,7 @@ class _DeveloperCardState extends State<DeveloperCard> {
                   decoration:
                       kTextFieldDecoration.copyWith(labelText: "Database Uid"),
                 ),
-                FlatButton(
+                TextButton(
                     onPressed: () async {
                       setState(() {
                         loading = true;
@@ -217,7 +217,7 @@ class _DeveloperCardState extends State<DeveloperCard> {
                                 title: Text("ID"),
                                 content: Text("Your Id is $id"),
                                 actions: <Widget>[
-                                  FlatButton(
+                                  TextButton(
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },
@@ -326,7 +326,7 @@ class _DeveloperCardState extends State<DeveloperCard> {
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: Text(
-                              'Note: All the documents mentioned below and the obligations for creating a developer account as it is we need to confirm the identity as a real developer (Only for confirming your ID, will not be stored in database).',
+                              'Note: All the docs mentioned below and the obligations for creating a developer account as it is we need to confirm the identity as a real developer (Only for confirming your ID, will not be stored in database).',
                               style: TextStyle(fontSize: 18)),
                         ),
                       ),
@@ -415,7 +415,7 @@ class _DeveloperCardState extends State<DeveloperCard> {
                         Builder(
                           builder: (context) {
                             var controller = ExpandableController.of(context);
-                            return FlatButton(
+                            return TextButton(
                               child: Text(
                                 controller.expanded ? "COLLAPSE" : "EXPAND",
                                 style: Theme.of(context)
@@ -527,7 +527,7 @@ class _StudentCardState extends State<StudentCard> {
                   decoration:
                       kTextFieldDecoration.copyWith(labelText: "Your E-mail"),
                 ),
-                FlatButton(
+                TextButton(
                     onPressed: () async {
                       setState(() {
                         loading = true;
@@ -608,7 +608,7 @@ class _StudentCardState extends State<StudentCard> {
                         Builder(
                           builder: (context) {
                             var controller = ExpandableController.of(context);
-                            return FlatButton(
+                            return TextButton(
                               child: Text(
                                 controller.expanded ? "COLLAPSE" : "EXPAND",
                                 style: Theme.of(context)
